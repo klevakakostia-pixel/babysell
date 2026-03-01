@@ -1,0 +1,63 @@
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<div id="particles-js"></div>
+
+<div class="app">
+  <header class="header">
+    <div class="logo">BABY<span>SELL</span></div>
+    <div class="header-right">
+      <div class="lang-switcher">
+        <span onclick="setLang('ua')">UA</span>
+        <span onclick="setLang('ru')">RU</span>
+        <span onclick="setLang('en')">EN</span>
+      </div>
+      <div class="user-panel">
+        <div class="promo-box">
+          <input type="text" id="promo-input" placeholder="PROMO">
+          <button class="promo-btn" onclick="usePromo()">OK</button>
+        </div>
+        <div class="bal-box"><span id="u-balance">0</span> B</div>
+        <button id="login-btn" class="btn-open-case" style="padding: 5px 10px; margin: 0; font-size: 12px;" onclick="googleAuth()">LOGIN</button>
+        <div id="user-info" style="display:none"><img src="" id="u-pic"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <section id="screen-cases" class="screen" style="display:flex">
+      <div class="case-card" onclick="showScreen('screen-preview')">
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img">
+        <h2 style="font-family:'Orbitron'; letter-spacing:5px; margin-top:15px;">ELITE CASE</h2>
+      </div>
+    </section>
+
+    <section id="screen-preview" class="screen">
+      <div class="preview-container">
+        <button class="btn-back" id="t-back" onclick="showScreen('screen-cases')">← НАЗАД</button>
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="preview-img">
+        <h2 class="preview-name">AK-47 ELITE CASE</h2>
+        <button class="btn-open-case" id="t-open-btn" onclick="startSpin()">ВІДКРИТИ ЗА 500 B</button>
+      </div>
+    </section>
+
+    <section id="screen-roulette" class="screen">
+      <div class="roulette-wrapper">
+        <div class="pointer-arrow">▼</div>
+        <div id="track" class="track"></div>
+      </div>
+      <h2 class="opening-text" id="t-opening">ВІДКРИТТЯ...</h2>
+    </section>
+  </main>
+
+  <div id="win-modal" class="modal">
+    <div class="modal-cnt">
+      <h2 id="t-win-title" style="font-family:'Orbitron'; color:var(--main);">ВЫИГРЫШ!</h2>
+      <div id="win-res"></div>
+      <p id="auto-sell-text" style="color:#555; margin: 15px 0;"></p>
+      <button class="btn-open-case" id="t-claim" onclick="closeWin()">ЗАБРАТИ</button>
+    </div>
+  </div>
+</div>
