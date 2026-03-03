@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>BABYSELL CASE</title>
+    <title>BABYSELL - FIXED ROULETTE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -10,128 +10,265 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
-        :root { --main: #00ffaa; --bg: #050508; --border: rgba(0, 255, 170, 0.2); }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; height: 100vh; overflow: hidden; }
-        #particles-js { position: fixed; inset: 0; z-index: 0; background-color: var(--bg); }
-        .app { position: relative; z-index: 1; display: flex; flex-direction: column; height: 100vh; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); }
-        .logo { font-family: 'Orbitron'; font-size: 22px; letter-spacing: 3px; font-weight: 700; }
-        .logo span { color: var(--main); text-shadow: 0 0 10px var(--main); }
-        .header-right { display: flex; align-items: center; gap: 30px; }
-        .bal-box { background: rgba(0,255,170,0.1); border: 1px solid var(--main); padding: 6px 15px; border-radius: 4px; color: var(--main); font-family: 'Orbitron'; }
-        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--main); object-fit: cover; }
-        .content { flex: 1; display: flex; justify-content: center; align-items: center; }
-        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
-        .case-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.4s; }
+        :root { --main: #00ffaa; --bg: #050508; --border: rgba(0, 255, 170, 0.15); }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
+        
+        #particles-js { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100vh; }
+
+        /* HEADER */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 40px; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+        }
+        .logo { font-family: 'Orbitron'; font-size: 24px; letter-spacing: 3px; cursor: pointer; color: #fff; }
+        .logo span { color: var(--main); text-shadow: 0 0 15px var(--main); }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .bal-box { 
+            background: rgba(0,255,170,0.08); border: 1px solid var(--main); 
+            padding: 8px 20px; border-radius: 10px; color: var(--main); 
+            font-family: 'Orbitron'; min-width: 120px; text-align: center;
+        }
+
+        /* SETTINGS PANEL */
+        .user-menu-container { position: relative; }
+        #u-pic { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); cursor: pointer; transition: 0.3s; }
+        #u-pic:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--main); }
+
+        .settings-panel {
+            position: absolute; top: 60px; right: 0; width: 250px;
+            background: rgba(10, 10, 15, 0.98); border: 1px solid var(--main);
+            border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 15px;
+            backdrop-filter: blur(15px); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+        }
+        .settings-panel.active { display: flex; animation: slideIn 0.2s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CASES & ROULETTE */
+        .cases-grid { display: flex; gap: 50px; justify-content: center; padding-top: 50px; }
+        .case-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 30px; border-radius: 25px; width: 280px; text-align: center; cursor: pointer; transition: 0.5s; }
         .case-card:hover { transform: translateY(-10px); border-color: var(--main); }
-        .case-img { width: 220px; }
-        .roulette-wrapper { position: relative; width: 800px; height: 180px; background: #000; border: 1px solid var(--main); overflow: hidden; border-radius: 15px; display: flex; align-items: center; }
-        .pointer-arrow { position: absolute; left: 50%; top: 0; transform: translateX(-50%); color: var(--main); font-size: 30px; z-index: 20; }
-        .track { display: flex; align-items: center; position: absolute; height: 100%; left: 0; }
-        .track div { min-width: 160px; text-align: center; }
-        .track img { width: 110px; }
-        .btn-open-case { background: transparent; color: var(--main); border: 2px solid var(--main); padding: 12px 40px; border-radius: 8px; font-family: 'Orbitron'; cursor: pointer; margin-top: 15px; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 999; }
-        .modal-cnt { background: #0a0a0d; padding: 50px; border: 2px solid var(--main); border-radius: 30px; text-align: center; }
+        .case-img { width: 100%; border-radius: 15px; }
+
+        .btn { background: transparent; color: var(--main); border: 2px solid var(--main); padding: 14px 40px; border-radius: 12px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn:hover { background: var(--main); color: #000; }
+
+        /* --- ФИКС РУЛЕТКИ ТУТ --- */
+        .roulette-wrapper { 
+            position: relative; width: 800px; height: 200px; 
+            background: rgba(0,0,0,0.9); border: 2px solid var(--main); 
+            overflow: hidden; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+        }
+        .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 20; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
+        
+        .track { display: flex; align-items: center; position: absolute; height: 100%; left: 0; will-change: transform; }
+        
+        /* КАРТИНКИ В РУЛЕТКЕ */
+        .track div { 
+            min-width: 160px; height: 200px; 
+            display: flex; justify-content: center; align-items: center; 
+            padding: 10px; border-right: 1px solid rgba(255,255,255,0.05);
+            transition: 0.5s;
+        }
+        .track div img { 
+            max-width: 120px; max-height: 120px; 
+            object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+        }
+        .track div.active { background: rgba(0,255,170,0.1); transform: scale(1.1); }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .modal-cnt { background: #08080a; padding: 50px; border: 1px solid var(--main); border-radius: 30px; text-align: center; }
+        #win-res img { width: 200px; height: 200px; object-fit: contain; margin-bottom: 20px; }
     </style>
 </head>
 <body>
+
+    <audio id="bg-music"></audio>
+
     <div id="particles-js"></div>
+
     <div class="app">
         <header class="header">
-            <div class="logo">BABY<span>SELL</span></div>
+            <div class="logo" onclick="showScreen('screen-cases')">BABY<span>SELL</span></div>
             <div class="header-right">
+                <div style="display:flex; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+                    <input type="text" id="promo-input" placeholder="ПРОМО" style="background:none; border:none; color:#fff; padding:5px 10px; width:80px; font-family:'Rajdhani';">
+                    <button onclick="usePromo()" style="background:var(--main); border:none; padding:0 10px; font-family:'Orbitron'; font-size:10px; cursor:pointer;">OK</button>
+                </div>
                 <div class="bal-box"><span id="u-balance">0</span> B</div>
-                <button id="login-btn" class="btn-open-case" style="padding: 5px 10px; font-size: 12px;" onclick="googleAuth()">LOGIN</button>
-                <div id="user-info" style="display:none"><img src="" id="u-pic"></div>
+                <button id="login-btn" class="btn" style="padding: 8px 15px; font-size: 11px;" onclick="googleAuth()">LOGIN</button>
+                
+                <div class="user-menu-container" id="user-info" style="display:none">
+                    <img src="" id="u-pic" onclick="toggleSettings()">
+                    <div class="settings-panel" id="settings-panel">
+                        <h4 style="font-family:'Orbitron'; font-size:11px; color:#fff; margin-bottom:10px; text-align:center;">SETTINGS</h4>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <label style="font-size:10px; color:var(--main);">MUSIC</label>
+                            <select id="music-state" onchange="handleMusic()" style="background:#111; color:#fff; border:1px solid var(--border); padding:5px;">
+                                <option value="off">OFF</option>
+                                <option value="on">ON</option>
+                            </select>
+                            <label style="font-size:10px; color:var(--main);">VOLUME</label>
+                            <input type="range" id="volume-range" min="0" max="1" step="0.1" value="0.5" oninput="changeVolume()">
+                        </div>
+                        <div class="logout-btn" style="color:#ff4444; cursor:pointer; font-size:12px; text-align:center; margin-top:10px;" onclick="auth.signOut()">LOGOUT</div>
+                    </div>
+                </div>
             </div>
         </header>
-        <main class="content">
-            <section id="screen-cases" class="screen" style="display:flex">
-                <div class="case-card" onclick="showScreen('screen-preview')">
-                    <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img">
-                    <h2 style="font-family:'Orbitron';">ELITE CASE</h2>
+
+        <main style="flex:1; display:flex; justify-content:center; align-items:center;">
+            <section id="screen-cases" class="screen" style="display:flex;">
+                <div class="cases-grid">
+                    <div class="case-card" onclick="openPreview('УЛИЧНЫЕ КОШМАРЫ', 'https://i.postimg.cc/ZnHQ1pwz/AAA.png')">
+                        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img">
+                        <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">УЛИЧНЫЕ КОШМАРЫ</h3>
+                    </div>
+                    <div class="case-card" onclick="openPreview('НАВЕРНОЕ ПОВЕЗЕТ', 'https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png')">
+                        <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" class="case-img">
+                        <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
+                    </div>
                 </div>
             </section>
-            <section id="screen-preview" class="screen">
-                <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" width="240">
-                <button class="btn-open-case" onclick="startSpin()">ОТКРЫТЬ [500 B]</button>
+
+            <section id="screen-preview" class="screen" style="display:none; flex-direction:column; align-items:center;">
+                <img id="preview-img" src="" width="250">
+                <h2 id="preview-name" style="font-family:'Orbitron'; margin: 25px 0;"></h2>
+                <button class="btn" onclick="startSpin()">ОТКРЫТЬ ЗА 500 B</button>
+                <p onclick="showScreen('screen-cases')" style="cursor:pointer; margin-top:30px; color:#666;">← НАЗАД</p>
             </section>
-            <section id="screen-roulette" class="screen">
+
+            <section id="screen-roulette" class="screen" style="display:none; flex-direction:column; align-items:center;">
                 <div class="roulette-wrapper">
-                    <div class="pointer-arrow">▼</div>
+                    <div class="pointer"></div>
                     <div id="track" class="track"></div>
                 </div>
             </section>
         </main>
-        <div id="win-modal" class="modal">
-            <div class="modal-cnt">
-                <div id="win-res"></div>
-                <button class="btn-open-case" onclick="location.reload()">ЗАБРАТЬ</button>
-            </div>
+    </div>
+
+    <div id="win-modal" class="modal">
+        <div class="modal-cnt">
+            <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom:20px;">ВЫПАЛО!</h2>
+            <div id="win-res"></div>
+            <button class="btn" onclick="closeWin()" style="margin-top:20px;">ЗАБРАТЬ</button>
         </div>
     </div>
 
     <script>
+        // --- DATA ---
+        const LOOT = [
+            { n: "ГЛОК КАРАМЕЛЬНОЕ ЯБЛОКО", p: 350, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" },
+            { n: "USP-S ИЗВИЛИНЫ", p: 500, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png" },
+            { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 2000, img: "https://i.postimg.cc/3NW96mG1/AK.png" }
+        ];
+
+        // --- MUSIC ---
+        const playlist = ["https://files.catbox.moe/sv6xxw.mp3", "https://files.catbox.moe/zjpbt5.mp3", "https://files.catbox.moe/957yym.mp3"];
+        let currentTrackIdx = 0;
+        const audio = document.getElementById('bg-music');
+        function handleMusic() {
+            if (document.getElementById('music-state').value === "on") playNext();
+            else audio.pause();
+        }
+        function playNext() {
+            audio.src = playlist[currentTrackIdx];
+            audio.play().catch(() => {});
+            currentTrackIdx = (currentTrackIdx + 1) % playlist.length;
+        }
+        audio.onended = playNext;
+        function changeVolume() { audio.volume = document.getElementById('volume-range').value; }
+        function toggleSettings() { document.getElementById('settings-panel').classList.toggle('active'); }
+
+        // --- FIREBASE ---
         const firebaseConfig = { 
             apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
             authDomain: "babysell-8b37b.firebaseapp.com", 
             projectId: "babysell-8b37b", 
-            databaseURL: "https://babysell-8b37b-default-rtdb.firebaseio.com", 
+            databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", 
             appId: "1:955498378146:web:52f027f8e97398e75b78fb" 
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.database();
         let bal = 0;
-        const LOOT = [
-            { n: "АКР ТУНЕЛЬНІ ТВАРИ", p: 1400, img: "https://i.postimg.cc/3NW96mG1/AK.png" },
-            { n: "ГЛОК КАРАМЕЛЬНЕ ЯБЛУКО", p: 450, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" }
-        ];
 
         auth.onAuthStateChanged(user => {
             if (user) {
+                db.ref('users/' + user.uid + '/balance').on('value', s => {
+                    bal = s.val() || 0;
+                    document.getElementById('u-balance').innerText = bal.toLocaleString();
+                });
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('user-info').style.display = 'block';
                 document.getElementById('u-pic').src = user.photoURL;
-                db.ref('users/' + user.uid + '/balance').on('value', s => {
-                    bal = s.val() || 0;
-                    document.getElementById('u-balance').innerText = bal;
-                });
+            } else {
+                document.getElementById('login-btn').style.display = 'block';
+                document.getElementById('user-info').style.display = 'none';
             }
         });
 
         window.googleAuth = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        
+        window.usePromo = () => {
+            const input = document.getElementById('promo-input').value.trim().toUpperCase();
+            if (input === "ADMIN2027" && auth.currentUser) {
+                db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
+            }
+            document.getElementById('promo-input').value = '';
+        };
+
+        // --- CORE ---
         window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'flex';
         };
 
-        window.startSpin = () => {
-            if (bal < 500) return alert("Low balance!");
-            db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) - 500);
-            showScreen('screen-roulette');
-            const winIndex = 30;
-            const winItem = LOOT[Math.floor(Math.random() * LOOT.length)];
-            const track = document.getElementById('track');
-            let html = '';
-            for (let i = 0; i < 40; i++) {
-                const cur = (i === winIndex) ? winItem : LOOT[Math.floor(Math.random() * LOOT.length)];
-                html += `<div><img src="${cur.img}"></div>`;
-            }
-            track.innerHTML = html;
-            setTimeout(() => {
-                track.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.05, 1)';
-                track.style.transform = `translateX(-${(winIndex * 160) - 320}px)`;
-            }, 100);
-            setTimeout(() => {
-                db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + winItem.p);
-                document.getElementById('win-res').innerHTML = `<img src="${winItem.img}" width="150"><h3>${winItem.n}</h3>`;
-                document.getElementById('win-modal').style.display = 'flex';
-            }, 6500);
+        window.openPreview = (name, img) => {
+            document.getElementById('preview-name').innerText = name;
+            document.getElementById('preview-img').src = img;
+            showScreen('screen-preview');
         };
 
-        particlesJS("particles-js", { particles: { number: { value: 50 }, color: { value: "#00ffaa" }, opacity: { value: 0.2 }, size: { value: 2 }, line_linked: { enable: true, opacity: 0.1 }, move: { speed: 1 } } });
+        window.startSpin = () => {
+            if (bal < 500) { alert("Недостаточно баланса!"); return; }
+            const uId = auth.currentUser.uid;
+            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) - 500);
+            
+            showScreen('screen-roulette');
+            
+            const winIndex = 35;
+            const winItem = LOOT[Math.floor(Math.random() * LOOT.length)];
+            const track = document.getElementById('track');
+            
+            track.innerHTML = '';
+            track.style.transition = 'none';
+            track.style.transform = `translateX(0px)`;
+
+            for (let i = 0; i < 45; i++) {
+                const item = (i === winIndex) ? winItem : LOOT[Math.floor(Math.random() * LOOT.length)];
+                const div = document.createElement('div');
+                div.innerHTML = `<img src="${item.img}">`;
+                track.appendChild(div);
+            }
+
+            setTimeout(() => {
+                track.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
+                const shift = (winIndex * 160) - (800 / 2) + 80;
+                track.style.transform = `translateX(-${shift}px)`;
+            }, 50);
+
+            setTimeout(() => {
+                track.querySelectorAll('div')[winIndex].classList.add('active');
+                db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + winItem.p);
+                document.getElementById('win-res').innerHTML = `<img src="${winItem.img}"><h3>${winItem.n}</h3><p style="color:var(--main);">+${winItem.p} B</p>`;
+                document.getElementById('win-modal').style.display = 'flex';
+            }, 7500);
+        };
+
+        window.closeWin = () => { document.getElementById('win-modal').style.display = 'none'; showScreen('screen-cases'); };
+        particlesJS("particles-js", { particles: { number: { value: 40 }, color: { value: "#00ffaa" }, opacity: { value: 0.2 }, size: { value: 2 }, move: { speed: 1, direction: "top" } } });
     </script>
 </body>
 </html>
