@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>BABYSELL - FIXED ROULETTE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BABYSELL - CASE OPENING</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -22,7 +23,7 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 40px; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
         }
-        .logo { font-family: 'Orbitron'; font-size: 24px; letter-spacing: 3px; cursor: pointer; color: #fff; }
+        .logo { font-family: 'Orbitron'; font-size: 24px; letter-spacing: 3px; cursor: pointer; color: #fff; text-decoration: none; }
         .logo span { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
         .header-right { display: flex; align-items: center; gap: 20px; }
@@ -32,51 +33,43 @@
             font-family: 'Orbitron'; min-width: 120px; text-align: center;
         }
 
-        /* SETTINGS PANEL */
-        .user-menu-container { position: relative; }
-        #u-pic { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); cursor: pointer; transition: 0.3s; }
-        #u-pic:hover { transform: scale(1.1); box-shadow: 0 0 15px var(--main); }
-
+        /* SETTINGS */
         .settings-panel {
-            position: absolute; top: 60px; right: 0; width: 250px;
+            position: absolute; top: 60px; right: 40px; width: 250px;
             background: rgba(10, 10, 15, 0.98); border: 1px solid var(--main);
             border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 15px;
-            backdrop-filter: blur(15px); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px); z-index: 1000;
         }
         .settings-panel.active { display: flex; animation: slideIn 0.2s ease-out; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CASES & ROULETTE */
-        .cases-grid { display: flex; gap: 50px; justify-content: center; padding-top: 50px; }
-        .case-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 30px; border-radius: 25px; width: 280px; text-align: center; cursor: pointer; transition: 0.5s; }
+        /* CASES */
+        .cases-grid { display: flex; gap: 50px; justify-content: center; padding-top: 50px; flex-wrap: wrap; }
+        .case-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 30px; border-radius: 25px; width: 280px; text-align: center; cursor: pointer; transition: 0.5s; position: relative; }
         .case-card:hover { transform: translateY(-10px); border-color: var(--main); }
         .case-img { width: 100%; border-radius: 15px; }
+        
+        /* LOCKED STATE */
+        .case-card.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
+        .case-card.locked:hover { transform: none; border-color: var(--border); }
+        .lock-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 25px; }
+        .timer-text { font-family: 'Orbitron'; color: var(--main); font-size: 18px; margin-top: 10px; text-shadow: 0 0 10px var(--main); }
 
         .btn { background: transparent; color: var(--main); border: 2px solid var(--main); padding: 14px 40px; border-radius: 12px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn:hover { background: var(--main); color: #000; }
+        .btn:hover:not(:disabled) { background: var(--main); color: #000; box-shadow: 0 0 20px var(--main); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* --- ФИКС РУЛЕТКИ ТУТ --- */
+        /* ROULETTE */
         .roulette-wrapper { 
             position: relative; width: 800px; height: 200px; 
             background: rgba(0,0,0,0.9); border: 2px solid var(--main); 
             overflow: hidden; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
         }
         .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 20; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
-        
         .track { display: flex; align-items: center; position: absolute; height: 100%; left: 0; will-change: transform; }
-        
-        /* КАРТИНКИ В РУЛЕТКЕ */
-        .track div { 
-            min-width: 160px; height: 200px; 
-            display: flex; justify-content: center; align-items: center; 
-            padding: 10px; border-right: 1px solid rgba(255,255,255,0.05);
-            transition: 0.5s;
-        }
-        .track div img { 
-            max-width: 120px; max-height: 120px; 
-            object-fit: contain; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-        }
-        .track div.active { background: rgba(0,255,170,0.1); transform: scale(1.1); }
+        .track div { min-width: 160px; height: 200px; display: flex; justify-content: center; align-items: center; padding: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .track div img { max-width: 120px; max-height: 120px; object-fit: contain; }
+        .track div.active { background: rgba(0,255,170,0.1); transform: scale(1.1); transition: 0.5s; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-cnt { background: #08080a; padding: 50px; border: 1px solid var(--main); border-radius: 30px; text-align: center; }
@@ -86,7 +79,6 @@
 <body>
 
     <audio id="bg-music"></audio>
-
     <div id="particles-js"></div>
 
     <div class="app">
@@ -101,7 +93,7 @@
                 <button id="login-btn" class="btn" style="padding: 8px 15px; font-size: 11px;" onclick="googleAuth()">LOGIN</button>
                 
                 <div class="user-menu-container" id="user-info" style="display:none">
-                    <img src="" id="u-pic" onclick="toggleSettings()">
+                    <img src="" id="u-pic" onclick="toggleSettings()" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); cursor: pointer;">
                     <div class="settings-panel" id="settings-panel">
                         <h4 style="font-family:'Orbitron'; font-size:11px; color:#fff; margin-bottom:10px; text-align:center;">SETTINGS</h4>
                         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -122,13 +114,17 @@
         <main style="flex:1; display:flex; justify-content:center; align-items:center;">
             <section id="screen-cases" class="screen" style="display:flex;">
                 <div class="cases-grid">
-                    <div class="case-card" onclick="openPreview('УЛИЧНЫЕ КОШМАРЫ', 'https://i.postimg.cc/ZnHQ1pwz/AAA.png')">
+                    <div class="case-card" onclick="openPreview('УЛИЧНЫЕ КОШМАРЫ', 'https://i.postimg.cc/ZnHQ1pwz/AAA.png', false)">
                         <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img">
                         <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">УЛИЧНЫЕ КОШМАРЫ</h3>
                     </div>
-                    <div class="case-card" onclick="openPreview('НАВЕРНОЕ ПОВЕЗЕТ', 'https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png')">
+                    <div id="case-lucky" class="case-card locked">
                         <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" class="case-img">
                         <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
+                        <div class="lock-overlay">
+                            <span style="font-size: 30px;">🔒</span>
+                            <div id="timer" class="timer-text">00:00:00</div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -136,7 +132,7 @@
             <section id="screen-preview" class="screen" style="display:none; flex-direction:column; align-items:center;">
                 <img id="preview-img" src="" width="250">
                 <h2 id="preview-name" style="font-family:'Orbitron'; margin: 25px 0;"></h2>
-                <button class="btn" onclick="startSpin()">ОТКРЫТЬ ЗА 500 B</button>
+                <button id="spin-btn" class="btn" onclick="startSpin()">ОТКРЫТЬ ЗА 500 B</button>
                 <p onclick="showScreen('screen-cases')" style="cursor:pointer; margin-top:30px; color:#666;">← НАЗАД</p>
             </section>
 
@@ -162,8 +158,42 @@
         const LOOT = [
             { n: "ГЛОК КАРАМЕЛЬНОЕ ЯБЛОКО", p: 350, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" },
             { n: "USP-S ИЗВИЛИНЫ", p: 500, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png" },
-            { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 2000, img: "https://i.postimg.cc/3NW96mG1/AK.png" }
+            { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 2000, img: "https://i.postimg.cc/3NW96mG1/AK.png" },
+            { n: "BUTTERFLY | EMERALD", p: 5000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png" }
         ];
+
+        // --- TIMER LOGIC ---
+        function initTimer() {
+            let unlockTime = localStorage.getItem('unlockTime');
+            if (!unlockTime) {
+                // Устанавливаем время: сейчас + 13ч 19мин
+                unlockTime = Date.now() + (13 * 60 * 60 * 1000) + (19 * 60 * 1000);
+                localStorage.setItem('unlockTime', unlockTime);
+            }
+
+            const timerDisplay = document.getElementById('timer');
+            const caseLucky = document.getElementById('case-lucky');
+
+            const x = setInterval(function() {
+                const now = Date.now();
+                const distance = unlockTime - now;
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timerDisplay.innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+
+                if (distance < 0) {
+                    clearInterval(x);
+                    timerDisplay.innerHTML = "OPEN NOW!";
+                    caseLucky.classList.remove('locked');
+                    caseLucky.onclick = () => openPreview('НАВЕРНОЕ ПОВЕЗЕТ', 'https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png', false);
+                    document.querySelector('.lock-overlay').style.display = 'none';
+                }
+            }, 1000);
+        }
+        initTimer();
 
         // --- MUSIC ---
         const playlist = ["https://files.catbox.moe/sv6xxw.mp3", "https://files.catbox.moe/zjpbt5.mp3", "https://files.catbox.moe/957yym.mp3"];
@@ -225,17 +255,22 @@
             document.getElementById(id).style.display = 'flex';
         };
 
-        window.openPreview = (name, img) => {
+        window.openPreview = (name, img, isLocked) => {
+            if(isLocked) return;
             document.getElementById('preview-name').innerText = name;
             document.getElementById('preview-img').src = img;
             showScreen('screen-preview');
         };
 
         window.startSpin = () => {
+            if (!auth.currentUser) { alert("Сначала залогинься!"); return; }
             if (bal < 500) { alert("Недостаточно баланса!"); return; }
-            const uId = auth.currentUser.uid;
-            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) - 500);
             
+            const uId = auth.currentUser.uid;
+            const spinBtn = document.getElementById('spin-btn');
+            spinBtn.disabled = true;
+
+            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) - 500);
             showScreen('screen-roulette');
             
             const winIndex = 35;
@@ -255,15 +290,18 @@
 
             setTimeout(() => {
                 track.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
-                const shift = (winIndex * 160) - (800 / 2) + 80;
+                const itemWidth = 160;
+                const wrapperWidth = 800;
+                const shift = (winIndex * itemWidth) - (wrapperWidth / 2) + (itemWidth / 2);
                 track.style.transform = `translateX(-${shift}px)`;
             }, 50);
 
             setTimeout(() => {
                 track.querySelectorAll('div')[winIndex].classList.add('active');
                 db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + winItem.p);
-                document.getElementById('win-res').innerHTML = `<img src="${winItem.img}"><h3>${winItem.n}</h3><p style="color:var(--main);">+${winItem.p} B</p>`;
+                document.getElementById('win-res').innerHTML = `<img src="${winItem.img}"><h3>${winItem.n}</h3><p style="color:var(--main); font-size:20px;">+${winItem.p} B</p>`;
                 document.getElementById('win-modal').style.display = 'flex';
+                spinBtn.disabled = false;
             }, 7500);
         };
 
