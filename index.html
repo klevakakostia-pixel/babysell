@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - CASE OPENING</title>
+    <title>BABYSELL - CASE OPENING & UPGRADE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -11,7 +11,7 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap');
-        :root { --main: #00ffaa; --bg: #050508; --border: rgba(0, 255, 170, 0.15); }
+        :root { --main: #00ffaa; --bg: #050508; --border: rgba(0, 255, 170, 0.15); --rare: #eb4b4b; }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
         
@@ -26,87 +26,60 @@
         .logo { font-family: 'Orbitron'; font-size: 24px; letter-spacing: 3px; cursor: pointer; color: #fff; text-decoration: none; }
         .logo span { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
+        .nav { display: flex; gap: 20px; margin-left: 30px; }
+        .nav-link { color: #888; text-decoration: none; font-family: 'Orbitron'; font-size: 12px; transition: 0.3s; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { color: var(--main); text-shadow: 0 0 10px var(--main); }
+
         .header-right { display: flex; align-items: center; gap: 20px; }
-        .bal-box { 
-            background: rgba(0,255,170,0.08); border: 1px solid var(--main); 
-            padding: 8px 20px; border-radius: 10px; color: var(--main); 
-            font-family: 'Orbitron'; min-width: 120px; text-align: center;
-        }
+        .bal-box { background: rgba(0,255,170,0.08); border: 1px solid var(--main); padding: 8px 20px; border-radius: 10px; color: var(--main); font-family: 'Orbitron'; min-width: 120px; text-align: center; }
 
-        /* SETTINGS */
-        .settings-panel {
-            position: absolute; top: 60px; right: 40px; width: 250px;
-            background: rgba(10, 10, 15, 0.98); border: 1px solid var(--main);
-            border-radius: 15px; padding: 20px; display: none; flex-direction: column; gap: 15px;
-            backdrop-filter: blur(15px); z-index: 1000;
-        }
-        .settings-panel.active { display: flex; animation: slideIn 0.2s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        /* UPGRADE */
+        #screen-upgrade { flex-direction: column; align-items: center; padding-top: 40px; }
+        .upgrade-container { display: flex; gap: 50px; align-items: center; margin-top: 30px; }
+        .up-box { width: 220px; height: 300px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .up-box img { max-width: 150px; margin-bottom: 15px; }
+        .chance-circle { width: 200px; height: 200px; border-radius: 50%; border: 10px solid #222; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .chance-fill { position: absolute; inset: 0; background: conic-gradient(var(--main) 0%, transparent 0%); transition: 0.3s; }
+        .chance-text { position: relative; z-index: 5; font-family: 'Orbitron'; font-size: 24px; }
 
-        /* CASES */
+        /* ROULETTE & CASES */
         .cases-grid { display: flex; gap: 50px; justify-content: center; padding-top: 50px; flex-wrap: wrap; }
         .case-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 30px; border-radius: 25px; width: 280px; text-align: center; cursor: pointer; transition: 0.5s; position: relative; }
-        .case-card:hover { transform: translateY(-10px); border-color: var(--main); }
-        .case-img { width: 100%; border-radius: 15px; }
-        
-        /* LOCKED STATE */
         .case-card.locked { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
-        .case-card.locked:hover { transform: none; border-color: var(--border); }
         .lock-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 25px; }
-        .timer-text { font-family: 'Orbitron'; color: var(--main); font-size: 18px; margin-top: 10px; text-shadow: 0 0 10px var(--main); }
 
         .btn { background: transparent; color: var(--main); border: 2px solid var(--main); padding: 14px 40px; border-radius: 12px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .btn:hover:not(:disabled) { background: var(--main); color: #000; box-shadow: 0 0 20px var(--main); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ROULETTE */
-        .roulette-wrapper { 
-            position: relative; width: 800px; height: 200px; 
-            background: rgba(0,0,0,0.9); border: 2px solid var(--main); 
-            overflow: hidden; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
-        }
-        .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 20; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
-        .track { display: flex; align-items: center; position: absolute; height: 100%; left: 0; will-change: transform; }
-        .track div { min-width: 160px; height: 200px; display: flex; justify-content: center; align-items: center; padding: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
-        .track div img { max-width: 120px; max-height: 120px; object-fit: contain; }
-        .track div.active { background: rgba(0,255,170,0.1); transform: scale(1.1); transition: 0.5s; }
+        .roulette-wrapper { position: relative; width: 800px; height: 200px; background: rgba(0,0,0,0.9); border: 2px solid var(--main); overflow: hidden; border-radius: 20px; }
+        .pointer { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 20; transform: translateX(-50%); }
+        .track { display: flex; align-items: center; position: absolute; height: 100%; left: 0; }
+        .track div { min-width: 160px; height: 200px; display: flex; justify-content: center; align-items: center; padding: 10px; }
+        .track div img { max-width: 120px; }
 
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 9999; }
         .modal-cnt { background: #08080a; padding: 50px; border: 1px solid var(--main); border-radius: 30px; text-align: center; }
-        #win-res img { width: 200px; height: 200px; object-fit: contain; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <audio id="bg-music"></audio>
+    <audio id="bg-music" loop src="https://files.catbox.moe/sv6xxw.mp3"></audio>
     <div id="particles-js"></div>
 
     <div class="app">
         <header class="header">
-            <div class="logo" onclick="showScreen('screen-cases')">BABY<span>SELL</span></div>
-            <div class="header-right">
-                <div style="display:flex; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
-                    <input type="text" id="promo-input" placeholder="ПРОМО" style="background:none; border:none; color:#fff; padding:5px 10px; width:80px; font-family:'Rajdhani';">
-                    <button onclick="usePromo()" style="background:var(--main); border:none; padding:0 10px; font-family:'Orbitron'; font-size:10px; cursor:pointer;">OK</button>
+            <div style="display: flex; align-items: center;">
+                <div class="logo" onclick="showScreen('screen-cases')">BABY<span>SELL</span></div>
+                <div class="nav">
+                    <span class="nav-link active" id="nav-cases" onclick="showScreen('screen-cases')">CASES</span>
+                    <span class="nav-link" id="nav-upgrade" onclick="showScreen('screen-upgrade')">UPGRADE</span>
                 </div>
+            </div>
+            <div class="header-right">
                 <div class="bal-box"><span id="u-balance">0</span> B</div>
                 <button id="login-btn" class="btn" style="padding: 8px 15px; font-size: 11px;" onclick="googleAuth()">LOGIN</button>
-                
-                <div class="user-menu-container" id="user-info" style="display:none">
-                    <img src="" id="u-pic" onclick="toggleSettings()" style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); cursor: pointer;">
-                    <div class="settings-panel" id="settings-panel">
-                        <h4 style="font-family:'Orbitron'; font-size:11px; color:#fff; margin-bottom:10px; text-align:center;">SETTINGS</h4>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <label style="font-size:10px; color:var(--main);">MUSIC</label>
-                            <select id="music-state" onchange="handleMusic()" style="background:#111; color:#fff; border:1px solid var(--border); padding:5px;">
-                                <option value="off">OFF</option>
-                                <option value="on">ON</option>
-                            </select>
-                            <label style="font-size:10px; color:var(--main);">VOLUME</label>
-                            <input type="range" id="volume-range" min="0" max="1" step="0.1" value="0.5" oninput="changeVolume()">
-                        </div>
-                        <div class="logout-btn" style="color:#ff4444; cursor:pointer; font-size:12px; text-align:center; margin-top:10px;" onclick="auth.signOut()">LOGOUT</div>
-                    </div>
+                <div id="user-info" style="display:none">
+                    <img src="" id="u-pic" onclick="toggleSettings()" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--main); cursor: pointer;">
                 </div>
             </div>
         </header>
@@ -114,26 +87,35 @@
         <main style="flex:1; display:flex; justify-content:center; align-items:center;">
             <section id="screen-cases" class="screen" style="display:flex;">
                 <div class="cases-grid">
-                    <div class="case-card" onclick="openPreview('УЛИЧНЫЕ КОШМАРЫ', 'https://i.postimg.cc/ZnHQ1pwz/AAA.png', false)">
-                        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img">
+                    <div class="case-card" onclick="openPreview('УЛИЧНЫЕ КОШМАРЫ', 'https://i.postimg.cc/ZnHQ1pwz/AAA.png')">
+                        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" class="case-img" style="width:100%">
                         <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">УЛИЧНЫЕ КОШМАРЫ</h3>
                     </div>
                     <div id="case-lucky" class="case-card locked">
-                        <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" class="case-img">
-                        <h3 style="font-family:'Orbitron'; margin-top:20px; font-size:14px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
-                        <div class="lock-overlay">
-                            <span style="font-size: 30px;">🔒</span>
-                            <div id="timer" class="timer-text">00:00:00</div>
-                        </div>
+                        <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" class="case-img" style="width:100%">
+                        <div class="lock-overlay"><div id="timer" style="font-family:'Orbitron'; color:var(--main);">00:00:00</div></div>
                     </div>
                 </div>
             </section>
 
-            <section id="screen-preview" class="screen" style="display:none; flex-direction:column; align-items:center;">
-                <img id="preview-img" src="" width="250">
-                <h2 id="preview-name" style="font-family:'Orbitron'; margin: 25px 0;"></h2>
-                <button id="spin-btn" class="btn" onclick="startSpin()">ОТКРЫТЬ ЗА 500 B</button>
-                <p onclick="showScreen('screen-cases')" style="cursor:pointer; margin-top:30px; color:#666;">← НАЗАД</p>
+            <section id="screen-upgrade" class="screen" style="display:none;">
+                <h1 style="font-family:'Orbitron'; color:var(--main);">SKIN UPGRADE</h1>
+                <div class="upgrade-container">
+                    <div class="up-box" id="up-current">
+                        <span style="color:#444;">SELECT SKIN</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:20px;">
+                        <div class="chance-circle">
+                            <div class="chance-fill" id="chance-fill"></div>
+                            <div class="chance-text" id="chance-val">0%</div>
+                        </div>
+                        <button class="btn" onclick="startUpgrade()">UPGRADE</button>
+                    </div>
+                    <div class="up-box" id="up-target">
+                        <img src="https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png">
+                        <span style="font-family:'Orbitron'; color:var(--main);">BUTTERFLY EMERALD</span>
+                    </div>
+                </div>
             </section>
 
             <section id="screen-roulette" class="screen" style="display:none; flex-direction:column; align-items:center;">
@@ -142,77 +124,31 @@
                     <div id="track" class="track"></div>
                 </div>
             </section>
+
+            <section id="screen-preview" class="screen" style="display:none; flex-direction:column; align-items:center;">
+                <img id="preview-img" src="" width="250">
+                <h2 id="preview-name" style="font-family:'Orbitron'; margin: 25px 0;"></h2>
+                <button id="spin-btn" class="btn" onclick="startSpin()">ОТКРЫТЬ ЗА 500 B</button>
+            </section>
         </main>
     </div>
 
     <div id="win-modal" class="modal">
-        <div class="modal-cnt">
-            <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom:20px;">ВЫПАЛО!</h2>
-            <div id="win-res"></div>
-            <button class="btn" onclick="closeWin()" style="margin-top:20px;">ЗАБРАТЬ</button>
-        </div>
+        <div class="modal-cnt" id="win-cnt"></div>
     </div>
 
     <script>
-        // --- DATA ---
         const LOOT = [
-            { n: "ГЛОК КАРАМЕЛЬНОЕ ЯБЛОКО", p: 350, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" },
-            { n: "USP-S ИЗВИЛИНЫ", p: 500, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png" },
-            { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 2000, img: "https://i.postimg.cc/3NW96mG1/AK.png" },
-            { n: "BUTTERFLY | EMERALD", p: 5000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png" }
+            { n: "ГЛОК КАРАМЕЛЬНОЕ ЯБЛОКО", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
+            { n: "USP-S ИЗВИЛИНЫ", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
+            { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
+            { n: "BUTTERFLY | EMERALD", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
         ];
 
-        // --- TIMER LOGIC ---
-        function initTimer() {
-            let unlockTime = localStorage.getItem('unlockTime');
-            if (!unlockTime) {
-                // Устанавливаем время: сейчас + 13ч 19мин
-                unlockTime = Date.now() + (13 * 60 * 60 * 1000) + (19 * 60 * 1000);
-                localStorage.setItem('unlockTime', unlockTime);
-            }
+        let bal = 0;
+        let selectedForUpgrade = null;
 
-            const timerDisplay = document.getElementById('timer');
-            const caseLucky = document.getElementById('case-lucky');
-
-            const x = setInterval(function() {
-                const now = Date.now();
-                const distance = unlockTime - now;
-
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                timerDisplay.innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
-
-                if (distance < 0) {
-                    clearInterval(x);
-                    timerDisplay.innerHTML = "OPEN NOW!";
-                    caseLucky.classList.remove('locked');
-                    caseLucky.onclick = () => openPreview('НАВЕРНОЕ ПОВЕЗЕТ', 'https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png', false);
-                    document.querySelector('.lock-overlay').style.display = 'none';
-                }
-            }, 1000);
-        }
-        initTimer();
-
-        // --- MUSIC ---
-        const playlist = ["https://files.catbox.moe/sv6xxw.mp3", "https://files.catbox.moe/zjpbt5.mp3", "https://files.catbox.moe/957yym.mp3"];
-        let currentTrackIdx = 0;
-        const audio = document.getElementById('bg-music');
-        function handleMusic() {
-            if (document.getElementById('music-state').value === "on") playNext();
-            else audio.pause();
-        }
-        function playNext() {
-            audio.src = playlist[currentTrackIdx];
-            audio.play().catch(() => {});
-            currentTrackIdx = (currentTrackIdx + 1) % playlist.length;
-        }
-        audio.onended = playNext;
-        function changeVolume() { audio.volume = document.getElementById('volume-range').value; }
-        function toggleSettings() { document.getElementById('settings-panel').classList.toggle('active'); }
-
-        // --- FIREBASE ---
+        // --- AUTH & DATABASE ---
         const firebaseConfig = { 
             apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
             authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -222,64 +158,59 @@
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.database();
-        let bal = 0;
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 db.ref('users/' + user.uid + '/balance').on('value', s => {
                     bal = s.val() || 0;
                     document.getElementById('u-balance').innerText = bal.toLocaleString();
+                    updateUpgradeChance();
                 });
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('user-info').style.display = 'block';
                 document.getElementById('u-pic').src = user.photoURL;
-            } else {
-                document.getElementById('login-btn').style.display = 'block';
-                document.getElementById('user-info').style.display = 'none';
             }
         });
 
         window.googleAuth = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-        
-        window.usePromo = () => {
-            const input = document.getElementById('promo-input').value.trim().toUpperCase();
-            if (input === "ADMIN2027" && auth.currentUser) {
-                db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
-            }
-            document.getElementById('promo-input').value = '';
-        };
 
-        // --- CORE ---
+        // --- NAVIGATION ---
         window.showScreen = (id) => {
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(id).style.display = 'flex';
+            if(id === 'screen-cases') document.getElementById('nav-cases').classList.add('active');
+            if(id === 'screen-upgrade') document.getElementById('nav-upgrade').classList.add('active');
         };
 
-        window.openPreview = (name, img, isLocked) => {
-            if(isLocked) return;
+        window.openPreview = (name, img) => {
             document.getElementById('preview-name').innerText = name;
             document.getElementById('preview-img').src = img;
             showScreen('screen-preview');
         };
 
+        // --- ROULETTE ---
         window.startSpin = () => {
-            if (!auth.currentUser) { alert("Сначала залогинься!"); return; }
-            if (bal < 500) { alert("Недостаточно баланса!"); return; }
-            
-            const uId = auth.currentUser.uid;
-            const spinBtn = document.getElementById('spin-btn');
-            spinBtn.disabled = true;
-
-            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) - 500);
+            if (bal < 500) return alert("Мало бабок!");
+            db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c - 500);
             showScreen('screen-roulette');
             
-            const winIndex = 35;
-            const winItem = LOOT[Math.floor(Math.random() * LOOT.length)];
             const track = document.getElementById('track');
-            
             track.innerHTML = '';
-            track.style.transition = 'none';
-            track.style.transform = `translateX(0px)`;
+            
+            // Weighted Random
+            const getWinItem = () => {
+                let r = Math.random() * 100;
+                let sum = 0;
+                for(let item of LOOT) {
+                    sum += item.w;
+                    if(r <= sum) return item;
+                }
+                return LOOT[0];
+            };
+
+            const winItem = getWinItem();
+            const winIndex = 35;
 
             for (let i = 0; i < 45; i++) {
                 const item = (i === winIndex) ? winItem : LOOT[Math.floor(Math.random() * LOOT.length)];
@@ -290,23 +221,65 @@
 
             setTimeout(() => {
                 track.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
-                const itemWidth = 160;
-                const wrapperWidth = 800;
-                const shift = (winIndex * itemWidth) - (wrapperWidth / 2) + (itemWidth / 2);
-                track.style.transform = `translateX(-${shift}px)`;
+                track.style.transform = `translateX(-${(winIndex * 160) - 320}px)`;
             }, 50);
 
             setTimeout(() => {
-                track.querySelectorAll('div')[winIndex].classList.add('active');
-                db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + winItem.p);
-                document.getElementById('win-res').innerHTML = `<img src="${winItem.img}"><h3>${winItem.n}</h3><p style="color:var(--main); font-size:20px;">+${winItem.p} B</p>`;
+                db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + winItem.p);
+                selectedForUpgrade = winItem; // Авто-выбор для апгрейда
+                document.getElementById('up-current').innerHTML = `<img src="${winItem.img}"><span>${winItem.n}</span>`;
+                
+                document.getElementById('win-cnt').innerHTML = `
+                    <img src="${winItem.img}" width="200">
+                    <h2 style="color:var(--main)">${winItem.n}</h2>
+                    <button class="btn" onclick="document.getElementById('win-modal').style.display='none'; showScreen('screen-cases')">ЗАБРАТЬ</button>
+                `;
                 document.getElementById('win-modal').style.display = 'flex';
-                spinBtn.disabled = false;
             }, 7500);
         };
 
-        window.closeWin = () => { document.getElementById('win-modal').style.display = 'none'; showScreen('screen-cases'); };
-        particlesJS("particles-js", { particles: { number: { value: 40 }, color: { value: "#00ffaa" }, opacity: { value: 0.2 }, size: { value: 2 }, move: { speed: 1, direction: "top" } } });
+        // --- UPGRADE LOGIC ---
+        function updateUpgradeChance() {
+            if(!selectedForUpgrade) return;
+            let targetP = 50000; // Butterfly
+            let chance = Math.min(((selectedForUpgrade.p + (bal * 0.1)) / targetP) * 100, 80).toFixed(1);
+            document.getElementById('chance-val').innerText = chance + "%";
+            document.getElementById('chance-fill').style.background = `conic-gradient(var(--main) ${chance}%, transparent 0%)`;
+        }
+
+        window.startUpgrade = () => {
+            if(!selectedForUpgrade) return alert("Сначала выбей скин!");
+            let chance = parseFloat(document.getElementById('chance-val').innerText);
+            let win = Math.random() * 100 <= chance;
+            
+            if(win) {
+                db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + 50000);
+                alert("ИМБА! ТЫ ПОВЫСИЛ ДО БАБОЧКИ!");
+            } else {
+                alert("ЛУЗЕР! СКИН СГОРЕЛ!");
+                selectedForUpgrade = null;
+                document.getElementById('up-current').innerHTML = '<span style="color:#444;">SELECT SKIN</span>';
+            }
+            updateUpgradeChance();
+        };
+
+        // --- TIMER ---
+        let unlockTime = localStorage.getItem('unlockTime') || Date.now() + (13*3600*1000 + 19*60*1000);
+        localStorage.setItem('unlockTime', unlockTime);
+        setInterval(() => {
+            let dist = unlockTime - Date.now();
+            if(dist < 0) {
+                document.getElementById('case-lucky').classList.remove('locked');
+                document.getElementById('timer').innerText = "OPEN!";
+            } else {
+                let h = Math.floor(dist/3600000), m = Math.floor((dist%3600000)/60000), s = Math.floor((dist%60000)/1000);
+                document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+            }
+        }, 1000);
+
+        // Music Trigger
+        document.body.onclick = () => { document.getElementById('bg-music').play().catch(()=>{}); };
+        particlesJS("particles-js", { particles: { number: { value: 30 }, color: { value: "#00ffaa" }, opacity: { value: 0.1 }, move: { speed: 1 } } });
     </script>
 </body>
 </html>
