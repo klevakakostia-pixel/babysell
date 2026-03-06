@@ -60,12 +60,9 @@
         }
         #balance { color: #fff; font-size: 16px; }
 
-        /* CASES IN ROW */
+        /* MAIN CONTENT */
         .container { max-width: 1200px; margin: 50px auto; text-align: center; }
-        
-        .cases-row { 
-            display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; 
-        }
+        .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
 
         .case-card { 
             width: 280px; padding: 25px; background: var(--card); 
@@ -74,7 +71,6 @@
         }
         .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); }
 
-        /* LOCKED OVERLAY */
         .case-card.locked { cursor: not-allowed; filter: grayscale(0.8); opacity: 0.6; }
         .lock-label {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg);
@@ -84,12 +80,26 @@
             z-index: 10; pointer-events: none;
         }
 
+        /* LEADERBOARD & INVENTORY */
+        .grid-layout { display: flex; gap: 30px; margin-top: 60px; text-align: left; }
+        .section-box { background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #111; padding: 25px; flex: 1; }
+        .section-title { font-family: 'Orbitron'; font-size: 16px; color: var(--main); margin-bottom: 20px; display: block; border-bottom: 1px solid #222; padding-bottom: 10px; }
+
+        /* Leaderboard table */
+        .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; font-size: 12px; }
+        .top-table tr { border-bottom: 1px solid #111; transition: 0.2s; }
+        .top-table tr:hover { background: rgba(0, 255, 170, 0.05); }
+        .top-table td { padding: 12px 5px; }
+        .rank { color: var(--main); width: 30px; }
+        .t-name { color: #fff; }
+        .t-bal { text-align: right; color: var(--main); }
+
         #notify-box { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 12px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); font-size: 12px; animation: slideIn 0.3s ease forwards; }
+        .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 12px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); font-size: 11px; animation: slideIn 0.3s ease; }
         .notify.error { border-color: var(--error); color: var(--error); }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-        .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 12px; }
+        .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 11px; }
 
         .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
@@ -151,9 +161,17 @@
         <p onclick="location.reload()" style="margin-top:15px; cursor:pointer; color:#444; font-size: 12px;">← НАЗАД</p>
     </div>
 
-    <div class="inventory" style="margin-top: 50px;">
-        <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size: 18px; color: var(--main);">MY INVENTORY</h2>
-        <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;"></div>
+    <div class="grid-layout">
+        <div class="section-box">
+            <span class="section-title">🏆 TOP RICH PLAYERS</span>
+            <table class="top-table" id="leaderboard">
+                </table>
+        </div>
+
+        <div class="section-box">
+            <span class="section-title">🎒 MY INVENTORY</span>
+            <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+        </div>
     </div>
 </div>
 
@@ -190,11 +208,16 @@
             document.getElementById('login').style.display = 'none';
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
+            
+            // Sync Balance and Name for Leaderboard
+            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
+            
             db.ref('users/' + user.uid + '/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('balance').innerText = balance.toLocaleString();
             });
             updateInventoryUI();
+            updateLeaderboard();
             document.body.onclick = () => { document.getElementById('bg-music').volume = 0.1; document.getElementById('bg-music').play().catch(()=>{}); };
         }
     });
@@ -276,9 +299,9 @@
             grid.innerHTML = '';
             s.forEach(child => {
                 const item = child.val();
-                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:120px;">
-                    <img src="${item.img}" width="70"><br><small style="font-size:9px">${item.n}</small><br>
-                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:9px; margin-top:5px;">SELL ${item.p}</button>
+                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:110px;">
+                    <img src="${item.img}" width="60"><br><small style="font-size:8px">${item.n}</small><br>
+                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:8px; margin-top:5px;">SELL ${item.p}</button>
                 </div>`;
             });
         });
@@ -290,10 +313,27 @@
         showNotify("SOLD!");
     }
 
+    function updateLeaderboard() {
+        db.ref('users').orderByChild('balance').limitToLast(5).on('value', s => {
+            const list = [];
+            s.forEach(u => { list.push(u.val()); });
+            list.reverse();
+            const table = document.getElementById('leaderboard');
+            table.innerHTML = '';
+            list.forEach((u, i) => {
+                table.innerHTML += `<tr>
+                    <td class="rank">#${i+1}</td>
+                    <td class="t-name">${u.name || 'USER'}</td>
+                    <td class="t-bal">${(u.balance || 0).toLocaleString()} B</td>
+                </tr>`;
+            });
+        });
+    }
+
     const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let diff = unlockDate - Date.now();
-        if(diff < 0) { document.getElementById('timer').innerText = "AVAILABLE NOW"; return; }
+        if(diff < 0) { document.getElementById('timer').innerText = "AVAILABLE"; return; }
         let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
