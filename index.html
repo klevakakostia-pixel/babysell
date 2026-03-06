@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - LEGENDARY CAT</title>
+    <title>BABYSELL - CAT FARMER PRO</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -44,12 +44,10 @@
         /* CONTAINER */
         .container { max-width: 1000px; margin: 40px auto; text-align: center; padding: 0 20px; }
         
-        /* CASE ROW */
+        /* CASE ROW (STATIC) */
         .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
-        .case-card { width: 260px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.3s ease; position: relative; }
-        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); }
-        .case-card.locked { cursor: not-allowed; filter: grayscale(0.8); opacity: 0.6; }
-        .lock-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg); background: var(--error); color: #fff; padding: 8px 25px; font-family: 'Orbitron'; font-size: 18px; font-weight: bold; border: 2px solid #fff; z-index: 5; }
+        .case-card { width: 260px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 20px; opacity: 0.5; position: relative; }
+        .case-card img { width: 100%; }
 
         /* TABS */
         .tabs-menu { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
@@ -63,11 +61,25 @@
 
         /* CAT GAME STYLE */
         .cat-game-ui { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
-        .cat-main-img { width: 200px; cursor: pointer; transition: transform 0.05s; filter: drop-shadow(0 0 20px var(--main)); user-select: none; }
+        .cat-main-img { 
+            width: 200px; cursor: pointer; transition: transform 0.05s; 
+            filter: drop-shadow(0 0 20px var(--main)) brightness(0.8); /* Прибираємо акцент з фону */
+            user-select: none; border-radius: 20px;
+        }
         .cat-main-img:active { transform: scale(0.85); }
         .energy-wrapper { width: 320px; height: 25px; background: #000; border: 2px solid var(--main); border-radius: 15px; overflow: hidden; position: relative; box-shadow: 0 0 15px rgba(0,255,170,0.1); }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #00ffaa, #008855); transition: width 0.15s; }
         .energy-num { position: absolute; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 11px; line-height: 22px; color: #fff; font-weight: bold; text-shadow: 1px 1px 2px #000; }
+        #boost-status { font-family: 'Orbitron'; font-size: 10px; color: #555; margin-top: 5px; }
+
+        /* STORE STYLE */
+        .store-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .store-item { background: #0a0a0c; border: 1px solid #222; padding: 20px; border-radius: 15px; text-align: center; transition: 0.3s; position: relative;}
+        .store-item:hover { border-color: var(--main); box-shadow: 0 5px 15px rgba(0,255,170,0.05); }
+        .store-item h3 { font-family: 'Orbitron'; color: #fff; font-size: 16px; margin-bottom: 10px; }
+        .store-item p { font-size: 12px; color: #aaa; margin-bottom: 15px; height: 30px;}
+        .price-tag { font-family: 'Orbitron'; color: var(--main); font-size: 18px; font-weight: bold; margin-bottom: 15px; display: block;}
+        .owned-tag { position: absolute; top: 10px; right: 10px; background: var(--main); color: #000; font-family: 'Orbitron'; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold;}
 
         /* FLOATING TEXT */
         .pop-text { position: absolute; font-family: 'Orbitron'; font-size: 16px; font-weight: bold; pointer-events: none; animation: popUp 0.8s ease-out forwards; z-index: 1000; }
@@ -77,11 +89,12 @@
         .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; text-align: left; }
         .top-table td { padding: 15px; border-bottom: 1px solid #111; }
         .rank-col { color: var(--main); font-weight: bold; width: 60px; }
-        #inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
-        .item-box { background: #0a0a0c; border: 1px solid #222; padding: 15px; border-radius: 12px; text-align: center; }
-        .item-box img { width: 80px; }
+        #inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
+        .item-box { background: #0a0a0c; border: 1px solid #222; padding: 15px; border-radius: 12px; text-align: center; opacity: 0.5;}
+        .item-box img { width: 70px; }
         .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn:hover { box-shadow: 0 0 15px var(--main); }
+        .btn:hover:not(:disabled) { box-shadow: 0 0 15px var(--main); }
+        .btn:disabled { background: #333; color: #666; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -93,7 +106,7 @@
         <div class="avatar-wrapper"><img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic"></div>
         <div class="user-info">
             <span id="u-name">LOADING...</span>
-            <button id="login-btn" class="btn" onclick="googleLogin()" style="font-size: 10px; padding: 4px 10px; margin-top: 5px;">GOOGLE LOGIN</button>
+            <button id="login-btn" class="btn" onclick="googleLogin()" style="font-size: 9px; padding: 4px 10px; margin-top: 5px;">GOOGLE LOGIN</button>
         </div>
     </div>
     <div class="balance-box">
@@ -104,26 +117,51 @@
 <div class="container">
     
     <div id="case-selection" class="cases-row">
-        <div class="case-card" onclick="openCaseMenu('УЛИЧНЫЕ КОШМАРЫ', 500)">
-            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width: 100%;">
+        <div class="case-card">
+            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
             <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">УЛИЧНЫЕ КОШМАРЫ</h3>
-            <p style="color:var(--main); font-family:'Orbitron';">500 B</p>
-        </div>
-        <div class="case-card locked">
-            <div class="lock-label">LOCKED</div>
-            <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
-            <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">DRAGON BOX</h3>
-            <p style="color:var(--error); font-family:'Orbitron';">COMMING SOON</p>
+            <p style="color:var(--error); font-family:'Orbitron';">LOCKED</p>
         </div>
     </div>
 
     <div class="tabs-menu">
-        <button class="tab-btn active" onclick="switchTab('inventory')">INVENTORY</button>
+        <button class="tab-btn active" onclick="switchTab('cat-clicker-tab')">CLICK CAT 🐱</button>
+        <button class="tab-btn" onclick="switchTab('store')">STORE 🛒</button>
+        <button class="tab-btn" onclick="switchTab('inventory')">INVENTORY</button>
         <button class="tab-btn" onclick="switchTab('leaderboard')">LEADERBOARD</button>
-        <button class="tab-btn" onclick="switchTab('cat-clicker-tab')">CLICK CAT 🐱</button>
     </div>
 
-    <div id="inventory" class="tab-content active">
+    <div id="cat-clicker-tab" class="tab-content active">
+        <div class="cat-game-ui">
+            <h2 style="font-family:'Orbitron'; color:var(--main);">CAT FARMER PRO</h2>
+            <p style="font-size: 12px; opacity: 0.7; font-family:'Orbitron';">ШАНС 10% ВИГРАТИ <span style="color:#fff;">100 B</span> ЗА КЛІК!</p>
+            
+            <div id="cat-area" style="position: relative; margin: 20px 0;">
+                <img src="https://i.postimg.cc/1XyL92YC/Gemini-Generated-Image-9huqt39huqt39huq.png" class="cat-main-img" onclick="handleCatClick(event)">
+            </div>
+
+            <div class="energy-wrapper">
+                <div id="energy-fill"></div>
+                <div class="energy-num"><span id="energy-stat">100</span> / 100</div>
+            </div>
+            <div id="boost-status">Регенерація: x1.0 / сек</div>
+        </div>
+    </div>
+
+    <div id="store" class="tab-content">
+        <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">UPGRADES SHOP</h2>
+        <div class="store-grid">
+            <div class="store-item" id="item-energy-x2">
+                <h3>Energy X2</h3>
+                <p>Пасивне відновлення енергії працює у 2 рази швидше.</p>
+                <span class="price-tag">5,000 B</span>
+                <button class="btn" onclick="buyBoost('energy_x2', 5000)">КУПИТИ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="inventory" class="tab-content">
+        <p style="opacity:0.5; font-family:'Orbitron'; margin-top:50px;">INVENTORY EMPTY (LOCKED)</p>
         <div id="inv-grid"></div>
     </div>
 
@@ -132,22 +170,6 @@
             </table>
     </div>
 
-    <div id="cat-clicker-tab" class="tab-content">
-        <div class="cat-game-ui">
-            <h2 style="font-family:'Orbitron'; color:var(--main);">CAT FARMER v1.0</h2>
-            <p style="font-size: 12px; opacity: 0.7; font-family:'Orbitron';">ШАНС 10% ВИГРАТИ <span style="color:#fff;">100 B</span> ЗА КЛІК!</p>
-            
-            <div id="cat-area" style="position: relative; margin: 20px 0;">
-                <img src="https://i.postimg.cc/mD3m09M7/cat-pixel.png" class="cat-main-img" onclick="handleCatClick(event)">
-            </div>
-
-            <div class="energy-wrapper">
-                <div id="energy-fill"></div>
-                <div class="energy-num"><span id="energy-stat">100</span> / 100</div>
-            </div>
-            <p style="font-size: 10px; color: #555; font-family:'Orbitron';">ЕНЕРГІЯ ВІДНОВЛЮЄТЬСЯ САМА</p>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -166,6 +188,9 @@
     let userEnergy = 100;
     const MAX_ENERGY = 100;
     let lastClickStamp = 0;
+    
+    // Boost state
+    let hasEnergyX2 = false;
 
     // --- AUTH LOGIC ---
     auth.onAuthStateChanged(user => {
@@ -174,16 +199,28 @@
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
             
-            // Sync Data
-            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
-            db.ref('users/' + user.uid + '/balance').on('value', s => {
+            const userRef = db.ref('users/' + user.uid);
+            userRef.update({ name: user.displayName.split(' ')[0] });
+            
+            // Listen to balance
+            userRef.child('balance').on('value', s => {
                 userBalance = s.val() || 0;
                 document.getElementById('balance').innerText = userBalance.toLocaleString();
+                updateStoreUI(); // Refresh shop buttons if balance changes
             });
-            loadInventory();
+
+            // Listen to boosts
+            userRef.child('boosts').on('value', s => {
+                const boosts = s.val() || {};
+                hasEnergyX2 = boosts.energy_x2 || false;
+                updateGameStats();
+                updateStoreUI();
+            });
+
             loadLeaderboard();
         } else {
             document.getElementById('u-name').innerText = "GUEST_PLAYER";
+            document.getElementById('login-btn').style.display = 'block';
         }
     });
 
@@ -202,16 +239,14 @@
         if (!auth.currentUser) return notify("СПОЧАТКУ УВІЙДІТЬ!");
 
         const now = Date.now();
-        if (now - lastClickStamp < 70) return; // Anti-autoclicker (70ms)
-        if (userEnergy < 1) return notify("ЕНЕРГІЯ НА НУЛІ!", true);
+        if (now - lastClickStamp < 70) return; // Anti-autoclicker
+        if (userEnergy < 1) return notify("НЕМАЄ ЕНЕРГІЇ", true);
 
         lastClickStamp = now;
         userEnergy -= 1;
         updateEnergyDisplay();
 
         // SCAM CHANCE: Mathematically 0.0
-        // Навіть якщо Math.random() < 0.1, ми не додаємо код нарахування балансу.
-        
         spawnText(e.clientX, e.clientY, "MEOW");
     }
 
@@ -222,14 +257,82 @@
         stat.innerText = Math.floor(userEnergy);
     }
 
-    // Auto-regeneration (1 unit per 2 seconds)
+    function updateGameStats() {
+        const statusTxt = document.getElementById('boost-status');
+        if(hasEnergyX2) {
+            statusTxt.innerText = "Регенерація: x2.0 / сек (BOOSTED)";
+            statusTxt.style.color = "var(--main)";
+        } else {
+            statusTxt.innerText = "Регенерація: x1.0 / сек";
+            statusTxt.style.color = "#555";
+        }
+    }
+
+    // Auto-regeneration Logic with Boost
     setInterval(() => {
         if (userEnergy < MAX_ENERGY) {
-            userEnergy = Math.min(MAX_ENERGY, userEnergy + 0.5);
+            // Base reg = 0.5 per sec. If boosted, 0.5 * 2 = 1.0 per sec.
+            const baseRegen = 0.5;
+            const multiplier = hasEnergyX2 ? 2 : 1;
+            
+            userEnergy = Math.min(MAX_ENERGY, userEnergy + (baseRegen * multiplier));
             updateEnergyDisplay();
         }
     }, 1000);
 
+    // --- STORE LOGIC ---
+    function updateStoreUI() {
+        const energyX2Item = document.getElementById('item-energy-x2');
+        const buyBtn = energyX2Item.querySelector('button');
+
+        if(!auth.currentUser) {
+            buyBtn.disabled = true;
+            buyBtn.innerText = "УВІЙДІТЬ";
+            return;
+        }
+
+        if(hasEnergyX2) {
+            buyBtn.disabled = true;
+            buyBtn.innerText = "КУПЛЕНО";
+            if(!energyX2Item.querySelector('.owned-tag')) {
+                energyX2Item.innerHTML += '<span class="owned-tag">OWNED</span>';
+            }
+        } else {
+            if(userBalance < 5000) {
+                buyBtn.disabled = true;
+                buyBtn.innerText = "МАЛО БАЛАНСУ";
+            } else {
+                buyBtn.disabled = false;
+                buyBtn.innerText = "КУПИТИ";
+            }
+        }
+    }
+
+    function buyBoost(boostId, price) {
+        if(!auth.currentUser || hasEnergyX2 || userBalance < price) return;
+
+        // Transaction to ensure data consistency
+        db.ref('users/' + auth.currentUser.uid).transaction(userData => {
+            if(userData && userData.balance >= price && (!userData.boosts || !userData.boosts[boostId])) {
+                userData.balance -= price;
+                if(!userData.boosts) userData.boosts = {};
+                userData.boosts[boostId] = true;
+                return userData;
+            }
+            return; // Abort transaction
+        }, (error, committed) => {
+            if(committed) {
+                notify("УСПІШНО КУПЛЕНО!");
+                const buySnd = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+                buySnd.volume = 0.2;
+                buySnd.play();
+            } else {
+                notify("ПОМИЛКА ПОКУПКИ", true);
+            }
+        });
+    }
+
+    // --- VISUAL EFFECTS ---
     function spawnText(x, y, txt) {
         const el = document.createElement('div');
         el.className = 'pop-text';
@@ -241,20 +344,16 @@
         setTimeout(() => el.remove(), 800);
     }
 
-    // --- DATABASE HELPERS ---
-    function loadInventory() {
-        db.ref(`users/${auth.currentUser.uid}/inventory`).on('value', s => {
-            const grid = document.getElementById('inv-grid');
-            grid.innerHTML = '';
-            s.forEach(child => {
-                const item = child.val();
-                grid.innerHTML += `<div class="item-box">
-                    <img src="${item.img}"><br><small style="font-size:9px; color:#aaa;">${item.n}</small>
-                </div>`;
-            });
-        });
+    function notify(text, error = false) {
+        const container = document.getElementById('notif-container');
+        const n = document.createElement('div');
+        n.style.cssText = `background:rgba(0,0,0,0.9); border:1px solid ${error ? 'var(--error)' : 'var(--main)'}; padding:12px 20px; color:#fff; font-family:'Orbitron'; font-size:11px; margin-bottom:8px; border-radius:4px; animation: fadeIn 0.3sUp;`;
+        n.innerText = text;
+        container.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
     }
 
+    // --- LEADERBOARD ---
     function loadLeaderboard() {
         db.ref('users').orderByChild('balance').limitToLast(5).on('value', s => {
             const list = [];
@@ -266,15 +365,6 @@
                 table.innerHTML += `<tr><td class="rank-col">#${i+1}</td><td>${u.name}</td><td style="text-align:right; color:var(--main);">${u.bal.toLocaleString()} B</td></tr>`;
             });
         });
-    }
-
-    function notify(text, error = false) {
-        const container = document.getElementById('notif-container');
-        const n = document.createElement('div');
-        n.style.cssText = `background:rgba(0,0,0,0.9); border:1px solid ${error ? 'var(--error)' : 'var(--main)'}; padding:12px 20px; color:#fff; font-family:'Orbitron'; font-size:11px; margin-bottom:8px; border-radius:4px; animation: fadeIn 0.3s;`;
-        n.innerText = text;
-        container.appendChild(n);
-        setTimeout(() => n.remove(), 3000);
     }
 </script>
 </body>
