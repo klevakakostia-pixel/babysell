@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - LEGENDARY</title>
+    <title>BABYSELL - ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -25,7 +25,7 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- НОВИЙ ІНТЕРФЕЙС ХЕДЕРА --- */
+        /* HEADER */
         .header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 40px; background: var(--panel);
@@ -33,84 +33,68 @@
             position: sticky; top: 0; z-index: 1000; height: 80px;
         }
 
-        .user-block { display: flex; align-items: center; gap: 20px; }
-        
+        .user-block { display: flex; align-items: center; gap: 15px; }
         .avatar-wrapper {
-            position: relative; width: 55px; height: 55px;
-            border: 2px solid var(--main); border-radius: 12px;
-            padding: 3px; background: #000; box-shadow: 0 0 15px var(--main);
+            width: 50px; height: 50px; border: 2px solid var(--main); 
+            border-radius: 10px; padding: 2px; background: #000;
         }
-        #u-pic { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; }
-
-        .user-info { display: flex; flex-direction: column; }
-        #u-name { font-family: 'Orbitron'; font-size: 14px; color: #fff; letter-spacing: 1px; }
-        .status { font-size: 10px; color: var(--main); text-transform: uppercase; }
+        #u-pic { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
+        #u-name { font-family: 'Orbitron'; font-size: 13px; }
 
         .promo-panel {
             display: flex; background: #111; border: 1px solid #333;
-            border-radius: 8px; overflow: hidden; height: 40px; transition: 0.3s;
+            border-radius: 8px; overflow: hidden; height: 38px;
         }
-        .promo-panel:focus-within { border-color: var(--main); box-shadow: 0 0 10px var(--main); }
         .promo-panel input {
-            background: none; border: none; color: #fff; padding: 0 15px;
-            font-family: 'Orbitron'; font-size: 12px; outline: none; width: 140px;
+            background: none; border: none; color: #fff; padding: 0 12px;
+            font-family: 'Orbitron'; font-size: 11px; outline: none; width: 130px;
         }
         .promo-btn {
-            background: var(--main); color: #000; border: none; padding: 0 20px;
-            font-family: 'Orbitron'; font-size: 12px; font-weight: bold; cursor: pointer;
+            background: var(--main); color: #000; border: none; padding: 0 15px;
+            font-family: 'Orbitron'; font-size: 11px; font-weight: bold; cursor: pointer;
         }
 
-        .balance-display {
-            background: linear-gradient(90deg, #111, #000);
-            border: 1px solid var(--main); padding: 5px 20px; border-radius: 8px;
-            font-family: 'Orbitron'; text-align: right; min-width: 120px;
+        .balance-box {
+            border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px;
+            font-family: 'Orbitron'; text-align: center; background: #000;
         }
-        .bal-label { font-size: 9px; color: var(--main); display: block; }
-        #balance { font-size: 18px; color: #fff; text-shadow: 0 0 10px var(--main); }
+        #balance { color: #fff; font-size: 16px; }
 
-        /* --- КЕЙСИ ТА ЛАНЦЮГИ --- */
-        .container { max-width: 1200px; margin: 40px auto; text-align: center; }
+        /* CASES IN ROW */
+        .container { max-width: 1200px; margin: 50px auto; text-align: center; }
         
-        .locked-wrapper { position: relative; width: 300px; display: inline-block; margin: 20px; }
+        .cases-row { 
+            display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; 
+        }
+
         .case-card { 
-            width: 300px; padding: 25px; background: var(--card); 
-            border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.4s;
+            width: 280px; padding: 25px; background: var(--card); 
+            border: 1px solid #222; border-radius: 20px; cursor: pointer; 
+            transition: 0.3s ease; position: relative;
         }
-        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-10px); }
+        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); }
 
-        /* Анімація ланцюгів 2D */
-        .chains-x {
-            position: absolute; inset: 0; z-index: 10; pointer-events: none;
-            display: flex; align-items: center; justify-content: center;
+        /* LOCKED OVERLAY */
+        .case-card.locked { cursor: not-allowed; filter: grayscale(0.8); opacity: 0.6; }
+        .lock-label {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg);
+            background: var(--error); color: #fff; padding: 10px 30px;
+            font-family: 'Orbitron'; font-size: 20px; font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); border: 2px solid #fff;
+            z-index: 10; pointer-events: none;
         }
-        .chain-line {
-            position: absolute; width: 140%; height: 35px;
-            background: repeating-linear-gradient(90deg, #333 0, #111 10px, #444 20px);
-            border: 2px solid #000; box-shadow: 0 0 15px #000;
-        }
-        .line-1 { transform: rotate(45deg); }
-        .line-2 { transform: rotate(-45deg); }
-        
-        .lock-core {
-            position: absolute; width: 80px; height: 80px; background: #000;
-            border: 3px solid var(--error); border-radius: 15px; z-index: 20;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px var(--error); animation: pulse-red 2s infinite;
-        }
-        @keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 35px var(--error); } }
 
-        /* ПОВІДОМЛЕННЯ */
         #notify-box { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        .notify { background: rgba(0,0,0,0.9); border: 1px solid var(--main); padding: 15px 25px; border-radius: 8px; font-family: 'Orbitron'; color: var(--main); animation: slideIn 0.3s ease forwards; }
+        .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 12px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); font-size: 12px; animation: slideIn 0.3s ease forwards; }
         .notify.error { border-color: var(--error); color: var(--error); }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-        .btn { background: var(--main); color: #000; border: none; padding: 12px 30px; border-radius: 8px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; }
-        
-        .roulette-container { position: relative; width: 100%; max-width: 900px; height: 180px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
+        .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 12px; }
+
+        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 150px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .track div img { width: 110px; }
+        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
+        .track div img { width: 100px; }
     </style>
 </head>
 <body>
@@ -126,45 +110,35 @@
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic">
         </div>
         <div class="user-info">
-            <span id="u-name">GUEST_USER</span>
-            <span class="status">● Online</span>
+            <span id="u-name">GUEST</span>
         </div>
     </div>
 
-    <div style="display: flex; gap: 20px; align-items: center;">
+    <div style="display: flex; gap: 15px; align-items: center;">
         <div class="promo-panel">
-            <input type="text" id="promo-in" placeholder="ENTER PROMO">
+            <input type="text" id="promo-in" placeholder="PROMO CODE">
             <button class="promo-btn" onclick="applyPromo()">OK</button>
         </div>
-
-        <div class="balance-display">
-            <span class="bal-label">AVAILABLE BALANCE</span>
-            <span id="balance">0</span> <span style="color:var(--main); font-size: 12px;">B</span>
+        <div class="balance-box">
+            <span id="balance">0</span> <span style="color:var(--main); font-size: 10px;">B</span>
         </div>
-        
         <button id="login" class="btn" onclick="googleLogin()">LOGIN</button>
     </div>
 </header>
 
 <div class="container">
-    <div id="case-selection">
+    <div id="case-selection" class="cases-row">
         <div class="case-card" onclick="selectCase('УЛИЧНЫЕ КОШМАРЫ')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width: 100%;">
-            <h3 style="font-family:'Orbitron'; margin-top:15px;">УЛИЧНЫЕ КОШМАРЫ</h3>
+            <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">УЛИЧНЫЕ КОШМАРЫ</h3>
             <p style="color:var(--main); font-family:'Orbitron';">500 B</p>
         </div>
 
-        <div class="locked-wrapper">
-            <div class="chains-x">
-                <div class="chain-line line-1"></div>
-                <div class="chain-line line-2"></div>
-                <div class="lock-core"><span style="font-size: 40px;">🔒</span></div>
-            </div>
-            <div class="case-card" style="filter: grayscale(1) opacity(0.3);">
-                <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
-                <h3 style="font-family:'Orbitron'; margin-top:15px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
-                <p id="timer" style="color:var(--error); font-family:'Orbitron';">LOCKED</p>
-            </div>
+        <div class="case-card locked">
+            <div class="lock-label">LOCKED</div>
+            <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
+            <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
+            <p id="timer" style="color:var(--error); font-family:'Orbitron';">COMING SOON</p>
         </div>
     </div>
 
@@ -173,17 +147,17 @@
         <div class="roulette-container" id="roulette" style="display:block;">
             <div class="track" id="track"></div>
         </div>
-        <button class="btn" id="spin-btn" onclick="spin()" style="padding: 20px 60px; font-size: 18px;">ОТКРЫТЬ КЕЙС</button>
+        <button class="btn" id="spin-btn" onclick="spin()" style="padding: 15px 40px;">ОТКРЫТЬ</button>
+        <p onclick="location.reload()" style="margin-top:15px; cursor:pointer; color:#444; font-size: 12px;">← НАЗАД</p>
     </div>
 
     <div class="inventory" style="margin-top: 50px;">
-        <h2 style="font-family:'Orbitron'; margin-bottom:20px;">INVENTORY</h2>
-        <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:15px; justify-content:center;"></div>
+        <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size: 18px; color: var(--main);">MY INVENTORY</h2>
+        <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;"></div>
     </div>
 </div>
 
 <script>
-    // --- ДАНІ ТА КОНФІГ (Ті самі) ---
     const LOOT = [
         { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
         { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
@@ -215,20 +189,20 @@
         if (user) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('u-pic').src = user.photoURL;
-            document.getElementById('u-name').innerText = user.displayName.toUpperCase();
+            document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
             db.ref('users/' + user.uid + '/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('balance').innerText = balance.toLocaleString();
             });
             updateInventoryUI();
-            document.body.onclick = () => { document.getElementById('bg-music').volume = 0.15; document.getElementById('bg-music').play().catch(()=>{}); };
+            document.body.onclick = () => { document.getElementById('bg-music').volume = 0.1; document.getElementById('bg-music').play().catch(()=>{}); };
         }
     });
 
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
     function applyPromo() {
-        if(!auth.currentUser) return showNotify("LOGIN FIRST!", true);
+        if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
         const sndS = document.getElementById('sound-success');
         const sndF = document.getElementById('sound-fail');
@@ -236,15 +210,21 @@
 
         if(code === "START2026") {
             db.ref(`users/${auth.currentUser.uid}/promos/START2026`).once('value', s => {
-                if(s.exists()) { sndF.play(); showNotify("ALREADY USED!", true); }
+                if(s.exists()) { sndF.play(); showNotify("ALREADY USED", true); }
                 else { 
                     db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 100);
                     db.ref(`users/${auth.currentUser.uid}/promos/START2026`).set(true);
-                    sndS.play(); showNotify("SUCCESS! +100 B"); 
+                    sndS.play(); showNotify("PROMO OK! +100 B"); 
                 }
             });
-        } else {
-            sndF.play(); showNotify("INVALID CODE", true);
+        } 
+        else if(code === "ADMIN2027") {
+            sndS.play();
+            db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
+            showNotify("ADMIN ACTIVE: +50,000 B");
+        }
+        else {
+            sndF.play(); showNotify("WRONG CODE", true);
         }
         document.getElementById('promo-in').value = '';
     }
@@ -256,7 +236,7 @@
     }
 
     function spin() {
-        if (balance < 500) return showNotify("NOT ENOUGH BALANCE", true);
+        if (balance < 500) return showNotify("NO MONEY", true);
         const btn = document.getElementById('spin-btn');
         btn.disabled = true;
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c - 500);
@@ -266,7 +246,7 @@
         track.style.transform = 'translateX(0)';
         track.innerHTML = '';
 
-        const winItem = LOOT[Math.random() > 0.9 ? 2 : (Math.random() > 0.98 ? 3 : Math.floor(Math.random()*2))];
+        const winItem = LOOT[Math.random() > 0.9 ? 2 : (Math.random() > 0.99 ? 3 : Math.floor(Math.random()*2))];
 
         for(let i=0; i<60; i++) {
             const item = (i === 50) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
@@ -277,13 +257,13 @@
 
         setTimeout(() => {
             track.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0.05, 1)';
-            const x = (50 * 150) - (document.getElementById('roulette').offsetWidth / 2) + 75;
+            const x = (50 * 140) - (document.getElementById('roulette').offsetWidth / 2) + 70;
             track.style.transform = `translateX(-${x}px)`;
         }, 50);
 
         setTimeout(() => {
             db.ref(`users/${auth.currentUser.uid}/inventory`).push(winItem);
-            showNotify("YOU GOT: " + winItem.n);
+            showNotify("WIN: " + winItem.n);
             btn.disabled = false;
             updateInventoryUI();
         }, 7200);
@@ -296,9 +276,9 @@
             grid.innerHTML = '';
             s.forEach(child => {
                 const item = child.val();
-                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:140px;">
-                    <img src="${item.img}" width="80"><br><small>${item.n}</small><br>
-                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 10px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:10px; margin-top:5px;">SELL ${item.p}</button>
+                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:120px;">
+                    <img src="${item.img}" width="70"><br><small style="font-size:9px">${item.n}</small><br>
+                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:9px; margin-top:5px;">SELL ${item.p}</button>
                 </div>`;
             });
         });
@@ -307,14 +287,13 @@
     function sellItem(key, price) {
         db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
-        showNotify("ITEM SOLD!");
+        showNotify("SOLD!");
     }
 
-    // Timer
     const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let diff = unlockDate - Date.now();
-        if(diff < 0) { document.getElementById('timer').innerText = "AVAILABLE"; return; }
+        if(diff < 0) { document.getElementById('timer').innerText = "AVAILABLE NOW"; return; }
         let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
