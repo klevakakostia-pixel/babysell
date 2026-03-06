@@ -63,10 +63,10 @@
         .cat-game-ui { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
         .cat-main-img { 
             width: 200px; cursor: pointer; transition: transform 0.05s; 
-            filter: drop-shadow(0 0 20px var(--main)) brightness(0.8); /* Прибираємо акцент з фону */
-            user-select: none; border-radius: 20px;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); /* М'яке біле світіння для сірого кота */
+            user-select: none; border-radius: 30px; /* Скруглення для кращого вигляду */
         }
-        .cat-main-img:active { transform: scale(0.85); }
+        .cat-main-img:active { transform: scale(0.88); }
         .energy-wrapper { width: 320px; height: 25px; background: #000; border: 2px solid var(--main); border-radius: 15px; overflow: hidden; position: relative; box-shadow: 0 0 15px rgba(0,255,170,0.1); }
         #energy-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #00ffaa, #008855); transition: width 0.15s; }
         .energy-num { position: absolute; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 11px; line-height: 22px; color: #fff; font-weight: bold; text-shadow: 1px 1px 2px #000; }
@@ -137,7 +137,7 @@
             <p style="font-size: 12px; opacity: 0.7; font-family:'Orbitron';">ШАНС 10% ВИГРАТИ <span style="color:#fff;">100 B</span> ЗА КЛІК!</p>
             
             <div id="cat-area" style="position: relative; margin: 20px 0;">
-                <img src="https://i.postimg.cc/1XyL92YC/Gemini-Generated-Image-9huqt39huqt39huq.png" class="cat-main-img" onclick="handleCatClick(event)">
+                <img src="https://i.postimg.cc/V6kqmFWD/Gemini-Generated-Image-ujw4a0ujw4a0ujw4.png" class="cat-main-img" onclick="handleCatClick(event)">
             </div>
 
             <div class="energy-wrapper">
@@ -283,6 +283,7 @@
     // --- STORE LOGIC ---
     function updateStoreUI() {
         const energyX2Item = document.getElementById('item-energy-x2');
+        if (!energyX2Item) return;
         const buyBtn = energyX2Item.querySelector('button');
 
         if(!auth.currentUser) {
@@ -347,7 +348,7 @@
     function notify(text, error = false) {
         const container = document.getElementById('notif-container');
         const n = document.createElement('div');
-        n.style.cssText = `background:rgba(0,0,0,0.9); border:1px solid ${error ? 'var(--error)' : 'var(--main)'}; padding:12px 20px; color:#fff; font-family:'Orbitron'; font-size:11px; margin-bottom:8px; border-radius:4px; animation: fadeIn 0.3sUp;`;
+        n.style.cssText = `background:rgba(0,0,0,0.9); border:1px solid ${error ? 'var(--error)' : 'var(--main)'}; padding:12px 20px; color:#fff; font-family:'Orbitron'; font-size:11px; margin-bottom:8px; border-radius:4px; animation: fadeIn 0.3s;`;
         n.innerText = text;
         container.appendChild(n);
         setTimeout(() => n.remove(), 3000);
