@@ -62,7 +62,7 @@
         }
         #balance { color: #fff; font-size: 16px; }
 
-        /* MAIN CONTENT */
+        /* MAIN */
         .container { max-width: 1200px; margin: 40px auto; text-align: center; padding: 0 20px; }
         .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
 
@@ -82,12 +82,6 @@
             z-index: 10; pointer-events: none;
         }
 
-        /* ROULETTE */
-        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
-        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .track div img { width: 100px; }
-
         /* GRID FOR TOP & INV */
         .grid-layout { display: flex; gap: 30px; margin-top: 40px; text-align: left; flex-wrap: wrap; }
         .section-box { background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #111; padding: 25px; flex: 1; min-width: 300px; }
@@ -100,6 +94,12 @@
         .rank { color: var(--main); font-weight: bold; width: 40px; }
         .t-name { color: #fff; }
         .t-bal { text-align: right; color: var(--main); }
+
+        /* ROULETTE */
+        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
+        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
+        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
+        .track div img { width: 100px; }
 
         /* NOTIFICATIONS */
         #notify-box { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
@@ -167,19 +167,20 @@
 
     <div class="grid-layout">
         <div class="section-box">
-            <span class="section-title">🏆 TOP BALANCE</span>
-            <table class="top-table" id="leaderboard"></table>
+            <span class="section-title">🏆 TOP 5 PLAYERS</span>
+            <table class="top-table" id="leaderboard">
+                <tr><td colspan="3" style="text-align:center; opacity:0.5;">Loading stats...</td></tr>
+            </table>
         </div>
 
         <div class="section-box">
-            <span class="section-title">🎒 INVENTORY</span>
+            <span class="section-title">🎒 MY INVENTORY</span>
             <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- DATABASE CONFIG ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -192,27 +193,31 @@
     let balance = 0;
 
     const LOOT = [
-        { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
-        { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
-        { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
-        { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
+        { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" },
+        { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png" },
+        { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png" },
+        { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png" }
     ];
 
-    // --- AUTH LOGIC ---
     auth.onAuthStateChanged(user => {
+        updateLeaderboard(); // Обновляем топ всегда (для всех)
         if (user) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('logout-btn').style.display = 'block';
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
             
-            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
+            // Сохраняем имя и начальный баланс (если его нет) в базу
+            db.ref('users/' + user.uid).update({ 
+                name: user.displayName.split(' ')[0],
+                // Баланс не перезаписываем, если он уже есть
+            });
+            
             db.ref('users/' + user.uid + '/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('balance').innerText = balance.toLocaleString();
             });
             updateInventoryUI();
-            updateLeaderboard();
             document.body.onclick = () => { document.getElementById('bg-music').volume = 0.1; document.getElementById('bg-music').play().catch(()=>{}); };
         } else {
             document.getElementById('login').style.display = 'block';
@@ -236,7 +241,6 @@
         setTimeout(() => n.remove(), 4000);
     }
 
-    // --- PROMO LOGIC ---
     function applyPromo() {
         if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
@@ -262,7 +266,6 @@
         document.getElementById('promo-in').value = '';
     }
 
-    // --- GAME LOGIC ---
     function selectCase(name) {
         document.getElementById('case-selection').style.display = 'none';
         document.getElementById('roulette-screen').style.display = 'flex';
@@ -327,23 +330,39 @@
     }
 
     function updateLeaderboard() {
-        db.ref('users').orderByChild('balance').limitToLast(5).on('value', s => {
+        // Запрос всех пользователей, сортировка по балансу
+        db.ref('users').orderByChild('balance').on('value', s => {
             const list = [];
-            s.forEach(u => { list.push(u.val()); });
-            list.reverse();
+            s.forEach(u => {
+                const data = u.val();
+                list.push({
+                    name: data.name || 'Anonymous',
+                    balance: data.balance || 0
+                });
+            });
+            
+            // Сортируем от большего к меньшему и берем топ-5
+            list.sort((a, b) => b.balance - a.balance);
+            const top5 = list.slice(0, 5);
+
             const table = document.getElementById('leaderboard');
             table.innerHTML = '';
-            list.forEach((u, i) => {
+            
+            if(top5.length === 0) {
+                table.innerHTML = '<tr><td colspan="3" style="text-align:center; opacity:0.5;">No players yet</td></tr>';
+                return;
+            }
+
+            top5.forEach((u, i) => {
                 table.innerHTML += `<tr>
                     <td class="rank">#${i+1}</td>
-                    <td class="t-name">${u.name || 'USER'}</td>
-                    <td class="t-bal">${(u.balance || 0).toLocaleString()} B</td>
+                    <td class="t-name">${u.name}</td>
+                    <td class="t-bal">${u.balance.toLocaleString()} B</td>
                 </tr>`;
             });
         });
     }
 
-    // Timer for Locked Case
     const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let diff = unlockDate - Date.now();
