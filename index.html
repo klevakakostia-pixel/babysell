@@ -3,174 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - GLOBAL CAT EDITION</title>
+    <title>BABYSELL - ULTIMATE EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
         
         :root { 
             --main: #00ffaa; 
-            --bg: #050508; 
-            --card: rgba(255, 255, 255, 0.03); 
-            --error: #ff4444; 
-            --panel: rgba(0, 0, 0, 0.95);
+            --bg: #030305; 
+            --glass: rgba(255, 255, 255, 0.03); 
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --error: #ff3366; 
+            --glow: 0 0 20px rgba(0, 255, 170, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
             background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            background-image: radial-gradient(circle at 50% -20%, #1a3a2f 0%, var(--bg) 80%);
-            min-height: 100vh; overflow-x: hidden;
+            overflow-x: hidden; min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(0, 255, 170, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 90%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
         }
 
-        /* HEADER */
+        /* --- ANIMATIONS --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes glowPulse { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes caseShake { 0% { transform: scale(1); } 25% { transform: scale(1.05) rotate(2deg); } 50% { transform: scale(1.05) rotate(-2deg); } 100% { transform: scale(1); } }
+
+        /* --- LAYOUT --- */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 40px; background: var(--panel);
-            border-bottom: 2px solid var(--main); box-shadow: 0 5px 20px rgba(0,255,170,0.2);
-            position: sticky; top: 0; z-index: 1000; height: 85px;
+            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 1000;
         }
 
         .user-block { display: flex; align-items: center; gap: 15px; }
-        .avatar-wrapper { width: 50px; height: 50px; border: 2px solid var(--main); border-radius: 10px; padding: 2px; background: #000; }
-        #u-pic { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
-        .user-meta { display: flex; flex-direction: column; gap: 2px; }
-        #u-name { font-family: 'Orbitron'; font-size: 13px; color: #fff; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); padding: 2px; transition: 0.3s; }
+        .avatar:hover { transform: rotate(15deg); }
 
-        .balance-box { border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px; font-family: 'Orbitron'; background: #000; min-width: 120px; text-align: center; }
-        #balance { color: #fff; font-size: 16px; text-shadow: 0 0 10px var(--main); }
-
-        /* CONTAINER */
-        .container { max-width: 1000px; margin: 40px auto; text-align: center; padding: 0 20px; }
-        
-        /* CASE SYSTEM */
-        .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 40px; }
-        .case-card { width: 240px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.3s ease; }
-        .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
-        .case-card img { width: 100%; filter: drop-shadow(0 0 10px rgba(0,255,170,0.2)); }
-
-        /* TABS */
-        .tabs-menu { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
-        .tab-btn { background: none; border: none; color: #555; font-family: 'Orbitron'; font-size: 12px; padding: 12px 20px; cursor: pointer; transition: 0.3s; position: relative; }
-        .tab-btn.active { color: var(--main); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--main); box-shadow: 0 0 10px var(--main); }
-        
-        .tab-content { display: none; animation: fadeIn 0.4s ease-out forwards; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; min-height: 350px; border: 1px solid #111; position: relative; }
-        .tab-content.active { display: block; }
-
-        /* CAT GAME UI */
-        .cat-main-img { 
-            width: 220px; cursor: pointer; transition: transform 0.05s; 
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
-            user-select: none; border-radius: 20px;
+        .balance-card {
+            background: var(--glass); border: 1px solid var(--main);
+            padding: 8px 20px; border-radius: 12px; font-family: 'Orbitron';
+            animation: glowPulse 3s infinite;
         }
-        .cat-main-img:active { transform: scale(0.9); }
-        .energy-wrapper { width: 300px; height: 20px; background: #000; border: 1px solid var(--main); border-radius: 10px; overflow: hidden; position: relative; margin: 15px auto; }
-        #energy-fill { width: 100%; height: 100%; background: var(--main); transition: width 0.2s; }
-        .energy-num { position: absolute; width: 100%; text-align: center; font-family: 'Orbitron'; font-size: 10px; line-height: 18px; color: #fff; font-weight: bold; }
 
-        /* PROMO & STORE */
-        .input-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        input { background: #000; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 5px; font-family: 'Orbitron'; font-size: 12px; outline: none; width: 200px; }
-        input:focus { border-color: var(--main); }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 250px 1fr; gap: 30px; }
 
-        .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
-        .store-item { background: #0a0a0c; border: 1px solid #222; padding: 15px; border-radius: 12px; }
+        /* --- SIDEBAR NAV --- */
+        .sidebar { display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            color: #888; padding: 15px; border-radius: 12px; cursor: pointer;
+            font-family: 'Orbitron'; font-size: 12px; text-align: left; transition: 0.3s;
+        }
+        .nav-btn:hover { background: rgba(0, 255, 170, 0.1); color: #fff; border-color: var(--main); }
+        .nav-btn.active { background: var(--main); color: #000; font-weight: bold; box-shadow: var(--glow); }
 
-        /* HELPERS */
-        .btn { background: var(--main); color: #000; border: none; padding: 10px 18px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
-        .btn:hover:not(:disabled) { box-shadow: 0 0 15px var(--main); transform: scale(1.02); }
-        .btn:disabled { background: #222; color: #444; cursor: not-allowed; }
-        .btn-logout { background: transparent; color: var(--error); border: 1px solid var(--error); font-size: 9px; padding: 2px 6px; margin-top: 5px; cursor: pointer; border-radius: 3px; font-family: 'Orbitron'; }
+        /* --- MAIN CONTENT --- */
+        .content-area { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px; backdrop-filter: blur(5px); position: relative; }
+        .page { display: none; animation: slideIn 0.4s ease-out; }
+        .page.active { display: block; }
+
+        /* --- CAT CLICKER --- */
+        .cat-container { text-align: center; }
+        .main-cat {
+            width: 250px; cursor: pointer; transition: 0.1s;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+            animation: float 4s ease-in-out infinite;
+        }
+        .main-cat:active { transform: scale(0.92); filter: brightness(1.2); }
+
+        .energy-bar {
+            width: 100%; max-width: 400px; height: 12px; background: #111;
+            border-radius: 20px; margin: 20px auto; border: 1px solid #333; overflow: hidden;
+        }
+        #energy-fill { height: 100%; background: linear-gradient(90deg, var(--main), #008855); width: 100%; transition: 0.3s; }
+
+        /* --- CASES --- */
+        .case-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .case-item {
+            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 20px; cursor: pointer; transition: 0.3s;
+        }
+        .case-item:hover { transform: translateY(-5px); border-color: var(--main); background: rgba(0,255,170,0.05); }
+        .case-item img { width: 100%; transition: 0.5s; }
+        .case-item:active img { animation: caseShake 0.5s; }
+
+        /* --- BUTTONS & INPUTS --- */
+        .btn {
+            background: var(--main); color: #000; border: none; padding: 12px 25px;
+            border-radius: 10px; font-family: 'Orbitron'; font-weight: bold;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn:hover { box-shadow: var(--glow); transform: scale(1.05); }
         
-        .pop-text { position: absolute; font-family: 'Orbitron'; font-size: 14px; font-weight: bold; pointer-events: none; animation: popUp 0.8s ease-out forwards; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-80px); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .cyber-input {
+            background: #000; border: 1px solid #333; color: #fff; padding: 12px;
+            border-radius: 10px; font-family: 'Orbitron'; outline: none; transition: 0.3s;
+        }
+        .cyber-input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.2); }
 
-        #leader-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; font-size: 14px; text-align: left; }
-        #leader-table td { padding: 12px; border-bottom: 1px solid #111; }
+        /* --- NOTIFICATIONS --- */
+        #notif-wrap { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
+        .notif {
+            background: rgba(0,0,0,0.9); border-left: 4px solid var(--main);
+            padding: 15px 25px; margin-top: 10px; border-radius: 8px;
+            font-family: 'Orbitron'; font-size: 12px; animation: slideIn 0.3s forwards;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .pop-text { position: absolute; font-family: 'Orbitron'; font-weight: bold; pointer-events: none; animation: popUp 0.8s forwards; color: var(--main); }
+        @keyframes popUp { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
     </style>
 </head>
 <body>
 
-<div id="notif-box" style="position: fixed; top: 100px; right: 20px; z-index: 10000;"></div>
+<div id="notif-wrap"></div>
 
 <header class="header">
     <div class="user-block">
-        <div class="avatar-wrapper"><img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic"></div>
-        <div class="user-meta">
-            <span id="u-name">GUEST_PLAYER</span>
-            <div id="auth-controls">
-                <button id="login-btn" class="btn" onclick="googleLogin()" style="font-size: 9px; padding: 3px 8px;">LOGIN</button>
-            </div>
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic" class="avatar">
+        <div>
+            <div id="u-name" style="font-family:'Orbitron'; font-size:12px;">GUEST_SYSTEM</div>
+            <button onclick="logout()" style="background:none; border:none; color:var(--error); font-size:10px; cursor:pointer;">[ TERMINATE SESSION ]</button>
         </div>
     </div>
-    <div class="balance-box">
-        <span id="balance">0</span> <span style="color:var(--main); font-size: 10px;">B</span>
+    
+    <div id="auth-section">
+        <button class="btn" style="padding: 8px 15px; font-size: 10px;" onclick="googleLogin()">INIT LOGIN</button>
+    </div>
+
+    <div class="balance-card">
+        <span id="balance">0</span> <span style="font-size: 10px; color: var(--main);">B</span>
     </div>
 </header>
 
 <div class="container">
-    
-    <h2 style="font-family:'Orbitron'; font-size: 14px; margin-bottom: 20px; color: var(--main);">AVAILABLE CASES</h2>
-    <div class="cases-row">
-        <div class="case-card" onclick="openCase('STREET NIGHTMARE', 500)">
-            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <h3 style="font-family:'Orbitron'; font-size: 14px; margin-top: 10px;">STREET NIGHTMARE</h3>
-            <p style="color:var(--main); font-family:'Orbitron'; font-size: 12px;">500 B</p>
-        </div>
-    </div>
+    <aside class="sidebar">
+        <button class="nav-btn active" onclick="nav('cat')">NEURAL CAT</button>
+        <button class="nav-btn" onclick="nav('cases')">BLACK MARKET</button>
+        <button class="nav-btn" onclick="nav('store')">AUGMENTATIONS</button>
+        <button class="nav-btn" onclick="nav('promo')">DATA CODES</button>
+        <button class="nav-btn" onclick="nav('top')">GLOBAL TOP</button>
+    </aside>
 
-    <div class="tabs-menu">
-        <button class="tab-btn active" onclick="switchTab('cat-tab')">CLICK CAT 🐱</button>
-        <button class="tab-btn" onclick="switchTab('store-tab')">STORE 🛒</button>
-        <button class="tab-btn" onclick="switchTab('promo-tab')">PROMO 🎁</button>
-        <button class="tab-btn" onclick="switchTab('leader-tab')">TOP 🏆</button>
-    </div>
-
-    <div id="cat-tab" class="tab-content active">
-        <h2 style="font-family:'Orbitron'; color:var(--main); font-size: 18px;">CAT FARMER</h2>
-        <p style="font-size: 11px; opacity: 0.6; font-family:'Orbitron'; margin-bottom: 15px;">10% CHANCE TO WIN 100 B</p>
-        <div id="cat-area" style="position: relative;">
-            <img src="https://i.postimg.cc/V6kqmFWD/Gemini-Generated-Image-ujw4a0ujw4a0ujw4.png" class="cat-main-img" onclick="catClick(event)">
-        </div>
-        <div class="energy-wrapper">
-            <div id="energy-fill"></div>
-            <div class="energy-num">ENERGY: <span id="energy-val">100</span> / 100</div>
-        </div>
-        <p id="regen-rate" style="font-size: 10px; color: #555; font-family:'Orbitron';">REGEN: 0.5/s</p>
-    </div>
-
-    <div id="store-tab" class="tab-content">
-        <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">UPGRADES</h2>
-        <div class="store-grid">
-            <div class="store-item">
-                <h3 style="font-family:'Orbitron'; font-size: 14px;">ENERGY X2</h3>
-                <p style="font-size: 11px; color: #888; margin: 10px 0;">Double your energy recovery speed forever.</p>
-                <span style="display:block; color:var(--main); font-family:'Orbitron'; margin-bottom: 10px;">5,000 B</span>
-                <button id="buy-x2" class="btn" onclick="buyBoost('energy_x2', 5000)">BUY</button>
+    <main class="content-area">
+        <section id="p-cat" class="page active">
+            <div class="cat-container">
+                <h1 style="font-family:'Orbitron'; margin-bottom: 5px;">CAT_OS v4.0</h1>
+                <p style="color:#555; font-size:12px; margin-bottom: 30px;">PROBABILITY OF PROFIT: 0.0001%</p>
+                
+                <img src="https://i.postimg.cc/V6kqmFWD/Gemini-Generated-Image-ujw4a0ujw4a0ujw4.png" class="main-cat" onclick="klick(event)">
+                
+                <div class="energy-bar"><div id="energy-fill"></div></div>
+                <div style="font-family:'Orbitron'; font-size:12px;">SYSTEM_ENERGY: <span id="energy-stat">100</span>%</div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <div id="promo-tab" class="tab-content">
-        <h2 style="font-family:'Orbitron'; color:var(--main);">REDEEM CODE</h2>
-        <div class="input-group">
-            <input type="text" id="promo-input" placeholder="ENTER CODE...">
-            <button class="btn" onclick="redeemPromo()">REDEEM</button>
-        </div>
-    </div>
+        <section id="p-cases" class="page">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">RESTRICTED CASES</h2>
+            <div class="case-grid">
+                <div class="case-item" onclick="openCase('STREETS', 500)">
+                    <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
+                    <div style="margin-top:15px; font-family:'Orbitron';">STREET_NIGHTMARE</div>
+                    <div style="color:var(--main);">500 B</div>
+                </div>
+            </div>
+        </section>
 
-    <div id="leader-tab" class="tab-content">
-        <table id="leader-table"></table>
-    </div>
+        <section id="p-store" class="page">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">SYSTEM UPGRADES</h2>
+            <div class="case-grid">
+                <div class="case-item" id="boost-card">
+                    <h3 style="font-family:'Orbitron';">ENERGY_CORE X2</h3>
+                    <p style="font-size:11px; color:#666; margin:10px 0;">Permanent 2x energy regeneration speed.</p>
+                    <div style="color:var(--main); margin-bottom:15px;">5,000 B</div>
+                    <button class="btn" style="width:100%" onclick="buyBoost()">INSTALL</button>
+                </div>
+            </div>
+        </section>
 
+        <section id="p-promo" class="page">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">ACCESS CODES</h2>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="promo-in" class="cyber-input" placeholder="HEX_CODE...">
+                <button class="btn" onclick="claim()">EXECUTE</button>
+            </div>
+        </section>
+
+        <section id="p-top" class="page">
+            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">GLOBAL_LEADERBOARD</h2>
+            <div id="leader-list"></div>
+        </section>
+    </main>
 </div>
 
 <script>
-    // --- FIREBASE ---
+    // --- FIREBASE INITIALIZATION ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -181,145 +216,125 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    let balance = 0, energy = 100, hasX2 = false;
+    let bal = 0, nrg = 100, x2 = false;
 
-    // --- AUTH ---
+    // --- CORE AUTH ---
     auth.onAuthStateChanged(user => {
         if (user) {
+            document.getElementById('auth-section').style.display = 'none';
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('u-name').innerText = user.displayName.toUpperCase();
-            document.getElementById('auth-controls').innerHTML = `<button class="btn-logout" onclick="logout()">LOGOUT</button>`;
             
-            const uRef = db.ref('users/' + user.uid);
-            uRef.child('balance').on('value', s => {
-                balance = s.val() || 0;
-                document.getElementById('balance').innerText = balance.toLocaleString();
-                updateUI();
-            });
-            uRef.child('boosts/energy_x2').on('value', s => {
-                hasX2 = s.val() || false;
-                document.getElementById('regen-rate').innerText = hasX2 ? "REGEN: 1.0/s (BOOSTED)" : "REGEN: 0.5/s";
-                updateUI();
+            const ref = db.ref('users/' + user.uid);
+            ref.on('value', s => {
+                const data = s.val() || {};
+                bal = data.balance || 0;
+                x2 = data.boosts?.energy_x2 || false;
+                document.getElementById('balance').innerText = bal.toLocaleString();
+                updateStoreUI();
             });
             loadTop();
         } else {
-            resetGuestUI();
+            document.getElementById('auth-section').style.display = 'block';
         }
     });
 
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function logout() { auth.signOut().then(() => location.reload()); }
 
-    function resetGuestUI() {
-        document.getElementById('u-name').innerText = "GUEST_PLAYER";
-        document.getElementById('u-pic').src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-        document.getElementById('auth-controls').innerHTML = `<button id="login-btn" class="btn" onclick="googleLogin()" style="font-size: 9px; padding: 3px 8px;">LOGIN</button>`;
-        document.getElementById('balance').innerText = "0";
-    }
-
-    // --- CLICKER ---
-    function catClick(e) {
-        if(!auth.currentUser) return notify("PLEASE LOGIN FIRST!");
-        if(energy < 1) return notify("NO ENERGY!", true);
-
-        energy -= 1;
-        updateEnergyBar();
-        spawnText(e.clientX, e.clientY, "MEOW");
-        // SCAM: 0% real chance code here
-    }
-
-    function updateEnergyBar() {
-        document.getElementById('energy-fill').style.width = energy + "%";
-        document.getElementById('energy-val').innerText = Math.floor(energy);
-    }
-
-    setInterval(() => {
-        if(energy < 100) {
-            energy = Math.min(100, energy + (hasX2 ? 1.0 : 0.5));
-            updateEnergyBar();
-        }
-    }, 1000);
-
-    // --- CASE SYSTEM ---
-    function openCase(name, price) {
-        if(!auth.currentUser) return notify("LOGIN TO OPEN CASES!");
-        if(balance < price) return notify("NOT ENOUGH BALANCE!", true);
-
-        db.ref('users/' + auth.currentUser.uid + '/balance').set(balance - price)
-          .then(() => notify(`OPENING ${name}... GOOD LUCK!`));
-    }
-
-    // --- PROMO SYSTEM ---
-    function redeemPromo() {
-        const code = document.getElementById('promo-input').value.trim().toUpperCase();
-        if(!auth.currentUser) return notify("LOGIN FIRST!");
-        if(!code) return;
-
-        // Example Logic: GIFT2024 gives 1000
-        if(code === "WELCOME") {
-            db.ref('users/' + auth.currentUser.uid + '/balance').set(balance + 1000);
-            notify("PROMO REDEEMED: +1,000 B");
-            document.getElementById('promo-input').value = "";
-        } else {
-            notify("INVALID OR EXPIRED CODE", true);
-        }
-    }
-
-    // --- STORE ---
-    function buyBoost(id, price) {
-        if(balance < price) return notify("NOT ENOUGH B!", true);
-        if(hasX2) return notify("ALREADY OWNED!");
-
-        db.ref('users/' + auth.currentUser.uid).update({
-            balance: balance - price,
-            "boosts/energy_x2": true
-        }).then(() => notify("BOOST PURCHASED!"));
-    }
-
-    // --- UI UTILS ---
-    function switchTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    // --- NAVIGATION ---
+    function nav(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('p-' + id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    function updateUI() {
-        const btn = document.getElementById('buy-x2');
-        if(hasX2) { btn.innerText = "OWNED"; btn.disabled = true; }
-        else if(balance < 5000) { btn.innerText = "5,000 B"; btn.disabled = true; }
-        else { btn.innerText = "BUY"; btn.disabled = false; }
+    // --- GAME LOGIC ---
+    function klick(e) {
+        if(!auth.currentUser) return notify("AUTH_REQUIRED: Initialize login.");
+        if(nrg < 1) return notify("ERROR: System energy depleted.", true);
+
+        nrg -= 1;
+        updateNrg();
+        pop(e.clientX, e.clientY, "MEOW_INIT");
+    }
+
+    function updateNrg() {
+        document.getElementById('energy-fill').style.width = nrg + "%";
+        document.getElementById('energy-stat').innerText = Math.floor(nrg);
+    }
+
+    setInterval(() => {
+        if(nrg < 100) {
+            nrg = Math.min(100, nrg + (x2 ? 1.0 : 0.5));
+            updateNrg();
+        }
+    }, 1000);
+
+    function buyBoost() {
+        if(bal < 5000) return notify("INSUFFICIENT_CREDITS", true);
+        db.ref('users/'+auth.currentUser.uid).update({
+            balance: bal - 5000,
+            "boosts/energy_x2": true
+        }).then(() => notify("CORE_UPGRADE: Energy recovery doubled."));
+    }
+
+    function openCase(name, price) {
+        if(bal < price) return notify("INSUFFICIENT_CREDITS", true);
+        db.ref('users/'+auth.currentUser.uid+'/balance').set(bal - price)
+          .then(() => notify(`OPENING_${name}: Processing...`));
+    }
+
+    function claim() {
+        const c = document.getElementById('promo-in').value.toUpperCase();
+        if(c === "CYBER") {
+            db.ref('users/'+auth.currentUser.uid+'/balance').set(bal + 2500);
+            notify("DATA_MINED: +2,500 Credits added.");
+            document.getElementById('promo-in').value = "";
+        } else {
+            notify("INVALID_ACCESS_CODE", true);
+        }
+    }
+
+    // --- UI HELPERS ---
+    function notify(m, err=false) {
+        const w = document.getElementById('notif-wrap');
+        const n = document.createElement('div');
+        n.className = 'notif';
+        if(err) n.style.borderColor = 'var(--error)';
+        n.innerText = `> ${m}`;
+        w.appendChild(n);
+        setTimeout(() => n.remove(), 4000);
+    }
+
+    function pop(x, y, t) {
+        const d = document.createElement('div');
+        d.className = 'pop-text';
+        d.style.left = x + 'px'; d.style.top = y + 'px';
+        d.innerText = t;
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 800);
+    }
+
+    function updateStoreUI() {
+        const b = document.getElementById('boost-card');
+        if(x2) b.style.opacity = "0.5", b.querySelector('button').innerText = "INSTALLED", b.querySelector('button').disabled = true;
     }
 
     function loadTop() {
-        db.ref('users').orderByChild('balance').limitToLast(10).on('value', s => {
-            const table = document.getElementById('leader-table');
-            table.innerHTML = "";
-            let users = [];
-            s.forEach(child => { users.push(child.val()); });
-            users.reverse().forEach((u, i) => {
-                table.innerHTML += `<tr><td style="color:var(--main)">#${i+1}</td><td>${u.name || 'ANON'}</td><td style="text-align:right">${(u.balance || 0).toLocaleString()} B</td></tr>`;
+        db.ref('users').orderByChild('balance').limitToLast(5).on('value', s => {
+            const l = document.getElementById('leader-list');
+            l.innerHTML = "";
+            let arr = [];
+            s.forEach(c => arr.push(c.val()));
+            arr.reverse().forEach((u, i) => {
+                l.innerHTML += `<div style="padding:15px; border-bottom:1px solid #111; display:flex; justify-content:space-between;">
+                    <span>#${i+1} ${u.name || 'USER'}</span>
+                    <span style="color:var(--main)">${(u.balance || 0).toLocaleString()} B</span>
+                </div>`;
             });
         });
-    }
-
-    function notify(msg, err = false) {
-        const b = document.getElementById('notif-box');
-        const n = document.createElement('div');
-        n.style.cssText = `background:#000; border:1px solid ${err?'var(--error)':'var(--main)'}; padding:10px 15px; font-family:'Orbitron'; font-size:11px; margin-bottom:5px; border-radius:5px; animation: fadeIn 0.3s;`;
-        n.innerText = msg;
-        b.appendChild(n);
-        setTimeout(() => n.remove(), 3000);
-    }
-
-    function spawnText(x, y, txt) {
-        const el = document.createElement('div');
-        el.className = 'pop-text';
-        el.innerText = txt;
-        el.style.left = x + 'px'; el.style.top = y + 'px';
-        el.style.color = Math.random() > 0.5 ? 'var(--main)' : '#fff';
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 800);
     }
 </script>
 </body>
