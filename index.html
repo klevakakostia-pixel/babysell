@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ELITE</title>
+    <title>BABYSELL - ULTIMATE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -17,44 +17,55 @@
             min-height: 100vh;
         }
         
-        /* NOTIFICATION */
-        #notify-box { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        .notify { background: rgba(0,0,0,0.9); border: 1px solid var(--main); padding: 15px 25px; border-radius: 5px; font-family: 'Orbitron'; font-size: 13px; color: var(--main); animation: slideIn 0.3s ease forwards; }
-        .notify.error { border-color: var(--error); color: var(--error); }
+        /* ANIMATIONS */
+        @keyframes pulse { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes itemIn { from { filter: blur(10px); opacity: 0; transform: scale(0.8); } to { filter: blur(0); opacity: 1; transform: scale(1); } }
+
+        #notify-box { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 15px 25px; border-radius: 8px; font-family: 'Orbitron'; font-size: 13px; color: var(--main); animation: slideIn 0.3s ease forwards; backdrop-filter: blur(10px); }
+        .notify.error { border-color: var(--error); color: var(--error); }
 
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--main); }
-        .logo { font-family: 'Orbitron'; font-size: 28px; color: #fff; text-shadow: 0 0 10px var(--main); cursor: pointer; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: 'Orbitron'; font-size: 28px; color: #fff; text-shadow: 0 0 10px var(--main); cursor: pointer; transition: 0.3s; }
+        .logo:hover { transform: scale(1.05); }
         .logo span { color: var(--main); }
 
-        .user-profile { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid var(--border); }
-        #u-pic { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--main); }
-        #u-name { font-family: 'Orbitron'; font-size: 12px; color: #eee; }
+        .user-profile { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); padding: 6px 18px; border-radius: 50px; border: 1px solid rgba(0,255,170,0.3); transition: 0.3s; }
+        .user-profile:hover { border-color: var(--main); background: rgba(0,255,170,0.1); }
+        #u-pic { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--main); }
+        #u-name { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 1px; }
 
-        .bal-box { background: #111; border: 1px solid var(--main); padding: 8px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); }
+        .bal-box { background: #000; border: 1px solid var(--main); padding: 8px 22px; border-radius: 8px; font-family: 'Orbitron'; color: var(--main); animation: pulse 2s infinite; }
         
-        /* CASES & ROULETTE */
+        /* CASES */
         .container { max-width: 1200px; margin: 40px auto; text-align: center; }
-        .roulette-container { position: relative; width: 100%; max-width: 900px; height: 180px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 10px; display: none; }
-        .roulette-container::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
-        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 150px; height: 100%; border-right: 1px solid #111; display: flex; align-items: center; justify-content: center; }
-        .track div img { width: 100px; }
+        .case-card { display: inline-block; width: 280px; padding: 25px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: 20px; }
+        .case-card:hover { border-color: var(--main); transform: translateY(-10px) scale(1.02); background: rgba(0,255,170,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .case-card img { width: 100%; margin-bottom: 15px; animation: float 4s infinite ease-in-out; }
 
-        .case-card { display: inline-block; width: 280px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 15px; cursor: pointer; transition: 0.3s; margin: 20px; }
-        .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
-        .case-card img { width: 100%; margin-bottom: 15px; }
+        /* ROULETTE */
+        .roulette-container { position: relative; width: 100%; max-width: 900px; height: 180px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        .roulette-container::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 20px var(--main); }
+        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
+        .track div { min-width: 150px; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.05); background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%); }
+        .track div img { width: 110px; filter: drop-shadow(0 5px 15px #000); }
 
         /* INVENTORY */
-        .inventory { margin-top: 50px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; border-top: 1px solid #222; }
-        .inv-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-        .inv-item { width: 140px; background: #0d0d0f; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 11px; }
-        .inv-item img { width: 80px; }
-        .sell-btn { background: var(--main); color: #000; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 5px; font-weight: bold; }
+        .inventory { margin-top: 60px; background: rgba(0,0,0,0.4); padding: 40px; border-radius: 30px; border: 1px solid #111; backdrop-filter: blur(10px); }
+        .inv-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .inv-item { width: 150px; background: #0d0d0f; border: 1px solid #222; padding: 15px; border-radius: 12px; font-size: 11px; animation: itemIn 0.5s ease forwards; transition: 0.3s; }
+        .inv-item:hover { border-color: var(--main); transform: scale(1.05); }
+        .inv-item img { width: 90px; margin-bottom: 8px; }
 
-        .btn { background: var(--main); color: #000; border: none; padding: 12px 30px; font-family: 'Orbitron'; font-size: 14px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .btn:disabled { background: #333; cursor: not-allowed; }
+        .btn { background: var(--main); color: #000; border: none; padding: 14px 35px; font-family: 'Orbitron'; font-size: 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; }
+        .btn:hover { background: #fff; box-shadow: 0 0 25px var(--main); transform: scale(1.05); }
+        .btn:active { transform: scale(0.95); }
+        
+        .sell-btn { background: var(--main); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold; font-size: 10px; transition: 0.2s; }
+        .sell-btn:hover { background: #fff; }
     </style>
 </head>
 <body>
@@ -67,8 +78,10 @@
     <div class="logo" onclick="location.reload()">BABY<span>SELL</span></div>
     
     <div style="display:flex; gap:15px; align-items:center;">
-        <input type="text" id="promo-in" placeholder="PROMO" style="background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:5px; width: 100px;">
-        <button onclick="applyPromo()" class="sell-btn" style="padding:8px 12px;">OK</button>
+        <div style="display:flex; background:#111; border-radius:8px; border:1px solid #333; overflow:hidden;">
+            <input type="text" id="promo-in" placeholder="PROMO" style="background:none; border:none; color:#fff; padding:10px; width: 100px; font-family:'Rajdhani';">
+            <button onclick="applyPromo()" style="background:var(--main); border:none; color:#000; padding:0 15px; cursor:pointer; font-weight:bold;">OK</button>
+        </div>
         
         <div class="bal-box"><span id="balance">0</span> B</div>
 
@@ -77,41 +90,41 @@
             <img src="" id="u-pic">
         </div>
         
-        <button id="login" class="btn" onclick="googleLogin()">LOGIN</button>
+        <button id="login" class="btn" onclick="googleLogin()" style="padding: 10px 20px;">LOGIN</button>
     </div>
 </header>
 
 <div class="container">
-    <div id="case-selection">
+    <div id="case-selection" style="animation: itemIn 0.8s ease;">
         <div class="case-card" onclick="selectCase('УЛИЧНЫЕ КОШМАРЫ')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <h3>УЛИЧНЫЕ КОШМАРЫ</h3>
-            <p style="color:var(--main)">500 B</p>
+            <h3 style="font-family:'Orbitron'; font-size:16px;">УЛИЧНЫЕ КОШМАРЫ</h3>
+            <p style="color:var(--main); font-family:'Orbitron'; margin-top:10px;">500 B</p>
         </div>
-        <div class="case-card" style="opacity:0.5;">
+        <div class="case-card" style="opacity:0.4; cursor:not-allowed;">
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h3 id="timer">LOCKED</h3>
+            <h3 id="timer" style="font-family:'Orbitron'; font-size:14px; color:var(--error);">LOCKED</h3>
         </div>
     </div>
 
-    <div id="roulette-screen" style="display:none;">
-        <h2 id="case-title" style="font-family:'Orbitron'; margin-bottom:20px;"></h2>
+    <div id="roulette-screen" style="display:none; flex-direction:column; align-items:center;">
+        <h2 id="case-title" style="font-family:'Orbitron'; margin-bottom:30px; letter-spacing:3px;"></h2>
         <div class="roulette-container" id="roulette" style="display:block;">
             <div class="track" id="track"></div>
         </div>
-        <button class="btn" id="spin-btn" onclick="spin()">ОТКРЫТЬ КЕЙС</button>
-        <p onclick="location.reload()" style="margin: 20px; cursor:pointer; color:#555;">← НАЗАД</p>
+        <button class="btn" id="spin-btn" onclick="spin()" style="padding: 20px 60px; font-size: 18px;">ОТКРЫТЬ КЕЙС</button>
+        <p onclick="location.reload()" style="margin-top: 30px; cursor:pointer; color:#555; font-family:'Orbitron'; font-size:12px;">← НАЗАД К ВЫБОРУ</p>
     </div>
 
     <div class="inventory">
-        <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size:18px; color:var(--main);">ИНВЕНТАРЬ</h2>
+        <h2 style="font-family:'Orbitron'; margin-bottom:30px; font-size:20px; color:var(--main); letter-spacing:2px;">ВАШ ИНВЕНТАРЬ</h2>
         <div class="inv-grid" id="inv-grid"></div>
     </div>
 </div>
 
 <script>
     const LOOT = [
-        { n: "ГЛОК", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
+        { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
         { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
         { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
         { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
@@ -134,7 +147,7 @@
         n.className = 'notify' + (isError ? ' error' : '');
         n.innerText = text;
         box.appendChild(n);
-        setTimeout(() => n.remove(), 4000);
+        setTimeout(() => { n.style.opacity = '0'; setTimeout(() => n.remove(), 300); }, 3500);
     }
 
     auth.onAuthStateChanged(user => {
@@ -151,8 +164,8 @@
             updateInventoryUI();
             document.body.onclick = () => {
                 const bg = document.getElementById('bg-music');
-                bg.volume = 0.3;
-                bg.play();
+                bg.volume = 0.2;
+                bg.play().catch(()=>{});
             };
         }
     });
@@ -160,11 +173,15 @@
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
     function applyPromo() {
-        if(!auth.currentUser) return showNotify("ВОЙДИ В АККАУНТ!", true);
+        if(!auth.currentUser) return showNotify("ВОЙДИТЕ В АККАУНТ!", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
         const uId = auth.currentUser.uid;
+        
+        // ЗВУК ПРИ ЛЮБОМ ВВОДЕ
         const snd = document.getElementById('promo-sound');
-        snd.volume = 0.2; // ГУЧНІСТЬ НА 20%
+        snd.volume = 0.15;
+        snd.currentTime = 0;
+        snd.play();
 
         if(code === "START2026") {
             db.ref(`users/${uId}/promos/START2026`).once('value', s => {
@@ -173,22 +190,21 @@
                 } else {
                     db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 100);
                     db.ref(`users/${uId}/promos/START2026`).set(true);
-                    snd.play();
                     showNotify("УСПЕХ! +100 B");
                 }
             });
         } else if(code === "ADMIN2027") {
             db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 50000);
-            showNotify("ADMIN: +50,000 B");
+            showNotify("ADMIN ACCESS: +50,000 B");
         } else {
-            showNotify("КОД НЕВЕРНЫЙ", true);
+            showNotify("НЕВЕРНЫЙ КОД", true);
         }
         document.getElementById('promo-in').value = '';
     }
 
     function selectCase(name) {
         document.getElementById('case-selection').style.display = 'none';
-        document.getElementById('roulette-screen').style.display = 'block';
+        document.getElementById('roulette-screen').style.display = 'flex';
         document.getElementById('case-title').innerText = name;
     }
 
@@ -209,8 +225,8 @@
             return LOOT[0];
         })();
 
-        for(let i=0; i<50; i++) {
-            const item = (i === 40) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
+        for(let i=0; i<60; i++) {
+            const item = (i === 50) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
             const d = document.createElement('div');
             d.innerHTML = `<img src="${item.img}">`;
             track.appendChild(d);
@@ -218,13 +234,13 @@
 
         setTimeout(() => {
             track.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0.05, 1)';
-            const x = (40 * 150) - (document.getElementById('roulette').offsetWidth / 2) + 75;
+            const x = (50 * 150) - (document.getElementById('roulette').offsetWidth / 2) + 75;
             track.style.transform = `translateX(-${x}px)`;
         }, 50);
 
         setTimeout(() => {
             db.ref(`users/${auth.currentUser.uid}/inventory`).push(winItem);
-            showNotify("ВЫПАЛО: " + winItem.n);
+            showNotify("ПОЛУЧЕНО: " + winItem.n);
             btn.disabled = false;
             updateInventoryUI();
         }, 7200);
@@ -239,7 +255,7 @@
                 const item = child.val();
                 const d = document.createElement('div');
                 d.className = 'inv-item';
-                d.innerHTML = `<img src="${item.img}"><br>${item.n}<br><button class="sell-btn" onclick="sellItem('${child.key}', ${item.p})">SELL ${item.p}</button>`;
+                d.innerHTML = `<img src="${item.img}"><br><b>${item.n}</b><br><button class="sell-btn" onclick="sellItem('${child.key}', ${item.p})">ПРОДАТЬ: ${item.p}</button>`;
                 grid.appendChild(d);
             });
         });
@@ -248,14 +264,15 @@
     function sellItem(key, price) {
         db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
-        showNotify("ПРОДАНО ЗА " + price);
+        showNotify("ПРОДАНО ЗА " + price + " B");
     }
 
-    const end = Date.now() + (13*3600 + 19*60)*1000;
+    // Timer (Lock)
+    const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
-        let d = end - Date.now();
-        if(d<0) { document.getElementById('timer').innerText = "OPEN!"; return; }
-        let h = Math.floor(d/3600000), m = Math.floor((d%3600000)/60000), s = Math.floor((d%60000)/1000);
+        let diff = unlockDate - Date.now();
+        if(diff < 0) { document.getElementById('timer').innerText = "OPEN NOW!"; return; }
+        let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
 </script>
