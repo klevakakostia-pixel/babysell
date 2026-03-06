@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - LEGENDARY</title>
+    <title>BABYSELL - ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -17,59 +17,43 @@
             min-height: 100vh;
         }
         
-        /* NOTIFICATION SYSTEM */
-        #notify-box {
-            position: fixed; top: 20px; right: 20px; z-index: 10000;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .notify {
-            background: rgba(0,0,0,0.9); border: 1px solid var(--main); padding: 15px 25px;
-            border-radius: 5px; font-family: 'Orbitron'; font-size: 13px; color: var(--main);
-            box-shadow: 0 0 20px rgba(0,255,170,0.2); animation: slideIn 0.3s ease forwards;
-        }
-        .notify.error { border-color: var(--error); color: var(--error); box-shadow: 0 0 20px rgba(255,68,68,0.2); }
+        /* NOTIFICATION */
+        #notify-box { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .notify { background: rgba(0,0,0,0.9); border: 1px solid var(--main); padding: 15px 25px; border-radius: 5px; font-family: 'Orbitron'; font-size: 13px; color: var(--main); animation: slideIn 0.3s ease forwards; }
+        .notify.error { border-color: var(--error); color: var(--error); }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 50px; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--main);
-        }
-        .logo { font-family: 'Orbitron'; font-size: 28px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--main); }
+        /* HEADER */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--main); }
+        .logo { font-family: 'Orbitron'; font-size: 28px; color: #fff; text-shadow: 0 0 10px var(--main); cursor: pointer; }
         .logo span { color: var(--main); }
 
-        .bal-box { background: #111; border: 1px solid var(--main); padding: 10px 25px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); }
-        
-        .container { max-width: 1200px; margin: 40px auto; text-align: center; }
+        .user-profile { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 50px; border: 1px solid var(--border); }
+        #u-pic { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--main); }
+        #u-name { font-family: 'Orbitron'; font-size: 12px; color: #eee; }
 
-        .roulette-container {
-            position: relative; width: 100%; max-width: 900px; height: 180px;
-            margin: 30px auto; background: #0a0a0c; border: 2px solid #222;
-            overflow: hidden; border-radius: 10px; display: none;
-        }
+        .bal-box { background: #111; border: 1px solid var(--main); padding: 8px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); }
+        
+        /* CASES & ROULETTE */
+        .container { max-width: 1200px; margin: 40px auto; text-align: center; }
+        .roulette-container { position: relative; width: 100%; max-width: 900px; height: 180px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 10px; display: none; }
         .roulette-container::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 150px; height: 100%; border-right: 1px solid #111; display: flex; align-items: center; justify-content: center; background: linear-gradient(0deg, rgba(255,255,255,0.02), transparent); }
+        .track div { min-width: 150px; height: 100%; border-right: 1px solid #111; display: flex; align-items: center; justify-content: center; }
         .track div img { width: 100px; }
 
-        .case-card {
-            display: inline-block; width: 280px; padding: 20px; background: var(--card);
-            border: 1px solid #222; border-radius: 15px; cursor: pointer; transition: 0.3s;
-            margin: 20px; position: relative;
-        }
+        .case-card { display: inline-block; width: 280px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 15px; cursor: pointer; transition: 0.3s; margin: 20px; }
         .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
         .case-card img { width: 100%; margin-bottom: 15px; }
 
+        /* INVENTORY */
         .inventory { margin-top: 50px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; border-top: 1px solid #222; }
-        .inv-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; min-height: 100px; }
-        .inv-item { width: 140px; background: #0d0d0f; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 11px; text-align: center; }
+        .inv-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .inv-item { width: 140px; background: #0d0d0f; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 11px; }
         .inv-item img { width: 80px; }
         .sell-btn { background: var(--main); color: #000; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 5px; font-weight: bold; }
 
-        .btn {
-            background: var(--main); color: #000; border: none; padding: 15px 40px;
-            font-family: 'Orbitron'; font-size: 16px; border-radius: 5px; cursor: pointer;
-            transition: 0.3s; margin-top: 20px;
-        }
+        .btn { background: var(--main); color: #000; border: none; padding: 12px 30px; font-family: 'Orbitron'; font-size: 14px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
         .btn:disabled { background: #333; cursor: not-allowed; }
     </style>
 </head>
@@ -77,15 +61,23 @@
 
 <div id="notify-box"></div>
 <audio id="bg-music" loop src="https://files.catbox.moe/sv6xxw.mp3"></audio>
-<audio id="promo-sound" src="https://files.catbox.moe/0yp9wp.mp3"></audio>
+<audio id="promo-sound" src="https://files.catbox.moe/mr870z.mp3"></audio>
 
 <header class="header">
-    <div class="logo">BABY<span>SELL</span></div>
-    <div style="display:flex; gap:10px; align-items:center;">
-        <input type="text" id="promo-in" placeholder="ПРОМОКОД" style="background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:5px; width: 120px;">
-        <button onclick="applyPromo()" class="sell-btn" style="padding:8px 15px;">OK</button>
+    <div class="logo" onclick="location.reload()">BABY<span>SELL</span></div>
+    
+    <div style="display:flex; gap:15px; align-items:center;">
+        <input type="text" id="promo-in" placeholder="PROMO" style="background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:5px; width: 100px;">
+        <button onclick="applyPromo()" class="sell-btn" style="padding:8px 12px;">OK</button>
+        
         <div class="bal-box"><span id="balance">0</span> B</div>
-        <button id="login" class="btn" style="margin:0; padding:10px 20px;" onclick="googleLogin()">LOGIN</button>
+
+        <div id="user-display" style="display:none;" class="user-profile">
+            <span id="u-name">USER</span>
+            <img src="" id="u-pic">
+        </div>
+        
+        <button id="login" class="btn" onclick="googleLogin()">LOGIN</button>
     </div>
 </header>
 
@@ -148,38 +140,48 @@
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('login').style.display = 'none';
+            document.getElementById('user-display').style.display = 'flex';
+            document.getElementById('u-pic').src = user.photoURL;
+            document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
+            
             db.ref('users/' + user.uid + '/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('balance').innerText = balance.toLocaleString();
             });
             updateInventoryUI();
-            document.body.onclick = () => document.getElementById('bg-music').play();
+            document.body.onclick = () => {
+                const bg = document.getElementById('bg-music');
+                bg.volume = 0.3;
+                bg.play();
+            };
         }
     });
 
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
     function applyPromo() {
-        if(!auth.currentUser) return showNotify("СНАЧАЛА ВОЙДИ!", true);
+        if(!auth.currentUser) return showNotify("ВОЙДИ В АККАУНТ!", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
         const uId = auth.currentUser.uid;
+        const snd = document.getElementById('promo-sound');
+        snd.volume = 0.2; // ГУЧНІСТЬ НА 20%
 
         if(code === "START2026") {
             db.ref(`users/${uId}/promos/START2026`).once('value', s => {
                 if(s.exists()) {
-                    showNotify("ПРОМО УЖЕ ИСПОЛЬЗОВАНО!", true);
+                    showNotify("УЖЕ ИСПОЛЬЗОВАНО!", true);
                 } else {
                     db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 100);
                     db.ref(`users/${uId}/promos/START2026`).set(true);
-                    document.getElementById('promo-sound').play();
-                    showNotify("АКТИВИРОВАНО! +100 B");
+                    snd.play();
+                    showNotify("УСПЕХ! +100 B");
                 }
             });
         } else if(code === "ADMIN2027") {
             db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 50000);
-            showNotify("ADMIN POWER! +50,000 B");
+            showNotify("ADMIN: +50,000 B");
         } else {
-            showNotify("НЕВЕРНЫЙ КОД", true);
+            showNotify("КОД НЕВЕРНЫЙ", true);
         }
         document.getElementById('promo-in').value = '';
     }
@@ -191,10 +193,9 @@
     }
 
     function spin() {
-        if (balance < 500) return showNotify("НЕДОСТАТОЧНО СРЕДСТВ", true);
+        if (balance < 500) return showNotify("НЕДОСТАТОЧНО БАЛАНСА", true);
         const btn = document.getElementById('spin-btn');
         btn.disabled = true;
-
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c - 500);
 
         const track = document.getElementById('track');
@@ -231,7 +232,7 @@
 
     function updateInventoryUI() {
         if(!auth.currentUser) return;
-        db.ref(`users/${auth.currentUser.uid}/inventory`).once('value', s => {
+        db.ref(`users/${auth.currentUser.uid}/inventory`).on('value', s => {
             const grid = document.getElementById('inv-grid');
             grid.innerHTML = '';
             s.forEach(child => {
@@ -247,14 +248,13 @@
     function sellItem(key, price) {
         db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
-        updateInventoryUI();
-        showNotify("ПРОДАНО ЗА " + price + " B");
+        showNotify("ПРОДАНО ЗА " + price);
     }
 
-    // Timer (Lock)
     const end = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let d = end - Date.now();
+        if(d<0) { document.getElementById('timer').innerText = "OPEN!"; return; }
         let h = Math.floor(d/3600000), m = Math.floor((d%3600000)/60000), s = Math.floor((d%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
