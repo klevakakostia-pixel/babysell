@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - LEGENDARY</title>
+    <title>BABYSELL - ELITE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -30,7 +30,7 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 40px; background: var(--panel);
             border-bottom: 2px solid var(--main); box-shadow: 0 5px 20px rgba(0,255,170,0.2);
-            position: sticky; top: 0; z-index: 1000; height: 80px;
+            position: sticky; top: 0; z-index: 1000; height: 85px;
         }
 
         .user-block { display: flex; align-items: center; gap: 15px; }
@@ -39,108 +39,68 @@
             border-radius: 10px; padding: 2px; background: #000;
         }
         #u-pic { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
-        .user-info { display: flex; flex-direction: column; }
         #u-name { font-family: 'Orbitron'; font-size: 13px; color: #fff; }
-        #logout-btn { color: var(--error); font-size: 10px; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; display: none; }
+        #logout-btn { color: var(--error); font-size: 10px; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; display: none; margin-top: 2px; }
 
-        .promo-panel {
-            display: flex; background: #111; border: 1px solid #333;
-            border-radius: 8px; overflow: hidden; height: 38px;
+        /* CLICKER CAT */
+        .cat-container { position: relative; display: flex; align-items: center; margin: 0 20px; }
+        .cat-clicker { 
+            width: 40px; cursor: pointer; transition: 0.1s; 
+            filter: drop-shadow(0 0 5px var(--main)); user-select: none;
         }
-        .promo-panel input {
-            background: none; border: none; color: #fff; padding: 0 12px;
-            font-family: 'Orbitron'; font-size: 11px; outline: none; width: 130px;
+        .cat-clicker:active { transform: scale(0.85); }
+        .floating-text {
+            position: absolute; font-family: 'Orbitron'; font-size: 12px; font-weight: bold;
+            pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 2000;
         }
-        .promo-btn {
-            background: var(--main); color: #000; border: none; padding: 0 15px;
-            font-family: 'Orbitron'; font-size: 11px; font-weight: bold; cursor: pointer;
-        }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        .balance-box {
-            border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px;
-            font-family: 'Orbitron'; text-align: center; background: #000; min-width: 100px;
-        }
+        /* PROMO & BALANCE */
+        .promo-panel { display: flex; background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; height: 38px; }
+        .promo-panel input { background: none; border: none; color: #fff; padding: 0 12px; font-family: 'Orbitron'; font-size: 11px; outline: none; width: 120px; }
+        .promo-btn { background: var(--main); color: #000; border: none; padding: 0 15px; font-family: 'Orbitron'; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+        .balance-box { border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px; font-family: 'Orbitron'; background: #000; min-width: 100px; text-align: center; }
         #balance { color: #fff; font-size: 16px; text-shadow: 0 0 10px var(--main); }
 
-        /* MAIN CONTAINER */
+        /* CONTENT */
         .container { max-width: 1000px; margin: 40px auto; text-align: center; padding: 0 20px; }
-        
-        /* CASE ROW */
         .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
-        .case-card { 
-            width: 260px; padding: 20px; background: var(--card); 
-            border: 1px solid #222; border-radius: 20px; cursor: pointer; 
-            transition: 0.3s ease; position: relative;
-        }
-        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,255,170,0.1); }
+        .case-card { width: 260px; padding: 20px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.3s ease; position: relative; }
+        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); }
         .case-card.locked { cursor: not-allowed; filter: grayscale(0.8); opacity: 0.6; }
-        .lock-label {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg);
-            background: var(--error); color: #fff; padding: 8px 25px;
-            font-family: 'Orbitron'; font-size: 18px; font-weight: bold;
-            box-shadow: 0 0 20px var(--error); border: 2px solid #fff; z-index: 10;
-        }
+        .lock-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg); background: var(--error); color: #fff; padding: 8px 25px; font-family: 'Orbitron'; font-size: 18px; font-weight: bold; box-shadow: 0 0 20px var(--error); border: 2px solid #fff; }
 
-        /* TABS MENU */
-        .tabs-menu {
-            display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
-            border-bottom: 1px solid #222; padding-bottom: 10px;
-        }
-        .tab-btn {
-            background: none; border: none; color: #666; font-family: 'Orbitron';
-            font-size: 14px; padding: 10px 25px; cursor: pointer; transition: 0.3s;
-            position: relative;
-        }
+        /* TABS */
+        .tabs-menu { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #222; }
+        .tab-btn { background: none; border: none; color: #555; font-family: 'Orbitron'; font-size: 14px; padding: 10px 25px; cursor: pointer; transition: 0.3s; position: relative; }
         .tab-btn.active { color: var(--main); }
-        .tab-btn.active::after {
-            content: ''; position: absolute; bottom: -11px; left: 0; width: 100%;
-            height: 2px; background: var(--main); box-shadow: 0 0 10px var(--main);
-        }
-
-        /* TAB CONTENT ANIMATION */
-        .tab-content {
-            display: none; animation: fadeIn 0.4s ease-out forwards;
-            background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px;
-            min-height: 300px; border: 1px solid #111;
-        }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--main); box-shadow: 0 0 10px var(--main); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-out forwards; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; min-height: 250px; border: 1px solid #111; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* LEADERBOARD TABLE */
+        /* TABLES & GRID */
         .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; text-align: left; }
-        .top-table tr { border-bottom: 1px solid #111; transition: 0.2s; }
-        .top-table tr:hover { background: rgba(0,255,170,0.05); }
-        .top-table td { padding: 15px; font-size: 14px; }
-        .rank { color: var(--main); width: 50px; font-weight: bold; }
-        .t-bal { text-align: right; color: var(--main); }
-
-        /* INVENTORY GRID */
-        #inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
-        .inv-item {
-            background: #0a0a0c; border: 1px solid #222; padding: 15px;
-            border-radius: 12px; text-align: center; transition: 0.3s;
-        }
-        .inv-item:hover { border-color: var(--main); }
-        .inv-item img { width: 80px; margin-bottom: 10px; }
-        .inv-item small { font-size: 10px; display: block; margin-bottom: 10px; color: #aaa; }
-
-        /* ROULETTE (Hide other UI when spinning) */
-        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
-        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .track div img { width: 100px; }
+        .top-table td { padding: 15px; border-bottom: 1px solid #111; }
+        .rank { color: var(--main); font-weight: bold; width: 50px; }
+        #inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; }
+        .inv-item { background: #0a0a0c; border: 1px solid #222; padding: 10px; border-radius: 12px; text-align: center; }
+        .inv-item img { width: 70px; }
 
         /* NOTIFICATIONS */
-        #notify-box { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        #notify-box { position: fixed; top: 95px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 12px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); font-size: 11px; animation: slideIn 0.3s ease; }
-        .notify.error { border-color: var(--error); color: var(--error); }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
         .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 11px; }
+
+        /* ROULETTE */
+        #roulette-screen { display: none; flex-direction: column; align-items: center; }
+        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; }
+        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
+        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
+        .track div img { width: 100px; }
     </style>
 </head>
 <body>
@@ -158,6 +118,11 @@
             <span id="logout-btn" onclick="googleLogout()">Logout</span>
         </div>
     </div>
+
+    <div class="cat-container">
+        <img src="https://i.postimg.cc/mD3m09M7/cat-pixel.png" class="cat-clicker" id="money-cat" onclick="clickCat(event)">
+    </div>
+
     <div style="display: flex; gap: 15px; align-items: center;">
         <div class="promo-panel">
             <input type="text" id="promo-in" placeholder="PROMO CODE">
@@ -178,14 +143,14 @@
         <div class="case-card locked">
             <div class="lock-label">LOCKED</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
-            <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
+            <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">COMING SOON</h3>
             <p id="timer" style="color:var(--error); font-family:'Orbitron';">LOCKED</p>
         </div>
     </div>
 
-    <div id="roulette-screen" style="display:none; flex-direction:column; align-items:center;">
+    <div id="roulette-screen">
         <h2 id="case-title" style="font-family:'Orbitron'; margin-bottom:20px;"></h2>
-        <div class="roulette-container" id="roulette" style="display:block;"><div class="track" id="track"></div></div>
+        <div class="roulette-container" id="roulette"><div class="track" id="track"></div></div>
         <button class="btn" id="spin-btn" onclick="spin()" style="padding: 15px 40px; font-size: 14px;">ОТКРЫТЬ КЕЙС</button>
         <p onclick="location.reload()" style="margin-top:20px; cursor:pointer; color:#555; font-size: 12px; font-family:'Orbitron';">← НАЗАД</p>
     </div>
@@ -193,20 +158,10 @@
     <div class="tabs-menu">
         <button class="tab-btn active" onclick="openTab('inventory')">INVENTORY</button>
         <button class="tab-btn" onclick="openTab('leaderboard')">LEADERBOARD</button>
-        <button class="tab-btn" onclick="openTab('store')">STORE</button>
     </div>
 
-    <div id="inventory" class="tab-content active">
-        <div id="inv-grid"></div>
-    </div>
-
-    <div id="leaderboard" class="tab-content">
-        <table class="top-table" id="leader-table"></table>
-    </div>
-
-    <div id="store" class="tab-content">
-        <p style="opacity:0.5; font-family:'Orbitron'; margin-top:50px;">STORE COMING SOON...</p>
-    </div>
+    <div id="inventory" class="tab-content active"><div id="inv-grid"></div></div>
+    <div id="leaderboard" class="tab-content"><table class="top-table" id="leader-table"></table></div>
 </div>
 
 <script>
@@ -220,6 +175,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
     let balance = 0;
+    let lastClickTime = 0; // Для захисту від автоклікера
 
     const LOOT = [
         { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png" },
@@ -228,15 +184,40 @@
         { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png" }
     ];
 
+    // --- CAT CLICKER LOGIC ---
+    function clickCat(e) {
+        if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
+        
+        const now = Date.now();
+        if(now - lastClickTime < 100) return; // Ігноруємо кліки частіше ніж 0.1 сек
+        lastClickTime = now;
+
+        const chance = Math.random(); // Шанс 0.1% = 0.001
+        if(chance <= 0.001) {
+            db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 0.5);
+            createFloatingText(e.pageX, e.pageY, "+0.5 B", "#00ffaa");
+        } else {
+            createFloatingText(e.pageX, e.pageY, "meow", "#444");
+        }
+    }
+
+    function createFloatingText(x, y, text, color) {
+        const el = document.createElement('div');
+        el.className = 'floating-text';
+        el.innerText = text; el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.color = color;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 800);
+    }
+
     // --- TAB SYSTEM ---
-    function openTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
+    function openTab(name) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // --- AUTH & FIREBASE ---
+    // --- FIREBASE CORE ---
     auth.onAuthStateChanged(user => {
         updateLeaderboard();
         if (user) {
@@ -266,33 +247,27 @@
     function showNotify(text, isError = false) {
         const box = document.getElementById('notify-box');
         const n = document.createElement('div');
-        n.className = 'notify' + (isError ? ' error' : '');
-        n.innerText = text;
+        n.className = 'notify'; n.innerText = text;
+        if(isError) n.style.borderColor = "var(--error)";
         box.appendChild(n);
         setTimeout(() => n.remove(), 4000);
     }
 
     function applyPromo() {
-        if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
+        if(!auth.currentUser) return;
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
         if(code === "START2026") {
             db.ref(`users/${auth.currentUser.uid}/promos/START2026`).once('value', s => {
                 if(s.exists()) showNotify("ALREADY USED", true);
-                else { 
+                else {
                     db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 100);
                     db.ref(`users/${auth.currentUser.uid}/promos/START2026`).set(true);
-                    document.getElementById('sound-success').play();
-                    showNotify("PROMO OK! +100 B"); 
+                    showNotify("PROMO OK! +100 B");
                 }
             });
-        } 
-        else if(code === "ADMIN2027") {
+        } else if(code === "ADMIN2027") {
             db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
-            document.getElementById('sound-success').play();
-            showNotify("ADMIN ACTIVE: +50,000 B");
-        } else {
-            document.getElementById('sound-fail').play();
-            showNotify("WRONG CODE", true);
+            showNotify("ADMIN ACTIVE!");
         }
     }
 
@@ -309,9 +284,7 @@
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c - 500);
 
         const track = document.getElementById('track');
-        track.style.transition = 'none';
-        track.style.transform = 'translateX(0)';
-        track.innerHTML = '';
+        track.style.transition = 'none'; track.style.transform = 'translateX(0)'; track.innerHTML = '';
 
         const r = Math.random() * 100;
         let winItem = LOOT[0];
@@ -343,7 +316,7 @@
                 const item = child.val();
                 grid.innerHTML += `<div class="inv-item">
                     <img src="${item.img}"><br><small>${item.n}</small>
-                    <button class="btn" onclick="sellItem('${child.key}', ${item.p})" style="font-size:8px;">SELL ${item.p}</button>
+                    <button class="btn" onclick="sellItem('${child.key}', ${item.p})" style="font-size:8px; margin-top:5px;">SELL ${item.p}</button>
                 </div>`;
             });
         });
@@ -352,7 +325,6 @@
     function sellItem(key, price) {
         db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
-        showNotify("ITEM SOLD!");
     }
 
     function updateLeaderboard() {
@@ -363,14 +335,14 @@
             const table = document.getElementById('leader-table');
             table.innerHTML = '';
             list.slice(0, 5).forEach((u, i) => {
-                table.innerHTML += `<tr><td class="rank">#${i+1}</td><td>${u.name}</td><td class="t-bal">${u.bal.toLocaleString()} B</td></tr>`;
+                table.innerHTML += `<tr><td class="rank">#${i+1}</td><td>${u.name}</td><td style="text-align:right; color:var(--main);">${u.bal.toLocaleString()} B</td></tr>`;
             });
         });
     }
 
     // TIMER
     setInterval(() => {
-        const diff = (Date.now() + 50000000) - Date.now(); 
+        const diff = (Date.now() + 86400000) - Date.now(); 
         let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
