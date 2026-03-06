@@ -21,6 +21,8 @@
         @keyframes pulse { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes itemIn { from { filter: blur(10px); opacity: 0; transform: scale(0.8); } to { filter: blur(0); opacity: 1; transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(1deg); } 75% { transform: rotate(-1deg); } }
+        @keyframes rattle { 0% { transform: translate(0,0); } 10% { transform: translate(-2px, -2px); } 20% { transform: translate(2px, 2px); } 30% { transform: translate(0,0); } }
 
         #notify-box { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 15px 25px; border-radius: 8px; font-family: 'Orbitron'; font-size: 13px; color: var(--main); animation: slideIn 0.3s ease forwards; backdrop-filter: blur(10px); }
@@ -37,11 +39,27 @@
 
         .bal-box { background: #000; border: 1px solid var(--main); padding: 8px 22px; border-radius: 8px; font-family: 'Orbitron'; color: var(--main); animation: pulse 2s infinite; }
         
+        /* CASES */
         .container { max-width: 1200px; margin: 40px auto; text-align: center; }
-        .case-card { display: inline-block; width: 280px; padding: 25px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.4s; margin: 20px; }
-        .case-card:hover { border-color: var(--main); transform: translateY(-10px); background: rgba(0,255,170,0.05); }
+        .case-card { display: inline-block; width: 280px; padding: 25px; background: var(--card); border: 1px solid #222; border-radius: 20px; cursor: pointer; transition: 0.4s; margin: 20px; position: relative; }
+        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-10px); background: rgba(0,255,170,0.05); }
         .case-card img { width: 100%; margin-bottom: 15px; }
 
+        /* LOCKED CASE STYLES */
+        .case-card.locked { cursor: not-allowed; overflow: hidden; animation: rattle 4s infinite 2s; }
+        .chains-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 20px; pointer-events: none; z-index: 5;
+        }
+        .chain-svg {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            filter: drop-shadow(0 0 5px #000); opacity: 0.9;
+        }
+        .lock-icon { width: 60px !important; margin: 0 !important; z-index: 10; filter: drop-shadow(0 0 15px #000); }
+
+        /* ROULETTE & OTHERS */
         .roulette-container { position: relative; width: 100%; max-width: 900px; height: 180px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
         .roulette-container::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 20px var(--main); }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
@@ -54,8 +72,7 @@
         .inv-item img { width: 90px; }
 
         .btn { background: var(--main); color: #000; border: none; padding: 14px 35px; font-family: 'Orbitron'; font-size: 14px; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        .btn:hover { background: #fff; box-shadow: 0 0 25px var(--main); }
-        
+        .btn:hover:not(:disabled) { background: #fff; box-shadow: 0 0 25px var(--main); }
         .sell-btn { background: var(--main); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-top: 8px; font-weight: bold; font-size: 10px; }
     </style>
 </head>
@@ -74,14 +91,11 @@
             <input type="text" id="promo-in" placeholder="PROMO" style="background:none; border:none; color:#fff; padding:10px; width: 100px;">
             <button onclick="applyPromo()" style="background:var(--main); border:none; color:#000; padding:0 15px; cursor:pointer; font-weight:bold;">OK</button>
         </div>
-        
         <div class="bal-box"><span id="balance">0</span> B</div>
-
         <div id="user-display" style="display:none;" class="user-profile">
             <span id="u-name">USER</span>
             <img src="" id="u-pic">
         </div>
-        
         <button id="login" class="btn" onclick="googleLogin()" style="padding: 10px 20px;">LOGIN</button>
     </div>
 </header>
@@ -93,9 +107,20 @@
             <h3>УЛИЧНЫЕ КОШМАРЫ</h3>
             <p style="color:var(--main)">500 B</p>
         </div>
-        <div class="case-card" style="opacity:0.4;">
+
+        <div class="case-card locked">
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h3 id="timer" style="color:var(--error);">LOCKED</h3>
+            <div class="chains-overlay">
+                <svg class="chain-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line x1="0" y1="0" x2="100" y2="100" stroke="#555" stroke-width="8" stroke-dasharray="10,2" />
+                    <line x1="100" y1="0" x2="0" y2="100" stroke="#555" stroke-width="8" stroke-dasharray="10,2" />
+                    <line x1="0" y1="0" x2="100" y2="100" stroke="#333" stroke-width="4" stroke-dasharray="5,7" />
+                    <line x1="100" y1="0" x2="0" y2="100" stroke="#333" stroke-width="4" stroke-dasharray="5,7" />
+                </svg>
+                <img src="https://cdn-icons-png.flaticon.com/512/2560/2560374.png" class="lock-icon">
+                <h3 id="timer" style="color:#fff; margin-top: 10px; text-shadow: 0 0 10px #000;">LOCKED</h3>
+            </div>
+            <h3>НАВЕРНОЕ ПОВЕЗЕТ</h3>
         </div>
     </div>
 
@@ -105,6 +130,7 @@
             <div class="track" id="track"></div>
         </div>
         <button class="btn" id="spin-btn" onclick="spin()" style="padding: 20px 60px; font-size: 18px;">ОТКРЫТЬ КЕЙС</button>
+        <p onclick="location.reload()" style="margin-top:20px; cursor:pointer; color:#444;">← НАЗАД</p>
     </div>
 
     <div class="inventory">
@@ -114,6 +140,7 @@
 </div>
 
 <script>
+    // Масив луту залишаємо без змін
     const LOOT = [
         { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
         { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
@@ -121,6 +148,7 @@
         { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
     ];
 
+    // FIREBASE ТА ІНША ЛОГІКА
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -161,33 +189,18 @@
     function applyPromo() {
         if(!auth.currentUser) return showNotify("ВОЙДИТЕ!", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
-        const uId = auth.currentUser.uid;
-        
-        const sndSuccess = document.getElementById('sound-success');
-        const sndFail = document.getElementById('sound-fail');
-        sndSuccess.volume = 0.2;
-        sndFail.volume = 0.2;
+        const sndS = document.getElementById('sound-success');
+        const sndF = document.getElementById('sound-fail');
+        sndS.volume = sndF.volume = 0.2;
 
         if(code === "START2026") {
-            db.ref(`users/${uId}/promos/START2026`).once('value', s => {
-                if(s.exists()) {
-                    sndFail.play();
-                    showNotify("УЖЕ ИСПОЛЬЗОВАНО!", true);
-                } else {
-                    db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 100);
-                    db.ref(`users/${uId}/promos/START2026`).set(true);
-                    sndSuccess.play();
-                    showNotify("УСПЕХ! +100 B");
-                }
+            db.ref(`users/${auth.currentUser.uid}/promos/START2026`).once('value', s => {
+                if(s.exists()) { sndF.play(); showNotify("УЖЕ ИСПОЛЬЗОВАНО!", true); }
+                else { db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 100); db.ref(`users/${auth.currentUser.uid}/promos/START2026`).set(true); sndS.play(); showNotify("УСПЕХ! +100 B"); }
             });
         } else if(code === "ADMIN2027") {
-            sndSuccess.play();
-            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 50000);
-            showNotify("ADMIN: +50,000 B");
-        } else {
-            sndFail.play();
-            showNotify("НЕВЕРНЫЙ КОД", true);
-        }
+            sndS.play(); db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000); showNotify("ADMIN: +50,000 B");
+        } else { sndF.play(); showNotify("НЕВЕРНЫЙ КОД", true); }
         document.getElementById('promo-in').value = '';
     }
 
@@ -256,10 +269,11 @@
         showNotify("ПРОДАНО!");
     }
 
+    // Timer Logic
     const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let diff = unlockDate - Date.now();
-        if(diff < 0) { document.getElementById('timer').innerText = "OPEN!"; return; }
+        if(diff < 0) { document.getElementById('timer').innerText = "OPENING..."; return; }
         let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
