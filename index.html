@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - LEGENDARY EDITION</title>
+    <title>BABYSELL - LEGENDARY</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -15,7 +15,7 @@
             --bg: #050508; 
             --card: rgba(255, 255, 255, 0.03); 
             --error: #ff4444; 
-            --panel: rgba(0, 0, 0, 0.9);
+            --panel: rgba(0, 0, 0, 0.95);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,7 +39,7 @@
             border-radius: 10px; padding: 2px; background: #000;
         }
         #u-pic { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
-        .user-info { display: flex; flex-direction: column; gap: 2px; }
+        .user-info { display: flex; flex-direction: column; }
         #u-name { font-family: 'Orbitron'; font-size: 13px; color: #fff; }
         #logout-btn { color: var(--error); font-size: 10px; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; display: none; }
 
@@ -60,42 +60,75 @@
             border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px;
             font-family: 'Orbitron'; text-align: center; background: #000; min-width: 100px;
         }
-        #balance { color: #fff; font-size: 16px; }
+        #balance { color: #fff; font-size: 16px; text-shadow: 0 0 10px var(--main); }
 
-        /* MAIN */
-        .container { max-width: 1200px; margin: 40px auto; text-align: center; padding: 0 20px; }
+        /* MAIN CONTAINER */
+        .container { max-width: 1000px; margin: 40px auto; text-align: center; padding: 0 20px; }
+        
+        /* CASE ROW */
         .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
-
         .case-card { 
-            width: 280px; padding: 25px; background: var(--card); 
+            width: 260px; padding: 20px; background: var(--card); 
             border: 1px solid #222; border-radius: 20px; cursor: pointer; 
             transition: 0.3s ease; position: relative;
         }
-        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); }
-
+        .case-card:hover:not(.locked) { border-color: var(--main); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0,255,170,0.1); }
         .case-card.locked { cursor: not-allowed; filter: grayscale(0.8); opacity: 0.6; }
         .lock-label {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg);
-            background: var(--error); color: #fff; padding: 10px 30px;
-            font-family: 'Orbitron'; font-size: 20px; font-weight: bold;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); border: 2px solid #fff;
-            z-index: 10; pointer-events: none;
+            background: var(--error); color: #fff; padding: 8px 25px;
+            font-family: 'Orbitron'; font-size: 18px; font-weight: bold;
+            box-shadow: 0 0 20px var(--error); border: 2px solid #fff; z-index: 10;
         }
 
-        /* GRID FOR TOP & INV */
-        .grid-layout { display: flex; gap: 30px; margin-top: 40px; text-align: left; flex-wrap: wrap; }
-        .section-box { background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #111; padding: 25px; flex: 1; min-width: 300px; }
-        .section-title { font-family: 'Orbitron'; font-size: 14px; color: var(--main); margin-bottom: 20px; display: block; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; }
+        /* TABS MENU */
+        .tabs-menu {
+            display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
+            border-bottom: 1px solid #222; padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: none; border: none; color: #666; font-family: 'Orbitron';
+            font-size: 14px; padding: 10px 25px; cursor: pointer; transition: 0.3s;
+            position: relative;
+        }
+        .tab-btn.active { color: var(--main); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -11px; left: 0; width: 100%;
+            height: 2px; background: var(--main); box-shadow: 0 0 10px var(--main);
+        }
 
-        /* LEADERBOARD */
-        .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; font-size: 12px; }
-        .top-table tr { border-bottom: 1px solid #111; }
-        .top-table td { padding: 12px 5px; }
-        .rank { color: var(--main); font-weight: bold; width: 40px; }
-        .t-name { color: #fff; }
+        /* TAB CONTENT ANIMATION */
+        .tab-content {
+            display: none; animation: fadeIn 0.4s ease-out forwards;
+            background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px;
+            min-height: 300px; border: 1px solid #111;
+        }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* LEADERBOARD TABLE */
+        .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; text-align: left; }
+        .top-table tr { border-bottom: 1px solid #111; transition: 0.2s; }
+        .top-table tr:hover { background: rgba(0,255,170,0.05); }
+        .top-table td { padding: 15px; font-size: 14px; }
+        .rank { color: var(--main); width: 50px; font-weight: bold; }
         .t-bal { text-align: right; color: var(--main); }
 
-        /* ROULETTE */
+        /* INVENTORY GRID */
+        #inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+        .inv-item {
+            background: #0a0a0c; border: 1px solid #222; padding: 15px;
+            border-radius: 12px; text-align: center; transition: 0.3s;
+        }
+        .inv-item:hover { border-color: var(--main); }
+        .inv-item img { width: 80px; margin-bottom: 10px; }
+        .inv-item small { font-size: 10px; display: block; margin-bottom: 10px; color: #aaa; }
+
+        /* ROULETTE (Hide other UI when spinning) */
         .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
         .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
@@ -119,23 +152,18 @@
 
 <header class="header">
     <div class="user-block">
-        <div class="avatar-wrapper">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic">
-        </div>
+        <div class="avatar-wrapper"><img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic"></div>
         <div class="user-info">
             <span id="u-name">GUEST_PLAYER</span>
             <span id="logout-btn" onclick="googleLogout()">Logout</span>
         </div>
     </div>
-
     <div style="display: flex; gap: 15px; align-items: center;">
         <div class="promo-panel">
             <input type="text" id="promo-in" placeholder="PROMO CODE">
             <button class="promo-btn" onclick="applyPromo()">OK</button>
         </div>
-        <div class="balance-box">
-            <span id="balance">0</span> <span style="color:var(--main); font-size: 10px;">B</span>
-        </div>
+        <div class="balance-box"><span id="balance">0</span> <span style="color:var(--main); font-size: 10px;">B</span></div>
         <button id="login" class="btn" onclick="googleLogin()">LOGIN</button>
     </div>
 </header>
@@ -147,7 +175,6 @@
             <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">УЛИЧНЫЕ КОШМАРЫ</h3>
             <p style="color:var(--main); font-family:'Orbitron';">500 B</p>
         </div>
-
         <div class="case-card locked">
             <div class="lock-label">LOCKED</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
@@ -158,25 +185,27 @@
 
     <div id="roulette-screen" style="display:none; flex-direction:column; align-items:center;">
         <h2 id="case-title" style="font-family:'Orbitron'; margin-bottom:20px;"></h2>
-        <div class="roulette-container" id="roulette" style="display:block;">
-            <div class="track" id="track"></div>
-        </div>
+        <div class="roulette-container" id="roulette" style="display:block;"><div class="track" id="track"></div></div>
         <button class="btn" id="spin-btn" onclick="spin()" style="padding: 15px 40px; font-size: 14px;">ОТКРЫТЬ КЕЙС</button>
         <p onclick="location.reload()" style="margin-top:20px; cursor:pointer; color:#555; font-size: 12px; font-family:'Orbitron';">← НАЗАД</p>
     </div>
 
-    <div class="grid-layout">
-        <div class="section-box">
-            <span class="section-title">🏆 TOP 5 PLAYERS</span>
-            <table class="top-table" id="leaderboard">
-                <tr><td colspan="3" style="text-align:center; opacity:0.5;">Loading stats...</td></tr>
-            </table>
-        </div>
+    <div class="tabs-menu">
+        <button class="tab-btn active" onclick="openTab('inventory')">INVENTORY</button>
+        <button class="tab-btn" onclick="openTab('leaderboard')">LEADERBOARD</button>
+        <button class="tab-btn" onclick="openTab('store')">STORE</button>
+    </div>
 
-        <div class="section-box">
-            <span class="section-title">🎒 MY INVENTORY</span>
-            <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
-        </div>
+    <div id="inventory" class="tab-content active">
+        <div id="inv-grid"></div>
+    </div>
+
+    <div id="leaderboard" class="tab-content">
+        <table class="top-table" id="leader-table"></table>
+    </div>
+
+    <div id="store" class="tab-content">
+        <p style="opacity:0.5; font-family:'Orbitron'; margin-top:50px;">STORE COMING SOON...</p>
     </div>
 </div>
 
@@ -199,20 +228,23 @@
         { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png" }
     ];
 
+    // --- TAB SYSTEM ---
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // --- AUTH & FIREBASE ---
     auth.onAuthStateChanged(user => {
-        updateLeaderboard(); // Обновляем топ всегда (для всех)
+        updateLeaderboard();
         if (user) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('logout-btn').style.display = 'block';
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
-            
-            // Сохраняем имя и начальный баланс (если его нет) в базу
-            db.ref('users/' + user.uid).update({ 
-                name: user.displayName.split(' ')[0],
-                // Баланс не перезаписываем, если он уже есть
-            });
-            
+            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
             db.ref('users/' + user.uid + '/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('balance').innerText = balance.toLocaleString();
@@ -222,7 +254,6 @@
         } else {
             document.getElementById('login').style.display = 'block';
             document.getElementById('logout-btn').style.display = 'none';
-            document.getElementById('u-pic').src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
             document.getElementById('u-name').innerText = "GUEST_PLAYER";
             document.getElementById('balance').innerText = "0";
             document.getElementById('inv-grid').innerHTML = "";
@@ -244,26 +275,25 @@
     function applyPromo() {
         if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
-        const sndS = document.getElementById('sound-success');
-        const sndF = document.getElementById('sound-fail');
-
         if(code === "START2026") {
             db.ref(`users/${auth.currentUser.uid}/promos/START2026`).once('value', s => {
-                if(s.exists()) { sndF.play(); showNotify("ALREADY USED", true); }
+                if(s.exists()) showNotify("ALREADY USED", true);
                 else { 
                     db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 100);
                     db.ref(`users/${auth.currentUser.uid}/promos/START2026`).set(true);
-                    sndS.play(); showNotify("PROMO OK! +100 B"); 
+                    document.getElementById('sound-success').play();
+                    showNotify("PROMO OK! +100 B"); 
                 }
             });
         } 
         else if(code === "ADMIN2027") {
-            sndS.play();
             db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
+            document.getElementById('sound-success').play();
             showNotify("ADMIN ACTIVE: +50,000 B");
+        } else {
+            document.getElementById('sound-fail').play();
+            showNotify("WRONG CODE", true);
         }
-        else { sndF.play(); showNotify("WRONG CODE", true); }
-        document.getElementById('promo-in').value = '';
     }
 
     function selectCase(name) {
@@ -285,15 +315,11 @@
 
         const r = Math.random() * 100;
         let winItem = LOOT[0];
-        if(r > 98) winItem = LOOT[3];
-        else if(r > 90) winItem = LOOT[2];
-        else if(r > 60) winItem = LOOT[1];
+        if(r > 98) winItem = LOOT[3]; else if(r > 90) winItem = LOOT[2]; else if(r > 60) winItem = LOOT[1];
 
         for(let i=0; i<60; i++) {
             const item = (i === 50) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
-            const d = document.createElement('div');
-            d.innerHTML = `<img src="${item.img}">`;
-            track.appendChild(d);
+            track.innerHTML += `<div><img src="${item.img}"></div>`;
         }
 
         setTimeout(() => {
@@ -315,9 +341,9 @@
             grid.innerHTML = '';
             s.forEach(child => {
                 const item = child.val();
-                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:100px;">
-                    <img src="${item.img}" width="60"><br><small style="font-size:8px; display:block; margin:5px 0;">${item.n}</small>
-                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:8px;">SELL ${item.p}</button>
+                grid.innerHTML += `<div class="inv-item">
+                    <img src="${item.img}"><br><small>${item.n}</small>
+                    <button class="btn" onclick="sellItem('${child.key}', ${item.p})" style="font-size:8px;">SELL ${item.p}</button>
                 </div>`;
             });
         });
@@ -326,47 +352,25 @@
     function sellItem(key, price) {
         db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
         db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
-        showNotify("SOLD!");
+        showNotify("ITEM SOLD!");
     }
 
     function updateLeaderboard() {
-        // Запрос всех пользователей, сортировка по балансу
         db.ref('users').orderByChild('balance').on('value', s => {
             const list = [];
-            s.forEach(u => {
-                const data = u.val();
-                list.push({
-                    name: data.name || 'Anonymous',
-                    balance: data.balance || 0
-                });
-            });
-            
-            // Сортируем от большего к меньшему и берем топ-5
-            list.sort((a, b) => b.balance - a.balance);
-            const top5 = list.slice(0, 5);
-
-            const table = document.getElementById('leaderboard');
+            s.forEach(u => { const d = u.val(); list.push({name: d.name || 'GUEST', bal: d.balance || 0}); });
+            list.sort((a,b) => b.bal - a.bal);
+            const table = document.getElementById('leader-table');
             table.innerHTML = '';
-            
-            if(top5.length === 0) {
-                table.innerHTML = '<tr><td colspan="3" style="text-align:center; opacity:0.5;">No players yet</td></tr>';
-                return;
-            }
-
-            top5.forEach((u, i) => {
-                table.innerHTML += `<tr>
-                    <td class="rank">#${i+1}</td>
-                    <td class="t-name">${u.name}</td>
-                    <td class="t-bal">${u.balance.toLocaleString()} B</td>
-                </tr>`;
+            list.slice(0, 5).forEach((u, i) => {
+                table.innerHTML += `<tr><td class="rank">#${i+1}</td><td>${u.name}</td><td class="t-bal">${u.bal.toLocaleString()} B</td></tr>`;
             });
         });
     }
 
-    const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
+    // TIMER
     setInterval(() => {
-        let diff = unlockDate - Date.now();
-        if(diff < 0) { document.getElementById('timer').innerText = "AVAILABLE"; return; }
+        const diff = (Date.now() + 50000000) - Date.now(); 
         let h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
         document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
