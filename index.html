@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ELITE</title>
+    <title>BABYSELL - LEGENDARY EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -39,7 +39,9 @@
             border-radius: 10px; padding: 2px; background: #000;
         }
         #u-pic { width: 100%; height: 100%; border-radius: 6px; object-fit: cover; }
-        #u-name { font-family: 'Orbitron'; font-size: 13px; }
+        .user-info { display: flex; flex-direction: column; gap: 2px; }
+        #u-name { font-family: 'Orbitron'; font-size: 13px; color: #fff; }
+        #logout-btn { color: var(--error); font-size: 10px; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; display: none; }
 
         .promo-panel {
             display: flex; background: #111; border: 1px solid #333;
@@ -56,13 +58,13 @@
 
         .balance-box {
             border: 1px solid var(--main); padding: 5px 15px; border-radius: 8px;
-            font-family: 'Orbitron'; text-align: center; background: #000;
+            font-family: 'Orbitron'; text-align: center; background: #000; min-width: 100px;
         }
         #balance { color: #fff; font-size: 16px; }
 
         /* MAIN CONTENT */
-        .container { max-width: 1200px; margin: 50px auto; text-align: center; }
-        .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .container { max-width: 1200px; margin: 40px auto; text-align: center; padding: 0 20px; }
+        .cases-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 50px; }
 
         .case-card { 
             width: 280px; padding: 25px; background: var(--card); 
@@ -80,31 +82,32 @@
             z-index: 10; pointer-events: none;
         }
 
-        /* LEADERBOARD & INVENTORY */
-        .grid-layout { display: flex; gap: 30px; margin-top: 60px; text-align: left; }
-        .section-box { background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #111; padding: 25px; flex: 1; }
-        .section-title { font-family: 'Orbitron'; font-size: 16px; color: var(--main); margin-bottom: 20px; display: block; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        /* ROULETTE */
+        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
+        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
+        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
+        .track div img { width: 100px; }
 
-        /* Leaderboard table */
+        /* GRID FOR TOP & INV */
+        .grid-layout { display: flex; gap: 30px; margin-top: 40px; text-align: left; flex-wrap: wrap; }
+        .section-box { background: rgba(0,0,0,0.5); border-radius: 20px; border: 1px solid #111; padding: 25px; flex: 1; min-width: 300px; }
+        .section-title { font-family: 'Orbitron'; font-size: 14px; color: var(--main); margin-bottom: 20px; display: block; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; }
+
+        /* LEADERBOARD */
         .top-table { width: 100%; border-collapse: collapse; font-family: 'Orbitron'; font-size: 12px; }
-        .top-table tr { border-bottom: 1px solid #111; transition: 0.2s; }
-        .top-table tr:hover { background: rgba(0, 255, 170, 0.05); }
+        .top-table tr { border-bottom: 1px solid #111; }
         .top-table td { padding: 12px 5px; }
-        .rank { color: var(--main); width: 30px; }
+        .rank { color: var(--main); font-weight: bold; width: 40px; }
         .t-name { color: #fff; }
         .t-bal { text-align: right; color: var(--main); }
 
+        /* NOTIFICATIONS */
         #notify-box { position: fixed; top: 90px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .notify { background: rgba(0,0,0,0.95); border: 1px solid var(--main); padding: 12px 20px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); font-size: 11px; animation: slideIn 0.3s ease; }
         .notify.error { border-color: var(--error); color: var(--error); }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
         .btn { background: var(--main); color: #000; border: none; padding: 10px 20px; border-radius: 5px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 11px; }
-
-        .roulette-container { position: relative; width: 100%; max-width: 800px; height: 160px; margin: 30px auto; background: #0a0a0c; border: 2px solid #222; overflow: hidden; border-radius: 15px; display: none; }
-        .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
-        .track div { min-width: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .track div img { width: 100px; }
     </style>
 </head>
 <body>
@@ -120,7 +123,8 @@
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic">
         </div>
         <div class="user-info">
-            <span id="u-name">GUEST</span>
+            <span id="u-name">GUEST_PLAYER</span>
+            <span id="logout-btn" onclick="googleLogout()">Logout</span>
         </div>
     </div>
 
@@ -148,7 +152,7 @@
             <div class="lock-label">LOCKED</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png" style="width: 100%;">
             <h3 style="font-family:'Orbitron'; margin-top:15px; font-size: 16px;">НАВЕРНОЕ ПОВЕЗЕТ</h3>
-            <p id="timer" style="color:var(--error); font-family:'Orbitron';">COMING SOON</p>
+            <p id="timer" style="color:var(--error); font-family:'Orbitron';">LOCKED</p>
         </div>
     </div>
 
@@ -157,32 +161,25 @@
         <div class="roulette-container" id="roulette" style="display:block;">
             <div class="track" id="track"></div>
         </div>
-        <button class="btn" id="spin-btn" onclick="spin()" style="padding: 15px 40px;">ОТКРЫТЬ</button>
-        <p onclick="location.reload()" style="margin-top:15px; cursor:pointer; color:#444; font-size: 12px;">← НАЗАД</p>
+        <button class="btn" id="spin-btn" onclick="spin()" style="padding: 15px 40px; font-size: 14px;">ОТКРЫТЬ КЕЙС</button>
+        <p onclick="location.reload()" style="margin-top:20px; cursor:pointer; color:#555; font-size: 12px; font-family:'Orbitron';">← НАЗАД</p>
     </div>
 
     <div class="grid-layout">
         <div class="section-box">
-            <span class="section-title">🏆 TOP RICH PLAYERS</span>
-            <table class="top-table" id="leaderboard">
-                </table>
+            <span class="section-title">🏆 TOP BALANCE</span>
+            <table class="top-table" id="leaderboard"></table>
         </div>
 
         <div class="section-box">
-            <span class="section-title">🎒 MY INVENTORY</span>
+            <span class="section-title">🎒 INVENTORY</span>
             <div id="inv-grid" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const LOOT = [
-        { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
-        { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
-        { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
-        { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
-    ];
-
+    // --- DATABASE CONFIG ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -194,6 +191,42 @@
     const auth = firebase.auth(), db = firebase.database();
     let balance = 0;
 
+    const LOOT = [
+        { n: "GLOCK-18", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
+        { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
+        { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
+        { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
+    ];
+
+    // --- AUTH LOGIC ---
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'block';
+            document.getElementById('u-pic').src = user.photoURL;
+            document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
+            
+            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
+            db.ref('users/' + user.uid + '/balance').on('value', s => {
+                balance = s.val() || 0;
+                document.getElementById('balance').innerText = balance.toLocaleString();
+            });
+            updateInventoryUI();
+            updateLeaderboard();
+            document.body.onclick = () => { document.getElementById('bg-music').volume = 0.1; document.getElementById('bg-music').play().catch(()=>{}); };
+        } else {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('logout-btn').style.display = 'none';
+            document.getElementById('u-pic').src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+            document.getElementById('u-name').innerText = "GUEST_PLAYER";
+            document.getElementById('balance').innerText = "0";
+            document.getElementById('inv-grid').innerHTML = "";
+        }
+    });
+
+    function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    function googleLogout() { auth.signOut().then(() => location.reload()); }
+
     function showNotify(text, isError = false) {
         const box = document.getElementById('notify-box');
         const n = document.createElement('div');
@@ -203,33 +236,12 @@
         setTimeout(() => n.remove(), 4000);
     }
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('u-pic').src = user.photoURL;
-            document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
-            
-            // Sync Balance and Name for Leaderboard
-            db.ref('users/' + user.uid).update({ name: user.displayName.split(' ')[0] });
-            
-            db.ref('users/' + user.uid + '/balance').on('value', s => {
-                balance = s.val() || 0;
-                document.getElementById('balance').innerText = balance.toLocaleString();
-            });
-            updateInventoryUI();
-            updateLeaderboard();
-            document.body.onclick = () => { document.getElementById('bg-music').volume = 0.1; document.getElementById('bg-music').play().catch(()=>{}); };
-        }
-    });
-
-    function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-
+    // --- PROMO LOGIC ---
     function applyPromo() {
         if(!auth.currentUser) return showNotify("LOGIN REQUIRED", true);
         const code = document.getElementById('promo-in').value.trim().toUpperCase();
         const sndS = document.getElementById('sound-success');
         const sndF = document.getElementById('sound-fail');
-        sndS.volume = sndF.volume = 0.2;
 
         if(code === "START2026") {
             db.ref(`users/${auth.currentUser.uid}/promos/START2026`).once('value', s => {
@@ -246,12 +258,11 @@
             db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => (c || 0) + 50000);
             showNotify("ADMIN ACTIVE: +50,000 B");
         }
-        else {
-            sndF.play(); showNotify("WRONG CODE", true);
-        }
+        else { sndF.play(); showNotify("WRONG CODE", true); }
         document.getElementById('promo-in').value = '';
     }
 
+    // --- GAME LOGIC ---
     function selectCase(name) {
         document.getElementById('case-selection').style.display = 'none';
         document.getElementById('roulette-screen').style.display = 'flex';
@@ -269,7 +280,11 @@
         track.style.transform = 'translateX(0)';
         track.innerHTML = '';
 
-        const winItem = LOOT[Math.random() > 0.9 ? 2 : (Math.random() > 0.99 ? 3 : Math.floor(Math.random()*2))];
+        const r = Math.random() * 100;
+        let winItem = LOOT[0];
+        if(r > 98) winItem = LOOT[3];
+        else if(r > 90) winItem = LOOT[2];
+        else if(r > 60) winItem = LOOT[1];
 
         for(let i=0; i<60; i++) {
             const item = (i === 50) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
@@ -288,20 +303,18 @@
             db.ref(`users/${auth.currentUser.uid}/inventory`).push(winItem);
             showNotify("WIN: " + winItem.n);
             btn.disabled = false;
-            updateInventoryUI();
         }, 7200);
     }
 
     function updateInventoryUI() {
-        if(!auth.currentUser) return;
         db.ref(`users/${auth.currentUser.uid}/inventory`).on('value', s => {
             const grid = document.getElementById('inv-grid');
             grid.innerHTML = '';
             s.forEach(child => {
                 const item = child.val();
-                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:110px;">
-                    <img src="${item.img}" width="60"><br><small style="font-size:8px">${item.n}</small><br>
-                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:8px; margin-top:5px;">SELL ${item.p}</button>
+                grid.innerHTML += `<div style="background:#111; padding:10px; border-radius:10px; border:1px solid #222; text-align:center; width:100px;">
+                    <img src="${item.img}" width="60"><br><small style="font-size:8px; display:block; margin:5px 0;">${item.n}</small>
+                    <button onclick="sellItem('${child.key}', ${item.p})" style="background:var(--main); border:none; padding:3px 8px; border-radius:3px; font-weight:bold; cursor:pointer; font-size:8px;">SELL ${item.p}</button>
                 </div>`;
             });
         });
@@ -330,6 +343,7 @@
         });
     }
 
+    // Timer for Locked Case
     const unlockDate = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let diff = unlockDate - Date.now();
