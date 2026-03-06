@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@600&display=swap');
-        :root { --main: #00ffaa; --bg: #050508; --card: rgba(255, 255, 255, 0.03); }
+        :root { --main: #00ffaa; --bg: #050508; --card: rgba(255, 255, 255, 0.03); --error: #ff4444; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
@@ -17,19 +17,30 @@
             min-height: 100vh;
         }
         
+        /* NOTIFICATION SYSTEM */
+        #notify-box {
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .notify {
+            background: rgba(0,0,0,0.9); border: 1px solid var(--main); padding: 15px 25px;
+            border-radius: 5px; font-family: 'Orbitron'; font-size: 13px; color: var(--main);
+            box-shadow: 0 0 20px rgba(0,255,170,0.2); animation: slideIn 0.3s ease forwards;
+        }
+        .notify.error { border-color: var(--error); color: var(--error); box-shadow: 0 0 20px rgba(255,68,68,0.2); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
         .header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 50px; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--main);
-            box-shadow: 0 0 20px rgba(0,255,170,0.2);
         }
         .logo { font-family: 'Orbitron'; font-size: 28px; letter-spacing: 2px; color: #fff; text-shadow: 0 0 10px var(--main); }
         .logo span { color: var(--main); }
 
-        .bal-box { background: #111; border: 1px solid var(--main); padding: 10px 25px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); box-shadow: inset 0 0 10px rgba(0,255,170,0.1); }
+        .bal-box { background: #111; border: 1px solid var(--main); padding: 10px 25px; border-radius: 5px; font-family: 'Orbitron'; color: var(--main); }
         
         .container { max-width: 1200px; margin: 40px auto; text-align: center; }
 
-        /* ROULETTE */
         .roulette-container {
             position: relative; width: 100%; max-width: 900px; height: 180px;
             margin: 30px auto; background: #0a0a0c; border: 2px solid #222;
@@ -38,46 +49,41 @@
         .roulette-container::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: var(--main); z-index: 10; transform: translateX(-50%); box-shadow: 0 0 15px var(--main); }
         .track { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 7s cubic-bezier(0.1, 0, 0.05, 1); }
         .track div { min-width: 150px; height: 100%; border-right: 1px solid #111; display: flex; align-items: center; justify-content: center; background: linear-gradient(0deg, rgba(255,255,255,0.02), transparent); }
-        .track div img { width: 100px; transition: 0.3s; }
+        .track div img { width: 100px; }
 
-        /* CASE CARDS */
         .case-card {
             display: inline-block; width: 280px; padding: 20px; background: var(--card);
             border: 1px solid #222; border-radius: 15px; cursor: pointer; transition: 0.3s;
-            margin: 20px; position: relative; overflow: hidden;
+            margin: 20px; position: relative;
         }
-        .case-card:hover { border-color: var(--main); transform: translateY(-5px); background: rgba(0,255,170,0.05); }
-        .case-card img { width: 100%; margin-bottom: 15px; filter: drop-shadow(0 10px 15px #000); }
+        .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
+        .case-card img { width: 100%; margin-bottom: 15px; }
 
-        /* INVENTORY */
         .inventory { margin-top: 50px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; border-top: 1px solid #222; }
         .inv-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; min-height: 100px; }
-        .inv-item { 
-            width: 140px; background: #0d0d0f; border: 1px solid #222; padding: 10px; border-radius: 10px; 
-            font-size: 11px; text-align: center; animation: fadeIn 0.5s ease;
-        }
+        .inv-item { width: 140px; background: #0d0d0f; border: 1px solid #222; padding: 10px; border-radius: 10px; font-size: 11px; text-align: center; }
         .inv-item img { width: 80px; }
-        .sell-btn { background: var(--main); color: #000; border: none; padding: 3px 10px; border-radius: 3px; cursor: pointer; margin-top: 5px; font-weight: bold; }
+        .sell-btn { background: var(--main); color: #000; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-top: 5px; font-weight: bold; }
 
         .btn {
             background: var(--main); color: #000; border: none; padding: 15px 40px;
             font-family: 'Orbitron'; font-size: 16px; border-radius: 5px; cursor: pointer;
-            transition: 0.3s; margin-top: 20px; box-shadow: 0 0 20px rgba(0,255,170,0.3);
+            transition: 0.3s; margin-top: 20px;
         }
-        .btn:hover { letter-spacing: 2px; box-shadow: 0 0 30px var(--main); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .btn:disabled { background: #333; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
+<div id="notify-box"></div>
 <audio id="bg-music" loop src="https://files.catbox.moe/sv6xxw.mp3"></audio>
+<audio id="promo-sound" src="https://files.catbox.moe/0yp9wp.mp3"></audio>
 
 <header class="header">
     <div class="logo">BABY<span>SELL</span></div>
-    <div style="display:flex; gap:20px; align-items:center;">
-        <input type="text" id="promo" placeholder="PROMOCODE" style="background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:5px;">
-        <button onclick="applyPromo()" class="sell-btn" style="padding:8px 15px;">ACTIVATE</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <input type="text" id="promo-in" placeholder="ПРОМОКОД" style="background:#111; border:1px solid #333; color:#fff; padding:8px; border-radius:5px; width: 120px;">
+        <button onclick="applyPromo()" class="sell-btn" style="padding:8px 15px;">OK</button>
         <div class="bal-box"><span id="balance">0</span> B</div>
         <button id="login" class="btn" style="margin:0; padding:10px 20px;" onclick="googleLogin()">LOGIN</button>
     </div>
@@ -90,10 +96,9 @@
             <h3>УЛИЧНЫЕ КОШМАРЫ</h3>
             <p style="color:var(--main)">500 B</p>
         </div>
-        <div class="case-card" style="opacity:0.5; filter:grayscale(1);">
+        <div class="case-card" style="opacity:0.5;">
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h3>НАВЕРНОЕ ПОВЕЗЕТ</h3>
-            <p id="timer">LOCKED</p>
+            <h3 id="timer">LOCKED</h3>
         </div>
     </div>
 
@@ -103,22 +108,21 @@
             <div class="track" id="track"></div>
         </div>
         <button class="btn" id="spin-btn" onclick="spin()">ОТКРЫТЬ КЕЙС</button>
-        <p onclick="location.reload()" style="margin-top:20px; cursor:pointer; color:#555;">← НАЗАД</p>
+        <p onclick="location.reload()" style="margin: 20px; cursor:pointer; color:#555;">← НАЗАД</p>
     </div>
 
     <div class="inventory">
-        <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size:18px; color:var(--main);">ТВОЙ ИНВЕНТАРЬ</h2>
-        <div class="inv-grid" id="inv-grid">
-            </div>
+        <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size:18px; color:var(--main);">ИНВЕНТАРЬ</h2>
+        <div class="inv-grid" id="inv-grid"></div>
     </div>
 </div>
 
 <script>
     const LOOT = [
-        { n: "ГЛОК КАРАМЕЛЬНОЕ ЯБЛОКО", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
-        { n: "USP-S ИЗВИЛИНЫ", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
-        { n: "АКР ТУННЕЛЬНЫЕ ТВАРИ", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
-        { n: "BUTTERFLY | EMERALD", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
+        { n: "ГЛОК", p: 100, img: "https://i.postimg.cc/Hk5Jznr2/Glock.png", w: 60 },
+        { n: "USP-S", p: 666, img: "https://i.postimg.cc/HL5phv0W/aaaaa.png", w: 30 },
+        { n: "AK-47", p: 9999, img: "https://i.postimg.cc/3NW96mG1/AK.png", w: 8 },
+        { n: "BUTTERFLY", p: 50000, img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", w: 2 }
     ];
 
     const firebaseConfig = { 
@@ -131,6 +135,15 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
     let balance = 0;
+
+    function showNotify(text, isError = false) {
+        const box = document.getElementById('notify-box');
+        const n = document.createElement('div');
+        n.className = 'notify' + (isError ? ' error' : '');
+        n.innerText = text;
+        box.appendChild(n);
+        setTimeout(() => n.remove(), 4000);
+    }
 
     auth.onAuthStateChanged(user => {
         if (user) {
@@ -147,11 +160,28 @@
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
     function applyPromo() {
-        const code = document.getElementById('promo').value;
-        if(code === "ADMIN2027" && auth.currentUser) {
-            db.ref('users/' + auth.currentUser.uid + '/balance').transaction(c => (c || 0) + 50000);
-            alert("ПРОМОКОД АКТИВИРОВАН! +50,000 B");
+        if(!auth.currentUser) return showNotify("СНАЧАЛА ВОЙДИ!", true);
+        const code = document.getElementById('promo-in').value.trim().toUpperCase();
+        const uId = auth.currentUser.uid;
+
+        if(code === "START2026") {
+            db.ref(`users/${uId}/promos/START2026`).once('value', s => {
+                if(s.exists()) {
+                    showNotify("ПРОМО УЖЕ ИСПОЛЬЗОВАНО!", true);
+                } else {
+                    db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 100);
+                    db.ref(`users/${uId}/promos/START2026`).set(true);
+                    document.getElementById('promo-sound').play();
+                    showNotify("АКТИВИРОВАНО! +100 B");
+                }
+            });
+        } else if(code === "ADMIN2027") {
+            db.ref(`users/${uId}/balance`).transaction(c => (c || 0) + 50000);
+            showNotify("ADMIN POWER! +50,000 B");
+        } else {
+            showNotify("НЕВЕРНЫЙ КОД", true);
         }
+        document.getElementById('promo-in').value = '';
     }
 
     function selectCase(name) {
@@ -161,29 +191,25 @@
     }
 
     function spin() {
-        if (balance < 500) return alert("Мало бабок!");
-        const spinBtn = document.getElementById('spin-btn');
-        spinBtn.disabled = true;
+        if (balance < 500) return showNotify("НЕДОСТАТОЧНО СРЕДСТВ", true);
+        const btn = document.getElementById('spin-btn');
+        btn.disabled = true;
 
-        db.ref('users/' + auth.currentUser.uid + '/balance').transaction(c => c - 500);
+        db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c - 500);
 
         const track = document.getElementById('track');
         track.style.transition = 'none';
         track.style.transform = 'translateX(0)';
         track.innerHTML = '';
 
-        const getWin = () => {
+        const winItem = (() => {
             let r = Math.random() * 100, s = 0;
             for(let l of LOOT) { s += l.w; if(r <= s) return l; }
             return LOOT[0];
-        };
+        })();
 
-        const winItem = getWin();
-        const count = 50;
-        const winIdx = 40;
-
-        for(let i=0; i<count; i++) {
-            const item = (i === winIdx) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
+        for(let i=0; i<50; i++) {
+            const item = (i === 40) ? winItem : LOOT[Math.floor(Math.random()*LOOT.length)];
             const d = document.createElement('div');
             d.innerHTML = `<img src="${item.img}">`;
             track.appendChild(d);
@@ -191,21 +217,21 @@
 
         setTimeout(() => {
             track.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0.05, 1)';
-            const x = (winIdx * 150) - (document.getElementById('roulette').offsetWidth / 2) + 75;
+            const x = (40 * 150) - (document.getElementById('roulette').offsetWidth / 2) + 75;
             track.style.transform = `translateX(-${x}px)`;
         }, 50);
 
         setTimeout(() => {
-            db.ref('users/' + auth.currentUser.uid + '/inventory').push(winItem);
-            alert("ВЫПАЛО: " + winItem.n);
-            spinBtn.disabled = false;
+            db.ref(`users/${auth.currentUser.uid}/inventory`).push(winItem);
+            showNotify("ВЫПАЛО: " + winItem.n);
+            btn.disabled = false;
             updateInventoryUI();
         }, 7200);
     }
 
     function updateInventoryUI() {
         if(!auth.currentUser) return;
-        db.ref('users/' + auth.currentUser.uid + '/inventory').once('value', s => {
+        db.ref(`users/${auth.currentUser.uid}/inventory`).once('value', s => {
             const grid = document.getElementById('inv-grid');
             grid.innerHTML = '';
             s.forEach(child => {
@@ -219,17 +245,18 @@
     }
 
     function sellItem(key, price) {
-        db.ref('users/' + auth.currentUser.uid + '/inventory/' + key).remove();
-        db.ref('users/' + auth.currentUser.uid + '/balance').transaction(c => c + price);
+        db.ref(`users/${auth.currentUser.uid}/inventory/${key}`).remove();
+        db.ref(`users/${auth.currentUser.uid}/balance`).transaction(c => c + price);
         updateInventoryUI();
+        showNotify("ПРОДАНО ЗА " + price + " B");
     }
 
-    // Timer
+    // Timer (Lock)
     const end = Date.now() + (13*3600 + 19*60)*1000;
     setInterval(() => {
         let d = end - Date.now();
         let h = Math.floor(d/3600000), m = Math.floor((d%3600000)/60000), s = Math.floor((d%60000)/1000);
-        document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+        document.getElementById('timer').innerText = `LOCKED ${h}:${m}:${s}`;
     }, 1000);
 </script>
 </body>
