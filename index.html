@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ULTIMATE EDITION</title>
+    <title>BABYSELL - CLASSIC REBORN</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -11,115 +11,54 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
         
         :root { 
-            --main: #00ffaa; 
-            --bg: #030305; 
-            --glass: rgba(255, 255, 255, 0.03); 
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --error: #ff3366; 
-            --glow: 0 0 20px rgba(0, 255, 170, 0.4);
+            --main: #00ffaa; --bg: #050508; --glass: rgba(255, 255, 255, 0.03); 
+            --error: #ff3366; --rare: #4b69ff; --mythical: #8847ff; --legendary: #eb4b4b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            overflow-x: hidden; min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(0, 255, 170, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 90% 90%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
-        }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* --- ANIMATIONS --- */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes glowPulse { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes caseShake { 0% { transform: scale(1); } 25% { transform: scale(1.05) rotate(2deg); } 50% { transform: scale(1.05) rotate(-2deg); } 100% { transform: scale(1); } }
+        /* --- UI ELEMENTS --- */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0,0,0,0.9); border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
+        .balance-card { background: #000; border: 1px solid var(--main); padding: 8px 20px; border-radius: 8px; font-family: 'Orbitron'; box-shadow: 0 0 15px rgba(0,255,170,0.1); }
+        .btn { background: var(--main); color: #000; border: none; padding: 12px 25px; border-radius: 5px; font-family: 'Orbitron'; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:hover:not(:disabled) { box-shadow: 0 0 15px var(--main); transform: translateY(-2px); }
+        .btn:disabled { background: #222; color: #444; cursor: not-allowed; }
 
-        /* --- LAYOUT --- */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .user-block { display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--main); padding: 2px; transition: 0.3s; }
-        .avatar:hover { transform: rotate(15deg); }
-
-        .balance-card {
-            background: var(--glass); border: 1px solid var(--main);
-            padding: 8px 20px; border-radius: 12px; font-family: 'Orbitron';
-            animation: glowPulse 3s infinite;
-        }
-
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; display: grid; grid-template-columns: 250px 1fr; gap: 30px; }
-
-        /* --- SIDEBAR NAV --- */
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 220px 1fr; gap: 30px; }
         .sidebar { display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            color: #888; padding: 15px; border-radius: 12px; cursor: pointer;
-            font-family: 'Orbitron'; font-size: 12px; text-align: left; transition: 0.3s;
-        }
-        .nav-btn:hover { background: rgba(0, 255, 170, 0.1); color: #fff; border-color: var(--main); }
-        .nav-btn.active { background: var(--main); color: #000; font-weight: bold; box-shadow: var(--glow); }
+        .nav-btn { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); color: #777; padding: 15px; border-radius: 10px; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; text-align: left; transition: 0.3s; }
+        .nav-btn.active { background: var(--main); color: #000; font-weight: bold; }
 
-        /* --- MAIN CONTENT --- */
-        .content-area { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px; padding: 30px; backdrop-filter: blur(5px); position: relative; }
-        .page { display: none; animation: slideIn 0.4s ease-out; }
+        .page { display: none; animation: fadeIn 0.3s forwards; }
         .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- CAT CLICKER --- */
-        .cat-container { text-align: center; }
-        .main-cat {
-            width: 250px; cursor: pointer; transition: 0.1s;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
-            animation: float 4s ease-in-out infinite;
-        }
-        .main-cat:active { transform: scale(0.92); filter: brightness(1.2); }
+        /* --- CASES (MAIN MENU) --- */
+        .case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .case-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .case-card:hover { border-color: var(--main); transform: scale(1.02); background: rgba(0,255,170,0.03); }
+        .case-card img { width: 100%; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
 
-        .energy-bar {
-            width: 100%; max-width: 400px; height: 12px; background: #111;
-            border-radius: 20px; margin: 20px auto; border: 1px solid #333; overflow: hidden;
-        }
-        #energy-fill { height: 100%; background: linear-gradient(90deg, var(--main), #008855); width: 100%; transition: 0.3s; }
+        /* --- CAT MENU + UPGRADES --- */
+        .cat-layout { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+        .cat-img { width: 220px; cursor: pointer; transition: 0.05s; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
+        .cat-img:active { transform: scale(0.9); }
+        .energy-box { width: 300px; height: 15px; background: #111; border: 1px solid var(--main); border-radius: 10px; overflow: hidden; position: relative; }
+        #energy-fill { width: 100%; height: 100%; background: var(--main); transition: 0.2s; }
+        .upgrade-shelf { display: flex; gap: 15px; margin-top: 20px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border: 1px solid #222; }
+        .upgrade-item { text-align: center; padding: 10px; }
 
-        /* --- CASES --- */
-        .case-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .case-item {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            padding: 20px; border-radius: 20px; cursor: pointer; transition: 0.3s;
-        }
-        .case-item:hover { transform: translateY(-5px); border-color: var(--main); background: rgba(0,255,170,0.05); }
-        .case-item img { width: 100%; transition: 0.5s; }
-        .case-item:active img { animation: caseShake 0.5s; }
+        /* --- ROULETTE --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; }
+        .roulette-wrapper { position: relative; width: 100%; max-width: 700px; height: 150px; background: #080808; border: 2px solid #222; margin: 30px 0; overflow: hidden; border-radius: 10px; }
+        .roulette-line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 10; }
+        .strip { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1); }
+        .item-box { min-width: 130px; height: 100%; border-right: 1px solid #111; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0c0c0e; }
+        .item-box img { width: 70px; }
 
-        /* --- BUTTONS & INPUTS --- */
-        .btn {
-            background: var(--main); color: #000; border: none; padding: 12px 25px;
-            border-radius: 10px; font-family: 'Orbitron'; font-weight: bold;
-            cursor: pointer; transition: 0.3s; text-transform: uppercase;
-        }
-        .btn:hover { box-shadow: var(--glow); transform: scale(1.05); }
-        
-        .cyber-input {
-            background: #000; border: 1px solid #333; color: #fff; padding: 12px;
-            border-radius: 10px; font-family: 'Orbitron'; outline: none; transition: 0.3s;
-        }
-        .cyber-input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.2); }
-
-        /* --- NOTIFICATIONS --- */
-        #notif-wrap { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .notif {
-            background: rgba(0,0,0,0.9); border-left: 4px solid var(--main);
-            padding: 15px 25px; margin-top: 10px; border-radius: 8px;
-            font-family: 'Orbitron'; font-size: 12px; animation: slideIn 0.3s forwards;
-            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .pop-text { position: absolute; font-family: 'Orbitron'; font-weight: bold; pointer-events: none; animation: popUp 0.8s forwards; color: var(--main); }
-        @keyframes popUp { 0% { opacity: 1; } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
+        #notif-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 3000; }
+        .notif { background: #000; border: 1px solid var(--main); padding: 12px 20px; margin-top: 10px; font-family: 'Orbitron'; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -127,85 +66,77 @@
 <div id="notif-wrap"></div>
 
 <header class="header">
-    <div class="user-block">
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic" class="avatar">
-        <div>
-            <div id="u-name" style="font-family:'Orbitron'; font-size:12px;">GUEST_SYSTEM</div>
-            <button onclick="logout()" style="background:none; border:none; color:var(--error); font-size:10px; cursor:pointer;">[ TERMINATE SESSION ]</button>
+    <div style="display:flex; align-items:center; gap:12px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic" style="width:40px; border-radius:5px; border:1px solid var(--main);">
+        <div style="line-height:1;">
+            <span id="u-name" style="font-family:'Orbitron'; font-size:12px; display:block;">GUEST_USER</span>
+            <button onclick="logout()" style="background:none; border:none; color:var(--error); cursor:pointer; font-size:9px;">[ LOGOUT ]</button>
         </div>
     </div>
-    
-    <div id="auth-section">
-        <button class="btn" style="padding: 8px 15px; font-size: 10px;" onclick="googleLogin()">INIT LOGIN</button>
-    </div>
-
-    <div class="balance-card">
-        <span id="balance">0</span> <span style="font-size: 10px; color: var(--main);">B</span>
-    </div>
+    <div class="balance-card"><span id="balance">0</span> <span style="color:var(--main); font-size:10px;">B</span></div>
 </header>
 
 <div class="container">
     <aside class="sidebar">
-        <button class="nav-btn active" onclick="nav('cat')">NEURAL CAT</button>
-        <button class="nav-btn" onclick="nav('cases')">BLACK MARKET</button>
-        <button class="nav-btn" onclick="nav('store')">AUGMENTATIONS</button>
+        <button class="nav-btn active" onclick="nav('cases')">MARKET (CASES)</button>
+        <button class="nav-btn" onclick="nav('cat')">NEURAL CAT</button>
         <button class="nav-btn" onclick="nav('promo')">DATA CODES</button>
-        <button class="nav-btn" onclick="nav('top')">GLOBAL TOP</button>
+        <button class="nav-btn" onclick="googleLogin()" id="login-btn">LOGIN SYSTEM</button>
     </aside>
 
-    <main class="content-area">
-        <section id="p-cat" class="page active">
-            <div class="cat-container">
-                <h1 style="font-family:'Orbitron'; margin-bottom: 5px;">CAT_OS v4.0</h1>
-                <p style="color:#555; font-size:12px; margin-bottom: 30px;">PROBABILITY OF PROFIT: 0.0001%</p>
-                
-                <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png">
-                
-                <div class="energy-bar"><div id="energy-fill"></div></div>
-                <div style="font-family:'Orbitron'; font-size:12px;">SYSTEM_ENERGY: <span id="energy-stat">100</span>%</div>
-            </div>
-        </section>
-
-        <section id="p-cases" class="page">
-            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">RESTRICTED CASES</h2>
+    <main>
+        <section id="p-cases" class="page active">
+            <h2 style="font-family:'Orbitron'; margin-bottom:20px; font-size:18px; color:var(--main);">OPERATIONAL CASES</h2>
             <div class="case-grid">
-                <div class="case-item" onclick="openCase('STREETS', 500)">
+                <div class="case-card" onclick="openCaseModal()">
                     <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-                    <div style="margin-top:15px; font-family:'Orbitron';">STREET_NIGHTMARE</div>
-                    <div style="color:var(--main);">500 B</div>
+                    <h3 style="font-family:'Orbitron'; font-size:14px; margin-top:10px;">STREET NIGHTMARE</h3>
+                    <p style="color:var(--main); font-size:14px;">500 B</p>
                 </div>
             </div>
         </section>
 
-        <section id="p-store" class="page">
-            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">SYSTEM UPGRADES</h2>
-            <div class="case-grid">
-                <div class="case-item" id="boost-card">
-                    <h3 style="font-family:'Orbitron';">ENERGY_CORE X2</h3>
-                    <p style="font-size:11px; color:#666; margin:10px 0;">Permanent 2x energy regeneration speed.</p>
-                    <div style="color:var(--main); margin-bottom:15px;">5,000 B</div>
-                    <button class="btn" style="width:100%" onclick="buyBoost()">INSTALL</button>
+        <section id="p-cat" class="page">
+            <div class="cat-layout">
+                <h2 style="font-family:'Orbitron'; color:var(--main);">CAT FARMER CORE</h2>
+                <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png" class="cat-img" onclick="mine(event)">
+                
+                <div class="energy-box"><div id="energy-fill"></div></div>
+                <div style="font-family:'Orbitron'; font-size:12px;">ENERGY: <span id="e-val">100</span>%</div>
+
+                <div class="upgrade-shelf">
+                    <div class="upgrade-item">
+                        <div style="font-family:'Orbitron'; font-size:11px; margin-bottom:5px;">ENERGY REGEN X2</div>
+                        <button class="btn" id="buy-x2" onclick="buyBoost()" style="font-size:10px; padding:8px 15px;">5,000 B</button>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="p-promo" class="page">
-            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">ACCESS CODES</h2>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="promo-in" class="cyber-input" placeholder="HEX_CODE...">
-                <button class="btn" onclick="claim()">EXECUTE</button>
-            </div>
-        </section>
-
-        <section id="p-top" class="page">
-            <h2 style="font-family:'Orbitron'; margin-bottom: 25px;">GLOBAL_LEADERBOARD</h2>
-            <div id="leader-list"></div>
+            <h2 style="font-family:'Orbitron'; margin-bottom:15px;">ENTER VOUCHER</h2>
+            <input type="text" id="promo-in" placeholder="CODE..." style="background:#000; border:1px solid #333; color:#fff; padding:12px; font-family:'Orbitron'; outline:none; border-radius:5px;">
+            <button class="btn" onclick="redeem()">REDEEM</button>
         </section>
     </main>
 </div>
 
+<div id="case-modal" class="modal">
+    <div style="width:100%; text-align:center;">
+        <h2 style="font-family:'Orbitron';">STREET NIGHTMARE</h2>
+        <div class="roulette-wrapper">
+            <div class="roulette-line"></div>
+            <div id="strip" class="strip"></div>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn" id="spin-btn" onclick="startSpin()">OPEN CASE</button>
+            <button class="btn" style="background:#222; color:#fff;" onclick="closeModal()">CANCEL</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // --- FIREBASE INITIALIZATION ---
+    // --- FIREBASE ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -216,128 +147,114 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    let bal = 0, nrg = 100, x2 = false;
+    let balance = 0, energy = 100, hasX2 = false;
 
-    // --- CORE AUTH ---
     auth.onAuthStateChanged(user => {
-        if (user) {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('u-pic').src = user.photoURL;
+        if(user) {
             document.getElementById('u-name').innerText = user.displayName.toUpperCase();
-            
-            const ref = db.ref('users/' + user.uid);
-            ref.on('value', s => {
-                const data = s.val() || {};
-                bal = data.balance || 0;
-                x2 = data.boosts?.energy_x2 || false;
-                document.getElementById('balance').innerText = bal.toLocaleString();
-                updateStoreUI();
+            document.getElementById('u-pic').src = user.photoURL;
+            document.getElementById('login-btn').style.display = 'none';
+            db.ref('users/'+user.uid).on('value', s => {
+                const d = s.val() || {};
+                balance = d.balance || 0;
+                hasX2 = d.boosts?.energy_x2 || false;
+                document.getElementById('balance').innerText = balance.toLocaleString();
+                updateUpgrades();
             });
-            loadTop();
-        } else {
-            document.getElementById('auth-section').style.display = 'block';
         }
     });
 
     function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function logout() { auth.signOut().then(() => location.reload()); }
 
-    // --- NAVIGATION ---
     function nav(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('p-' + id).classList.add('active');
+        document.getElementById('p-'+id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
 
-    // --- GAME LOGIC ---
-    function klick(e) {
-        if(!auth.currentUser) return notify("AUTH_REQUIRED: Initialize login.");
-        if(nrg < 1) return notify("ERROR: System energy depleted.", true);
-
-        nrg -= 1;
-        updateNrg();
-        pop(e.clientX, e.clientY, "MEOW_INIT");
+    // --- CAT LOGIC ---
+    function mine(e) {
+        if(!auth.currentUser) return notify("PLEASE LOGIN");
+        if(energy < 1) return notify("OUT OF ENERGY", true);
+        energy--;
+        updateEnergyUI();
+        notify("MEOW!");
     }
 
-    function updateNrg() {
-        document.getElementById('energy-fill').style.width = nrg + "%";
-        document.getElementById('energy-stat').innerText = Math.floor(nrg);
+    function updateEnergyUI() {
+        document.getElementById('energy-fill').style.width = energy + "%";
+        document.getElementById('e-val').innerText = Math.floor(energy);
     }
 
     setInterval(() => {
-        if(nrg < 100) {
-            nrg = Math.min(100, nrg + (x2 ? 1.0 : 0.5));
-            updateNrg();
+        if(energy < 100) {
+            energy = Math.min(100, energy + (hasX2 ? 1.0 : 0.5));
+            updateEnergyUI();
         }
     }, 1000);
 
     function buyBoost() {
-        if(bal < 5000) return notify("INSUFFICIENT_CREDITS", true);
-        db.ref('users/'+auth.currentUser.uid).update({
-            balance: bal - 5000,
-            "boosts/energy_x2": true
-        }).then(() => notify("CORE_UPGRADE: Energy recovery doubled."));
+        if(balance < 5000) return notify("NOT ENOUGH BALANCE", true);
+        db.ref('users/'+auth.currentUser.uid).update({ balance: balance - 5000, "boosts/energy_x2": true });
     }
 
-    function openCase(name, price) {
-        if(bal < price) return notify("INSUFFICIENT_CREDITS", true);
-        db.ref('users/'+auth.currentUser.uid+'/balance').set(bal - price)
-          .then(() => notify(`OPENING_${name}: Processing...`));
+    function updateUpgrades() {
+        const b = document.getElementById('buy-x2');
+        if(hasX2) { b.innerText = "OWNED"; b.disabled = true; }
     }
 
-    function claim() {
-        const c = document.getElementById('promo-in').value.toUpperCase();
-        if(c === "CYBER") {
-            db.ref('users/'+auth.currentUser.uid+'/balance').set(bal + 2500);
-            notify("DATA_MINED: +2,500 Credits added.");
-            document.getElementById('promo-in').value = "";
-        } else {
-            notify("INVALID_ACCESS_CODE", true);
+    // --- ROULETTE LOGIC ---
+    function openCaseModal() {
+        document.getElementById('case-modal').style.display = 'flex';
+        const strip = document.getElementById('strip');
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0)';
+        strip.innerHTML = "";
+        for(let i=0; i<60; i++) {
+            strip.innerHTML += `<div class="item-box"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>`;
         }
     }
 
-    // --- UI HELPERS ---
+    function closeModal() { document.getElementById('case-modal').style.display = 'none'; }
+
+    function startSpin() {
+        if(balance < 500) return notify("NOT ENOUGH B", true);
+        const btn = document.getElementById('spin-btn');
+        btn.disabled = true;
+        
+        db.ref('users/'+auth.currentUser.uid+'/balance').set(balance - 500);
+
+        const strip = document.getElementById('strip');
+        const targetX = (50 * 131) - (700 / 2) + Math.random() * 100;
+        strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)';
+        strip.style.transform = `translateX(-${targetX}px)`;
+
+        setTimeout(() => {
+            notify("ITEM RECEIVED!");
+            btn.disabled = false;
+        }, 6500);
+    }
+
+    function redeem() {
+        const c = document.getElementById('promo-in').value.toUpperCase();
+        if(c === "WELCOME") {
+            db.ref('users/'+auth.currentUser.uid+'/balance').set(balance + 1000);
+            notify("PROMO CLAIMED!");
+            document.getElementById('promo-in').value = "";
+        }
+    }
+
     function notify(m, err=false) {
         const w = document.getElementById('notif-wrap');
         const n = document.createElement('div');
         n.className = 'notif';
         if(err) n.style.borderColor = 'var(--error)';
-        n.innerText = `> ${m}`;
+        n.innerText = m;
         w.appendChild(n);
-        setTimeout(() => n.remove(), 4000);
-    }
-
-    function pop(x, y, t) {
-        const d = document.createElement('div');
-        d.className = 'pop-text';
-        d.style.left = x + 'px'; d.style.top = y + 'px';
-        d.innerText = t;
-        document.body.appendChild(d);
-        setTimeout(() => d.remove(), 800);
-    }
-
-    function updateStoreUI() {
-        const b = document.getElementById('boost-card');
-        if(x2) b.style.opacity = "0.5", b.querySelector('button').innerText = "INSTALLED", b.querySelector('button').disabled = true;
-    }
-
-    function loadTop() {
-        db.ref('users').orderByChild('balance').limitToLast(5).on('value', s => {
-            const l = document.getElementById('leader-list');
-            l.innerHTML = "";
-            let arr = [];
-            s.forEach(c => arr.push(c.val()));
-            arr.reverse().forEach((u, i) => {
-                l.innerHTML += `<div style="padding:15px; border-bottom:1px solid #111; display:flex; justify-content:space-between;">
-                    <span>#${i+1} ${u.name || 'USER'}</span>
-                    <span style="color:var(--main)">${(u.balance || 0).toLocaleString()} B</span>
-                </div>`;
-            });
-        });
+        setTimeout(() => n.remove(), 3000);
     }
 </script>
 </body>
 </html>
-
-
