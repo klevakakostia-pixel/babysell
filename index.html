@@ -12,7 +12,7 @@
         
         :root { 
             --main: #00ffaa; --bg: #08080a; --accent: #ff2d55;
-            --promo-ok: #00ffaa; --promo-err: #ff2d55;
+            --rarity-knife: #eb4b4b; --rarity-ak: #d32ee6; --rarity-usp: #00ffaa; --rarity-glock: #4b69ff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +34,7 @@
         @keyframes onlineUserFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Анімація помилки промокоду */
-        @keyframes shakeError { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* Анімація успішного продажу */
         @keyframes sellSuccess { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); background: var(--main); color: #000; } 100% { transform: scale(0); opacity: 0; } }
@@ -59,16 +59,17 @@
         .page { display: none; padding: 20px; animation: fadeInUp 0.6s ease-out; }
         .page.active { display: block; }
 
-        /* EVENT BANNER */
+        /* EVENT BANNER WITH VIGNETTE (Виправлено) */
         .event-mini-banner {
-            max-width: 1000px; margin: 0 auto 30px; border-radius: 12px; height: 180px;
+            max-width: 1000px; /* Трохи ширше */
+            margin: 0 auto 30px; border-radius: 12px; height: 180px;
             background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
             display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
             border: 1px solid #1a1a1a; position: relative; overflow: hidden;
         }
         .event-mini-banner::after {
             content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle, transparent 15%, rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
             pointer-events: none;
         }
 
@@ -109,8 +110,8 @@
             font-family: 'Orbitron'; margin-bottom: 15px; outline: none; transition: 0.3s;
         }
         .promo-input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.2); }
-        .promo-input.error { animation: shakeError 0.4s ease-in-out; border-color: var(--promo-err); color: var(--promo-err); }
-        .promo-input.success { border-color: var(--promo-ok); box-shadow: 0 0 15px var(--promo-ok); }
+        .promo-input.error { animation: shake 0.4s ease-in-out; border-color: #ff3355; color: #ff3355; }
+        .promo-input.success { border-color: var(--main); box-shadow: 0 0 15px var(--main); }
 
         /* SELL BUTTON ANIMATION */
         .btn-sell-confirm { background: var(--main); color: #000; border: none; padding: 8px 25px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; font-size: 11px; transition: 0.3s; }
@@ -336,7 +337,6 @@
         if(balance < 1000) return;
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-        
         let r = Math.random()*100, win;
         if(r <= 0.2) win = SKINS[0]; else if(r <= 3) win = SKINS[1]; else if(r <= 35) win = SKINS[2]; else win = SKINS[3];
         
@@ -351,7 +351,7 @@
             const status = document.getElementById('m-status');
             status.innerText = "WON: " + win.name;
             status.style.color = win.color;
-            db.ref('users/'+user.uid+'/inventory').push(win);
+            db.ref('users/'+u.uid+'/inventory').push(win);
             toast("New item: " + win.name);
         }, 6200);
     }
