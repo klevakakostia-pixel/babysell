@@ -144,7 +144,10 @@
 </div>
 
 <div id="page-inventory" class="page">
-    <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: var(--main);">MY ITEMS</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="font-family:'Orbitron'; color: var(--main);">MY ITEMS</h2>
+        <button class="btn-nav" style="background:var(--accent); color:#fff; border:none;" onclick="sellAllItems()">SELL ALL</button>
+    </div>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
@@ -190,8 +193,10 @@
         </div>
 
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">GENERATE ITEM:</p>
-        <div class="admin-grid" id="admin-item-list">
-            </div>
+        <div class="admin-grid" id="admin-item-list"></div>
+
+        <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CLEANUP:</p>
+        <button class="btn-nav" style="width:100%; margin-bottom:15px; border-color:var(--accent);" onclick="sellAllItems()">WIPE INVENTORY (SELL ALL)</button>
 
         <button class="btn-nav" style="width:100%;" onclick="closeAdminPanel()">EXIT</button>
     </div>
@@ -220,7 +225,7 @@
     ];
 
     const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
-    let user = null, balance = 0;
+    let user = null, balance = 0, currentInventory = {};
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -232,14 +237,13 @@
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
             db.ref('users/'+u.uid+'/inventory').on('value', s => {
-                const inv = s.val() || {};
-                document.getElementById('inv-count').innerText = Object.keys(inv).length;
-                renderInventory(inv);
+                currentInventory = s.val() || {};
+                document.getElementById('inv-count').innerText = Object.keys(currentInventory).length;
+                renderInventory(currentInventory);
             });
         }
     });
 
-    // Наповнення кнопок адмінки
     const admList = document.getElementById('admin-item-list');
     SKINS.forEach((s, idx) => {
         admList.innerHTML += `<button class="btn-nav" onclick="giveItem(${idx})" style="font-size:8px;">${s.name.toUpperCase()}</button>`;
@@ -282,21 +286,44 @@
         setTimeout(() => {
             document.getElementById('m-status').innerText = "WON: " + win.name;
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("New Skin: " + win.name);
+            toast("Won: " + win.name);
         }, 6200);
     }
 
     function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
     function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+    
     function activatePromo() {
         if(!user) return toast("Login first!");
         const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
         if(PROMOS[code]) {
             db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
                 if(snap.exists()) { toast("Used!"); }
-                else { db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); db.ref('users/'+user.uid+'/used_promos/'+code).set(true); toast("Success!"); closePromoModal(); }
+                else { 
+                    db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); 
+                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true); 
+                    toast("Success!"); closePromoModal(); 
+                }
             });
         } else { toast("Invalid!"); }
+    }
+
+    // --- SELL ALL FUNCTION ---
+    function sellAllItems() {
+        const count = Object.keys(currentInventory).length;
+        if(count === 0) return toast("Inventory is empty");
+        
+        let totalGain = 0;
+        Object.values(currentInventory).forEach(item => {
+            totalGain += (item.price || 0);
+        });
+
+        if(confirm(`Sell all ${count} items for ${totalGain} B?`)) {
+            db.ref('users/'+user.uid+'/inventory').remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + totalGain);
+            toast(`Sold all! +${totalGain} B`);
+            if(document.getElementById('admin-panel-modal').style.display === 'flex') closeAdminPanel();
+        }
     }
 
     // ADMIN ACTIONS
@@ -309,7 +336,7 @@
     }
     function closeAdminPanel() { document.getElementById('admin-panel-modal').style.display = 'none'; }
     function addMoney(a) { if(user) db.ref('users/'+user.uid+'/balance').set(balance + a); toast("Coins injected"); }
-    function resetBalance() { if(user) db.ref('users/'+user.uid+'/balance').set(0); toast("Wiped"); }
+    function resetBalance() { if(user && confirm("Reset balance to 0?")) db.ref('users/'+user.uid+'/balance').set(0); toast("Wiped"); }
     function giveItem(idx) {
         if(!user) return;
         db.ref('users/'+user.uid+'/inventory').push(SKINS[idx]);
