@@ -185,19 +185,15 @@
 <div id="admin-panel-modal" class="modal">
     <div class="modal-box" style="max-width: 450px; border-color: var(--main);">
         <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">SYSTEM TERMINAL</h2>
-        
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CURRENCY CONTROL:</p>
         <div class="admin-grid">
             <button class="btn-nav" onclick="addMoney(100000)">+100k B</button>
             <button class="btn-nav" style="background:var(--accent); color:#fff;" onclick="resetBalance()">RESET BAL</button>
         </div>
-
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">GENERATE ITEM:</p>
         <div class="admin-grid" id="admin-item-list"></div>
-
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CLEANUP:</p>
         <button class="btn-nav" style="width:100%; margin-bottom:15px; border-color:var(--accent);" onclick="sellAllItems()">WIPE INVENTORY (SELL ALL)</button>
-
         <button class="btn-nav" style="width:100%;" onclick="closeAdminPanel()">EXIT</button>
     </div>
 </div>
@@ -207,6 +203,10 @@
 </footer>
 
 <script>
+    // --- ЗВУКИ ---
+    const sndOk = new Audio('https://files.catbox.moe/5nmsv9.mp3'); // Успіх
+    const sndErr = new Audio('https://files.catbox.moe/czo3o9.mp3'); // Помилка
+
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -284,9 +284,10 @@
         strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
         strip.style.transform = `translateX(-${pos}px)`;
         setTimeout(() => {
+            sndOk.play();
             document.getElementById('m-status').innerText = "WON: " + win.name;
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("Won: " + win.name);
+            toast("New Skin: " + win.name);
         }, 6200);
     }
 
@@ -298,30 +299,37 @@
         const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
         if(PROMOS[code]) {
             db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
-                if(snap.exists()) { toast("Used!"); }
+                if(snap.exists()) { 
+                    sndErr.play(); 
+                    input.classList.add('error');
+                    setTimeout(() => input.classList.remove('error'), 400);
+                    toast("Used!"); 
+                }
                 else { 
+                    sndOk.play();
                     db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); 
                     db.ref('users/'+user.uid+'/used_promos/'+code).set(true); 
                     toast("Success!"); closePromoModal(); 
                 }
             });
-        } else { toast("Invalid!"); }
+        } else { 
+            sndErr.play();
+            input.classList.add('error');
+            setTimeout(() => input.classList.remove('error'), 400);
+            toast("Invalid!"); 
+        }
     }
 
-    // --- SELL ALL FUNCTION ---
     function sellAllItems() {
         const count = Object.keys(currentInventory).length;
         if(count === 0) return toast("Inventory is empty");
-        
         let totalGain = 0;
-        Object.values(currentInventory).forEach(item => {
-            totalGain += (item.price || 0);
-        });
-
-        if(confirm(`Sell all ${count} items for ${totalGain} B?`)) {
+        Object.values(currentInventory).forEach(item => totalGain += (item.price || 0));
+        if(confirm(`Sell all for ${totalGain} B?`)) {
+            sndOk.play();
             db.ref('users/'+user.uid+'/inventory').remove();
             db.ref('users/'+user.uid+'/balance').set(balance + totalGain);
-            toast(`Sold all! +${totalGain} B`);
+            toast(`Sold! +${totalGain} B`);
             if(document.getElementById('admin-panel-modal').style.display === 'flex') closeAdminPanel();
         }
     }
@@ -331,14 +339,16 @@
     function closeAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'none'; }
     function checkAdminAuth() {
         if(document.getElementById('adm-login').value === "BabyIceFace666" && document.getElementById('adm-pass').value === "kov6alex666") {
+            sndOk.play();
             closeAdminAuth(); document.getElementById('admin-panel-modal').style.display = 'flex'; toast("SYSTEM UNLOCKED");
-        } else { toast("DENIED"); }
+        } else { sndErr.play(); toast("DENIED"); }
     }
     function closeAdminPanel() { document.getElementById('admin-panel-modal').style.display = 'none'; }
-    function addMoney(a) { if(user) db.ref('users/'+user.uid+'/balance').set(balance + a); toast("Coins injected"); }
-    function resetBalance() { if(user && confirm("Reset balance to 0?")) db.ref('users/'+user.uid+'/balance').set(0); toast("Wiped"); }
+    function addMoney(a) { if(user) { sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + a); toast("Injected"); } }
+    function resetBalance() { if(user && confirm("Reset?")) { sndErr.play(); db.ref('users/'+user.uid+'/balance').set(0); toast("Wiped"); } }
     function giveItem(idx) {
         if(!user) return;
+        sndOk.play();
         db.ref('users/'+user.uid+'/inventory').push(SKINS[idx]);
         toast("Added: " + SKINS[idx].name);
     }
@@ -355,7 +365,14 @@
         });
     }
 
-    function sellItem(k, p) { if(confirm("Sell for " + p + " B?")) { db.ref('users/'+user.uid+'/inventory/'+k).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); toast("Sold!"); } }
+    function sellItem(k, p) { 
+        if(confirm("Sell?")) { 
+            sndOk.play();
+            db.ref('users/'+user.uid+'/inventory/'+k).remove(); 
+            db.ref('users/'+user.uid+'/balance').set(balance + p); 
+            toast("Sold!"); 
+        } 
+    }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function mineCat() { toast("Meow! Energy +1"); }
     function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; document.getElementById('m-status').innerText = "ROLLING..."; }
