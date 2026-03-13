@@ -89,8 +89,17 @@
         .promo-input.error { animation: shake 0.3s; border-color: var(--promo-err); }
 
         /* ADMIN SECTION */
-        .admin-footer { margin-top: 100px; padding: 40px; text-align: center; border-top: 1px solid #111; }
-        .btn-admin-open { background: none; border: 1px dashed #222; color: #222; padding: 8px 20px; font-family: 'Orbitron'; font-size: 9px; cursor: pointer; letter-spacing: 2px; }
+        .admin-footer { margin-top: 100px; padding: 60px 40px; text-align: center; border-top: 1px solid #111; }
+        .admin-trigger-img { 
+            width: 180px; 
+            cursor: pointer; 
+            transition: 0.4s; 
+            filter: grayscale(1) opacity(0.3);
+        }
+        .admin-trigger-img:hover { 
+            filter: grayscale(0) opacity(1) drop-shadow(0 0 15px var(--accent));
+            transform: scale(1.05);
+        }
         .admin-input { background: #050505; border: 1px solid #1a1a1a; color: var(--main); padding: 12px; margin-bottom: 12px; width: 100%; font-family: 'Orbitron'; outline: none; text-align: center; }
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 
@@ -193,19 +202,18 @@
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">GENERATE ITEM:</p>
         <div class="admin-grid" id="admin-item-list"></div>
         <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CLEANUP:</p>
-        <button class="btn-nav" style="width:100%; margin-bottom:15px; border-color:var(--accent);" onclick="sellAllItems()">WIPE INVENTORY (SELL ALL)</button>
+        <button class="btn-nav" style="width:100%; margin-bottom:15px; border-color:var(--accent);" onclick="sellAllItems()">WIPE INVENTORY</button>
         <button class="btn-nav" style="width:100%;" onclick="closeAdminPanel()">EXIT</button>
     </div>
 </div>
 
 <footer class="admin-footer">
-    <button class="btn-admin-open" onclick="openAdminAuth()">ADMIN TERMINAL</button>
+    <img src="https://i.postimg.cc/pLrKrWW0/fyvfyv.png" class="admin-trigger-img" alt="Admin Entry" onclick="openAdminAuth()">
 </footer>
 
 <script>
-    // --- ЗВУКИ ---
-    const sndOk = new Audio('https://files.catbox.moe/5nmsv9.mp3'); // Успіх
-    const sndErr = new Audio('https://files.catbox.moe/czo3o9.mp3'); // Помилка
+    const sndOk = new Audio('https://files.catbox.moe/5nmsv9.mp3');
+    const sndErr = new Audio('https://files.catbox.moe/czo3o9.mp3');
 
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
@@ -299,12 +307,7 @@
         const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
         if(PROMOS[code]) {
             db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
-                if(snap.exists()) { 
-                    sndErr.play(); 
-                    input.classList.add('error');
-                    setTimeout(() => input.classList.remove('error'), 400);
-                    toast("Used!"); 
-                }
+                if(snap.exists()) { sndErr.play(); toast("Used!"); }
                 else { 
                     sndOk.play();
                     db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); 
@@ -312,17 +315,12 @@
                     toast("Success!"); closePromoModal(); 
                 }
             });
-        } else { 
-            sndErr.play();
-            input.classList.add('error');
-            setTimeout(() => input.classList.remove('error'), 400);
-            toast("Invalid!"); 
-        }
+        } else { sndErr.play(); toast("Invalid!"); }
     }
 
     function sellAllItems() {
         const count = Object.keys(currentInventory).length;
-        if(count === 0) return toast("Inventory is empty");
+        if(count === 0) return toast("Empty");
         let totalGain = 0;
         Object.values(currentInventory).forEach(item => totalGain += (item.price || 0));
         if(confirm(`Sell all for ${totalGain} B?`)) {
@@ -330,26 +328,23 @@
             db.ref('users/'+user.uid+'/inventory').remove();
             db.ref('users/'+user.uid+'/balance').set(balance + totalGain);
             toast(`Sold! +${totalGain} B`);
-            if(document.getElementById('admin-panel-modal').style.display === 'flex') closeAdminPanel();
+            closeAdminPanel();
         }
     }
 
-    // ADMIN ACTIONS
     function openAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'flex'; }
     function closeAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'none'; }
     function checkAdminAuth() {
         if(document.getElementById('adm-login').value === "BabyIceFace666" && document.getElementById('adm-pass').value === "kov6alex666") {
-            sndOk.play();
-            closeAdminAuth(); document.getElementById('admin-panel-modal').style.display = 'flex'; toast("SYSTEM UNLOCKED");
+            sndOk.play(); closeAdminAuth(); document.getElementById('admin-panel-modal').style.display = 'flex';
         } else { sndErr.play(); toast("DENIED"); }
     }
     function closeAdminPanel() { document.getElementById('admin-panel-modal').style.display = 'none'; }
-    function addMoney(a) { if(user) { sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + a); toast("Injected"); } }
-    function resetBalance() { if(user && confirm("Reset?")) { sndErr.play(); db.ref('users/'+user.uid+'/balance').set(0); toast("Wiped"); } }
+    function addMoney(a) { if(user) { sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + a); } }
+    function resetBalance() { if(user && confirm("Reset?")) { sndErr.play(); db.ref('users/'+user.uid+'/balance').set(0); } }
     function giveItem(idx) {
         if(!user) return;
-        sndOk.play();
-        db.ref('users/'+user.uid+'/inventory').push(SKINS[idx]);
+        sndOk.play(); db.ref('users/'+user.uid+'/inventory').push(SKINS[idx]);
         toast("Added: " + SKINS[idx].name);
     }
 
@@ -370,12 +365,11 @@
             sndOk.play();
             db.ref('users/'+user.uid+'/inventory/'+k).remove(); 
             db.ref('users/'+user.uid+'/balance').set(balance + p); 
-            toast("Sold!"); 
         } 
     }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function mineCat() { toast("Meow! Energy +1"); }
-    function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; document.getElementById('m-status').innerText = "ROLLING..."; }
+    function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
