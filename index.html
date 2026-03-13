@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - PROMO EDITION</title>
+    <title>BABYSELL - PREMIUM</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -21,6 +21,7 @@
         @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* HEADER */
         .header { 
@@ -36,13 +37,13 @@
         }
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); background: rgba(0,255,170,0.05); }
 
-        .balance-card { border: 1px solid var(--main); padding: 4px 10px; border-radius: 4px; background: #000; font-family: 'Orbitron'; min-width: 80px; text-align: center; }
+        .balance-card { border: 1px solid var(--main); padding: 4px 12px; border-radius: 4px; background: #000; font-family: 'Orbitron'; min-width: 90px; text-align: center; color: var(--main); font-weight: bold; }
 
         /* PAGES */
         .page { display: none; padding: 20px; animation: fadeInUp 0.5s ease-out; }
         .page.active { display: block; }
 
-        /* EVENT BANNER with VIGNETTE */
+        /* EVENT BANNER WITH VIGNETTE */
         .event-mini-banner {
             max-width: 1000px; margin: 0 auto 30px; border-radius: 12px; height: 180px;
             background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
@@ -51,7 +52,7 @@
         }
         .event-mini-banner::after {
             content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.9) 100%);
             pointer-events: none;
         }
 
@@ -72,17 +73,12 @@
 
         /* INVENTORY */
         .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; position: relative; }
+        .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; position: relative; transition: 0.3s; }
+        .inv-item:hover { border-color: var(--main); }
         .inv-item img { width: 80px; }
 
-        /* ONLINE LIST */
-        .status-list { background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; width: 180px; border: 1px solid #222; position: relative; z-index: 5; }
-        .status-row { display: flex; justify-content: space-between; font-size: 9px; padding: 3px 0; border-bottom: 1px solid #111; }
-        .dot-online { color: var(--main); font-weight: bold; animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
-
         /* MODALS */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; text-align: center; animation: modalPop 0.3s forwards; }
 
         /* ROULETTE */
@@ -91,13 +87,13 @@
         .item { min-width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
         .item img { width: 80px; }
 
-        /* INPUTS */
+        /* INPUTS & PROMO */
         .promo-input { 
             background: #000; border: 1px solid #333; color: var(--main); 
-            padding: 10px; width: 100%; border-radius: 5px; text-align: center; 
-            font-family: 'Orbitron'; margin-bottom: 15px; outline: none;
+            padding: 12px; width: 100%; border-radius: 5px; text-align: center; 
+            font-family: 'Orbitron'; margin-bottom: 15px; outline: none; transition: 0.3s;
         }
-        .promo-input:focus { border-color: var(--main); }
+        .promo-input.error { animation: shake 0.3s; border-color: var(--accent); }
 
         /* TOAST */
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
@@ -114,24 +110,22 @@
         <button class="btn-nav active" id="btn-market" onclick="showPage('market')">MARKET</button>
         <button class="btn-nav" id="btn-inventory" onclick="showPage('inventory')">INVENTORY (<span id="inv-count">0</span>)</button>
         <button class="btn-nav" id="btn-miner" onclick="showPage('miner')">CAT MINER</button>
-        <button class="btn-nav" id="btn-promo-nav" onclick="openPromoModal()" style="border-color: #ff9d00; color: #ff9d00;">PROMO</button>
+        <button class="btn-nav" onclick="openPromoModal()" style="border-color: #ff9d00; color: #ff9d00;">PROMO</button>
     </div>
     <div class="user-block" style="display:flex; align-items:center; gap:10px;">
         <div class="balance-card" id="u-bal">0 B</div>
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic" style="width:30px; height:30px; border-radius:4px;">
-        <button id="l-btn" onclick="login()" style="background:var(--main); border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:9px; font-weight:bold;">LOGIN</button>
+        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic" style="width:30px; height:30px; border-radius:4px; border: 1px solid #222;">
+        <button id="l-btn" onclick="login()" style="background:var(--main); border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:9px; font-weight:bold; color:#000;">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
     <div class="event-mini-banner">
         <div style="position:relative; z-index:5;">
-            <h1 style="font-family:'Orbitron'; font-size: 20px;">EMERALD SKIES</h1>
-            <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; margin-top:10px;" onclick="joinEvent()">JOIN NOW</button>
+            <h1 style="font-family:'Orbitron'; font-size: 22px; text-shadow: 0 0 10px #000;">EMERALD SKIES</h1>
+            <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; margin-top:10px; font-weight:bold;" onclick="joinEvent()">JOIN EVENT</button>
         </div>
-        <div class="status-list">
-            <div id="p-list"></div>
-        </div>
+        <div id="p-list" style="background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #222; width: 160px; z-index: 5; font-size: 10px;"></div>
     </div>
     <div class="market-grid">
         <div class="case-card" onclick="openCase()">
@@ -146,48 +140,49 @@
     <div class="cat-page-content">
         <h1 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">CAT MINER CORE</h1>
         <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png" class="cat-img" onclick="mineCat()">
-        <p style="margin-top: 20px; color: #666; font-size: 12px; font-family: 'Orbitron';">CLICK TO GENERATE ENERGY</p>
+        <p style="margin-top: 20px; color: #666; font-size: 12px; font-family: 'Orbitron'; letter-spacing: 1px;">CLICK TO GENERATE ENERGY</p>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
-    <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: var(--main);">MY ITEMS</h2>
+    <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: var(--main); text-shadow: 0 0 15px rgba(0,255,170,0.2);">MY ITEMS</h2>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
 <div id="case-modal" class="modal">
     <div class="modal-box" style="max-width: 600px;">
-        <h2 id="m-status" style="font-family:'Orbitron';">ROLLING...</h2>
+        <h2 id="m-status" style="font-family:'Orbitron'; letter-spacing: 2px;">ROLLING...</h2>
         <div class="roulette-win">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10;"></div>
+            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow: 0 0 10px var(--main);"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; font-weight:bold; padding:10px 40px;" onclick="startSpin()">SPIN</button>
-        <button onclick="closeModal()" style="display:block; margin:10px auto; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
-    </div>
-</div>
-
-<div id="promo-modal" class="modal">
-    <div class="modal-box" style="max-width: 400px;">
-        <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: #ff9d00;">ENTER PROMOCODE</h2>
-        <input type="text" id="promo-input" class="promo-input" placeholder="CODE HERE">
-        <button class="btn-nav" style="background:#ff9d00; color:#000; font-weight:bold; width: 100%;" onclick="activatePromo()">ACTIVATE</button>
-        <button onclick="closePromoModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
+        <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; font-weight:bold; padding:12px 50px; font-size: 12px;" onclick="startSpin()">SPIN</button>
+        <button onclick="closeModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer; font-size: 10px;">CLOSE WINDOW</button>
     </div>
 </div>
 
 <div id="sell-modal" class="modal">
     <div class="modal-box" style="max-width:400px;">
-        <div id="sell-preview"></div>
-        <h3 style="font-family:'Orbitron'; margin:15px 0;">SELL FOR <span id="sell-price" style="color:var(--main)">0</span> B?</h3>
+        <div id="sell-preview" style="margin-bottom: 10px;"></div>
+        <h3 style="font-family:'Orbitron'; margin:15px 0; font-size: 14px;">SELL FOR <span id="sell-price" style="color:var(--main)">0</span> B?</h3>
         <div style="display:flex; gap:10px; justify-content:center;">
-            <button class="btn-nav" id="confirm-sell" style="background:var(--main); color:#000; font-weight:bold;">YES, SELL</button>
-            <button class="btn-nav" onclick="closeSellModal()">CANCEL</button>
+            <button class="btn-nav" id="confirm-sell" style="background:var(--main); color:#000; font-weight:bold; padding: 8px 20px;">CONFIRM</button>
+            <button class="btn-nav" onclick="closeSellModal()" style="padding: 8px 20px;">CANCEL</button>
         </div>
     </div>
 </div>
 
+<div id="promo-modal" class="modal">
+    <div class="modal-box" style="max-width: 400px;">
+        <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: #ff9d00;">PROMOCODE</h2>
+        <input type="text" id="promo-input" class="promo-input" placeholder="ENTER CODE">
+        <button class="btn-nav" style="background:#ff9d00; color:#000; font-weight:bold; width: 100%; padding: 12px;" onclick="activatePromo()">ACTIVATE</button>
+        <button onclick="closePromoModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
+    </div>
+</div>
+
 <script>
+    // FIREBASE CONFIG
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -205,10 +200,10 @@
         { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 }
     ];
 
-    const PROMOS = { "START": 5000, "BABY": 1000, "FREE": 2000 };
-
+    const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
     let user = null, balance = 0, pendingSell = null;
 
+    // AUTH & DATA SYNC
     auth.onAuthStateChanged(u => {
         if(u) {
             user = u;
@@ -226,13 +221,15 @@
         }
     });
 
+    // ONLINE LIST
     db.ref('events/emerald/users').limitToLast(5).on('value', s => {
         const list = document.getElementById('p-list'); list.innerHTML = "";
         if(s.exists()) Object.values(s.val()).reverse().forEach(v => {
-            list.innerHTML += `<div class="status-row"><span>${v.name}</span><span class="dot-online">ONLINE</span></div>`;
+            list.innerHTML += `<div style="padding:2px 0; border-bottom:1px solid #111; display:flex; justify-content:space-between;"><span>${v.name}</span><span style="color:var(--main)">ONLINE</span></div>`;
         });
     });
 
+    // PAGE NAVIGATION
     function showPage(p) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
@@ -242,30 +239,37 @@
         }
     }
 
-    // --- PROMO LOGIC ---
+    // PROMO LOGIC
     function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; document.getElementById('promo-input').value = ""; }
 
     function activatePromo() {
         if(!user) return toast("Login first!");
-        const code = document.getElementById('promo-input').value.toUpperCase();
+        const input = document.getElementById('promo-input');
+        const code = input.value.toUpperCase();
+        const errorAudio = new Audio('https://files.catbox.moe/czo3o9.mp3');
+
         if(PROMOS[code]) {
             db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
                 if(snap.exists()) {
+                    errorAudio.play();
+                    input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
                     toast("Already used!");
                 } else {
                     db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]);
                     db.ref('users/'+user.uid+'/used_promos/'+code).set(true);
-                    toast("Bonus +" + PROMOS[code] + " B!");
+                    toast("Success! +" + PROMOS[code] + " B");
                     closePromoModal();
                 }
             });
         } else {
+            errorAudio.play();
+            input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
             toast("Invalid code!");
         }
     }
 
-    // --- CASE LOGIC ---
+    // CASE OPENING
     function openCase() {
         if(!user) return toast("Login first!");
         if(balance < 1000) return toast("Need 1,000 B");
@@ -285,22 +289,27 @@
         if(balance < 1000) return;
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
+        
         let r = Math.random()*100, win;
-        if(r <= 0.1) win = SKINS[0]; else if(r <= 2) win = SKINS[1]; else if(r <= 30) win = SKINS[2]; else win = SKINS[3];
+        if(r <= 0.2) win = SKINS[0]; else if(r <= 3) win = SKINS[1]; else if(r <= 35) win = SKINS[2]; else win = SKINS[3];
         
         const strip = document.getElementById('strip');
         strip.getElementsByClassName('item')[70].innerHTML = `<img src="${win.img}">`;
         const pos = (70 * 130) - (document.querySelector('.roulette-win').offsetWidth / 2) + 65;
+        
         strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
         strip.style.transform = `translateX(-${pos}px)`;
         
         setTimeout(() => {
-            document.getElementById('m-status').innerText = "WIN: " + win.name;
+            const status = document.getElementById('m-status');
+            status.innerText = "WON: " + win.name;
+            status.style.color = win.color;
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("You won " + win.name);
+            toast("New item in inventory!");
         }, 6200);
     }
 
+    // INVENTORY & SELL
     function renderInventory(inv) {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
         Object.keys(inv).forEach(k => {
@@ -308,7 +317,7 @@
             g.innerHTML += `
                 <div class="inv-item">
                     <img src="${i.img}">
-                    <div style="font-size:10px; margin:5px 0;">${i.name}</div>
+                    <div style="font-size:10px; margin:5px 0; font-family:'Orbitron';">${i.name}</div>
                     <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; width:100%; font-size:9px;" onclick="openSellModal('${k}', ${i.price}, '${i.img}')">SELL ${i.price}B</button>
                     <div style="position:absolute; bottom:0; left:0; width:100%; height:3px; background:${i.color}; border-radius:10px;"></div>
                 </div>`;
@@ -318,21 +327,29 @@
     function openSellModal(k, p, img) {
         pendingSell = { k, p };
         document.getElementById('sell-price').innerText = p;
-        document.getElementById('sell-preview').innerHTML = `<img src="${img}" style="width:100px;">`;
+        document.getElementById('sell-preview').innerHTML = `<img src="${img}" style="width:100px; filter: drop-shadow(0 0 10px rgba(255,45,85,0.3));">`;
         document.getElementById('sell-modal').style.display = 'flex';
+        
         document.getElementById('confirm-sell').onclick = () => {
             db.ref('users/'+user.uid+'/inventory/'+pendingSell.k).remove();
             db.ref('users/'+user.uid+'/balance').set(balance + pendingSell.p);
             closeSellModal();
-            toast("Sold!");
+            toast("Item sold!");
         };
     }
 
     function closeSellModal() { document.getElementById('sell-modal').style.display = 'none'; }
-    function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; document.getElementById('m-status').innerText = "ROLLING..."; }
+    function closeModal() { 
+        document.getElementById('case-modal').style.display = 'none'; 
+        document.getElementById('spin-btn').disabled = false; 
+        document.getElementById('m-status').innerText = "ROLLING...";
+        document.getElementById('m-status').style.color = "#fff";
+    }
+
+    // SYSTEM FUNCTIONS
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function joinEvent() { if(user) db.ref('events/emerald/users/'+user.uid).set({ name: user.displayName.split(' ')[0] }); }
-    function mineCat() { toast("Meow! Energy +1"); }
+    function mineCat() { toast("Meow! Energy Core +1"); }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
