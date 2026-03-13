@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - COLLECTOR EDITION</title>
+    <title>BABYSELL - PRO CHANCES</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -12,7 +12,7 @@
         
         :root { 
             --main: #00ffaa; --bg: #08080a; --accent: #ff2d55;
-            --rarity-knife: #eb4b4b; --rarity-ak: #d32ee6; --rarity-glock: #4b69ff;
+            --rarity-knife: #eb4b4b; --rarity-ak: #d32ee6; --rarity-usp: #00ffaa; --rarity-glock: #4b69ff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +29,7 @@
 
         /* EVENT BANNER */
         .event-hero {
-            position: relative; width: 100%; height: 500px;
+            position: relative; width: 100%; height: 450px;
             background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover no-repeat;
             display: flex; align-items: center; padding-left: 8%;
         }
@@ -51,7 +51,7 @@
             display: inline-block; background: #0c0c0f; border: 1px solid #1a1a1a;
             border-radius: 20px; padding: 40px; transition: 0.4s; cursor: pointer;
         }
-        .case-card:hover { border-color: var(--main); transform: scale(1.02); box-shadow: 0 0 30px rgba(0,255,170,0.05); }
+        .case-card:hover { border-color: var(--main); transform: scale(1.02); }
         .case-card img { width: 280px; }
 
         /* ROULETTE MODAL */
@@ -79,7 +79,9 @@
         .rarity-bg { position: absolute; bottom: 0; width: 100%; height: 4px; }
 
         .btn-spin { background: var(--main); color: #000; padding: 15px 40px; border-radius: 5px; font-family: 'Orbitron'; font-weight: bold; border: none; cursor: pointer; font-size: 16px; }
-        .btn-spin:disabled { background: #222; color: #555; }
+        .btn-spin:disabled { background: #222; color: #555; cursor: default; }
+
+        .chance-info { font-size: 10px; color: #444; font-family: 'Orbitron'; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -88,19 +90,18 @@
     <h2 style="font-family:'Orbitron'; color:var(--main); letter-spacing: 2px;">BABYSELL</h2>
     <div class="user-block">
         <div style="text-align:right">
-            <div id="u-name" style="font-family:'Orbitron'; font-size:10px; color:#aaa;">GUEST</div>
+            <div id="u-name" style="font-family:'Orbitron'; font-size:10px;">GUEST</div>
             <div id="u-bal" style="color:var(--main); font-weight:bold; font-size:16px;">0 B</div>
         </div>
         <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic">
-        <button id="l-btn" onclick="login()" style="background:var(--main); border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:9px; font-weight:bold;">LOGIN</button>
+        <button id="l-btn" onclick="login()" style="background:var(--main); border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:9px;">LOGIN</button>
     </div>
 </header>
 
 <section class="event-hero">
     <div class="event-content">
-        <h1 style="font-family:'Orbitron'; font-size: 32px; margin-bottom:15px;">EMERALD SKIES</h1>
+        <h1 style="font-family:'Orbitron'; font-size: 28px; margin-bottom:15px;">EMERALD SKIES</h1>
         <div class="leaderboard">
-            <div style="font-size: 9px; color: #555; margin-bottom: 8px; font-family:'Orbitron';">LIVE PARTICIPANTS</div>
             <div id="p-list"></div>
         </div>
         <button class="btn-spin" style="background:var(--accent); color:#fff; width:100%;" id="j-btn" onclick="joinEvent()">JOIN EVENT</button>
@@ -109,21 +110,22 @@
 
 <div class="container">
     <div class="case-card" onclick="openCase()">
-        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" alt="Box">
-        <div style="font-family:'Orbitron'; margin-top:20px; font-size:22px; letter-spacing:1px;">ULTIMATE CASE</div>
-        <div style="color:var(--main); font-weight:bold; font-size:24px; margin-top:5px;">2,000 B</div>
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
+        <div style="font-family:'Orbitron'; margin-top:15px; font-size:18px;">HARDCORE CASE</div>
+        <div style="color:var(--main); font-weight:bold; font-size:22px;">2,000 B</div>
+        <div class="chance-info">KNIFE: 0.01% | AK: 1% | USP: 30% | GLOCK: 70%</div>
     </div>
 </div>
 
 <div id="case-modal" class="modal">
     <div class="modal-box">
-        <h2 id="m-status" style="font-family:'Orbitron'; letter-spacing:2px;">ROLLING...</h2>
+        <h2 id="m-status" style="font-family:'Orbitron';">ROLLING...</h2>
         <div class="roulette-win">
             <div class="pointer"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button class="btn-spin" id="spin-btn" onclick="startSpin()">SPIN FOR 2,000 B</button>
-        <button onclick="closeModal()" style="display:block; margin: 20px auto 0; background:none; border:none; color:#444; cursor:pointer; font-family:'Orbitron'; font-size:12px;">CLOSE INTERFACE</button>
+        <button class="btn-spin" id="spin-btn" onclick="startSpin()">SPIN</button>
+        <button onclick="closeModal()" style="display:block; margin: 20px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
     </div>
 </div>
 
@@ -139,10 +141,10 @@
     const auth = firebase.auth(), db = firebase.database();
 
     const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#eb4b4b" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6" },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff" },
-        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", color: "#00ffaa" }
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#eb4b4b", chance: 0.01 },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", chance: 1 },
+        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", color: "#00ffaa", chance: 30 },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", chance: 68.99 }
     ];
 
     let user = null, balance = 0;
@@ -163,11 +165,11 @@
         }
     });
 
-    db.ref('events/emerald/users').limitToLast(5).on('value', s => {
+    db.ref('events/emerald/users').limitToLast(3).on('value', s => {
         const list = document.getElementById('p-list'); list.innerHTML = "";
         if(s.exists()){
             Object.values(s.val()).reverse().forEach(v => {
-                list.innerHTML += `<div class="leader-row"><span style="color:var(--main)">${v.name}</span><span>ONLINE</span></div>`;
+                list.innerHTML += `<div class="leader-row"><span>${v.name}</span><span style="color:var(--main)">JOINED</span></div>`;
             });
         }
     });
@@ -177,7 +179,7 @@
 
     function openCase() {
         if(!user) return alert("Login first!");
-        if(balance < 2000) return alert("Insufficient balance (2,000 B required)");
+        if(balance < 2000) return alert("Need 2,000 B");
         document.getElementById('case-modal').style.display = 'flex';
         prepareRoulette();
     }
@@ -187,13 +189,9 @@
         strip.style.transition = 'none';
         strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
-        for(let i=0; i<70; i++) {
+        for(let i=0; i<80; i++) {
             const skin = SKINS[Math.floor(Math.random() * SKINS.length)];
-            strip.innerHTML += `
-                <div class="item">
-                    <img src="${skin.img}">
-                    <div class="rarity-bg" style="background:${skin.color}"></div>
-                </div>`;
+            strip.innerHTML += `<div class="item"><img src="${skin.img}"><div class="rarity-bg" style="background:${skin.color}"></div></div>`;
         }
     }
 
@@ -203,16 +201,24 @@
         db.ref('users/'+user.uid+'/balance').set(balance - 2000);
 
         const strip = document.getElementById('strip');
-        const winIndex = 60; 
-        const winSkin = SKINS[Math.floor(Math.random() * SKINS.length)];
+        const winIndex = 70; // Предмет на якому зупинимось
         
-        // Замінюємо 60-й елемент на переможний
+        // --- АЛГОРИТМ ШАНСІВ ---
+        let rand = Math.random() * 100;
+        let winSkin;
+        
+        if (rand <= 0.01) winSkin = SKINS[0]; // Knife
+        else if (rand <= 1.01) winSkin = SKINS[1]; // AK
+        else if (rand <= 31.01) winSkin = SKINS[2]; // USP
+        else winSkin = SKINS[3]; // Glock
+
+        // Підставляємо переможний скін у стрічку
         const items = strip.getElementsByClassName('item');
         items[winIndex].innerHTML = `<img src="${winSkin.img}"><div class="rarity-bg" style="background:${winSkin.color}"></div>`;
 
-        const move = (winIndex * 151) - (800/2) + 75;
+        const targetPos = (winIndex * 151) - (800 / 2) + 75;
         strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)';
-        strip.style.transform = `translateX(-${move}px)`;
+        strip.style.transform = `translateX(-${targetPos}px)`;
 
         setTimeout(() => {
             document.getElementById('m-status').innerText = "WIN: " + winSkin.name.toUpperCase();
@@ -222,9 +228,9 @@
 
     function closeModal() {
         document.getElementById('case-modal').style.display = 'none';
+        document.getElementById('spin-btn').disabled = false;
         document.getElementById('m-status').innerText = "ROLLING...";
         document.getElementById('m-status').style.color = "#fff";
-        document.getElementById('spin-btn').disabled = false;
     }
 </script>
 </body>
