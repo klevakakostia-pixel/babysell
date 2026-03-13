@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - FINAL EDITION</title>
+    <title>BABYSELL - PREMIUM EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -68,7 +68,6 @@
             background: #0c0c0f; border: 1px solid #1a1a1a; border-radius: 15px; 
             padding: 20px; width: 220px; text-align: center; cursor: pointer; transition: 0.3s;
         }
-        .case-card:hover { border-color: var(--main); transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,255,170,0.1); }
         .case-card img { width: 120px; margin-bottom: 10px; }
         .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; position: relative; }
@@ -77,14 +76,16 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; text-align: center; animation: modalPop 0.3s forwards; }
 
-        /* PROMO INPUT */
-        .promo-input { 
-            background: #000; border: 1px solid #333; color: var(--main); 
-            padding: 12px; width: 100%; border-radius: 5px; text-align: center; 
-            font-family: 'Orbitron'; margin-bottom: 15px; outline: none; transition: 0.3s;
-        }
+        /* ROULETTE STRIP */
+        .roulette-win { position: relative; width: 100%; height: 130px; background: #000; margin: 20px 0; overflow: hidden; border: 1px solid #222; }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; }
+        .strip-item { min-width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
+        .strip-item img { width: 80px; }
+
+        /* PROMO */
+        .promo-input { background: #000; border: 1px solid #333; color: var(--main); padding: 12px; width: 100%; border-radius: 5px; text-align: center; font-family: 'Orbitron'; margin-bottom: 15px; outline: none; }
         .promo-input.error { animation: shake 0.3s; border-color: var(--promo-err); }
-        .promo-input.success { border-color: var(--promo-ok); box-shadow: 0 0 10px var(--promo-ok); }
+        .promo-input.success { border-color: var(--promo-ok); }
 
         /* TOAST */
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
@@ -140,6 +141,18 @@
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
+<div id="case-modal" class="modal">
+    <div class="modal-box" style="max-width: 600px;">
+        <h2 id="m-status" style="font-family:'Orbitron';">ROLLING...</h2>
+        <div class="roulette-win">
+            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow: 0 0 10px var(--main);"></div>
+            <div id="strip" class="strip"></div>
+        </div>
+        <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; font-weight:bold; padding:12px 50px;" onclick="startSpin()">SPIN</button>
+        <button onclick="closeModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
+    </div>
+</div>
+
 <div id="promo-modal" class="modal">
     <div class="modal-box" style="max-width: 400px;">
         <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: #ff9d00;">PROMOCODE</h2>
@@ -149,30 +162,8 @@
     </div>
 </div>
 
-<div id="case-modal" class="modal">
-    <div class="modal-box" style="max-width: 600px;">
-        <h2 id="m-status" style="font-family:'Orbitron';">ROLLING...</h2>
-        <div style="position:relative; width:100%; height:130px; background:#000; margin:20px 0; overflow:hidden; border:1px solid #222;">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10;"></div>
-            <div id="strip" style="display:flex; position:absolute; left:0; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1);"></div>
-        </div>
-        <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; font-weight:bold; padding:10px 50px;" onclick="startSpin()">SPIN</button>
-        <button onclick="closeModal()" style="display:block; margin:15px auto; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
-    </div>
-</div>
-
-<div id="sell-modal" class="modal">
-    <div class="modal-box" style="max-width:400px;">
-        <div id="sell-preview"></div>
-        <h3 style="font-family:'Orbitron'; margin:15px 0;">SELL FOR <span id="sell-price" style="color:var(--main)">0</span> B?</h3>
-        <div style="display:flex; gap:10px; justify-content:center;">
-            <button class="btn-nav" id="confirm-sell" style="background:var(--main); color:#000; font-weight:bold;">CONFIRM</button>
-            <button class="btn-nav" onclick="closeSellModal()">CANCEL</button>
-        </div>
-    </div>
-</div>
-
 <script>
+    // FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -191,7 +182,7 @@
     ];
 
     const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
-    let user = null, balance = 0, pendingSell = null;
+    let user = null, balance = 0;
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -210,57 +201,14 @@
         }
     });
 
-    db.ref('events/emerald/users').limitToLast(5).on('value', s => {
-        const list = document.getElementById('p-list'); list.innerHTML = "";
-        if(s.exists()) Object.values(s.val()).reverse().forEach(v => {
-            list.innerHTML += `<div style="display:flex; justify-content:space-between;"><span>${v.name}</span><span style="color:var(--main)">ON</span></div>`;
-        });
-    });
-
     function showPage(p) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
-        if(document.getElementById('page-' + p)) {
-            document.getElementById('page-' + p).classList.add('active');
-            document.getElementById('btn-' + p).classList.add('active');
-        }
+        document.getElementById('page-' + p).classList.add('active');
+        document.getElementById('btn-' + p).classList.add('active');
     }
 
-    // --- PROMO LOGIC WITH YOUR SOUNDS ---
-    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
-
-    function activatePromo() {
-        if(!user) return toast("Login first!");
-        const input = document.getElementById('promo-input');
-        const code = input.value.toUpperCase();
-        
-        const errorAudio = new Audio('https://files.catbox.moe/czo3o9.mp3');
-        const successAudio = new Audio('https://files.catbox.moe/5nmsv9.mp3');
-
-        if(PROMOS[code]) {
-            db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
-                if(snap.exists()) {
-                    errorAudio.play();
-                    input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
-                    toast("Already used!");
-                } else {
-                    successAudio.play();
-                    input.classList.add('success');
-                    db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]);
-                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true);
-                    toast("Promo activated! +" + PROMOS[code] + " B");
-                    setTimeout(closePromoModal, 1000);
-                }
-            });
-        } else {
-            errorAudio.play();
-            input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
-            toast("Invalid code!");
-        }
-    }
-
-    // --- CASE & INVENTORY (істотні функції) ---
+    // --- CASE SYSTEM ---
     function openCase() {
         if(!user) return toast("Login first!");
         if(balance < 1000) return toast("Need 1,000 B");
@@ -269,61 +217,86 @@
     }
 
     function prepareRoulette() {
-        const strip = document.getElementById('strip'); strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; strip.innerHTML = "";
+        const strip = document.getElementById('strip');
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0)';
+        strip.innerHTML = "";
         for(let i=0; i<80; i++) {
             const s = SKINS[Math.floor(Math.random() * SKINS.length)];
-            strip.innerHTML += `<div style="min-width:130px; height:130px; display:flex; align-items:center; justify-content:center; border-right:1px solid #111;"><img src="${s.img}" style="width:80px"></div>`;
+            strip.innerHTML += `<div class="strip-item"><img src="${s.img}"></div>`;
         }
     }
 
     function startSpin() {
+        if(balance < 1000) return;
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
+        
         let r = Math.random()*100, win;
         if(r <= 0.2) win = SKINS[0]; else if(r <= 3) win = SKINS[1]; else if(r <= 35) win = SKINS[2]; else win = SKINS[3];
+        
         const strip = document.getElementById('strip');
-        strip.children[70].innerHTML = `<img src="${win.img}" style="width:80px">`;
+        strip.children[70].innerHTML = `<img src="${win.img}">`;
+        
         const pos = (70 * 130) - (document.querySelector('.roulette-win').offsetWidth / 2) + 65;
         strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
         strip.style.transform = `translateX(-${pos}px)`;
+        
         setTimeout(() => {
             document.getElementById('m-status').innerText = "WON: " + win.name;
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("You won " + win.name);
+            toast("Won " + win.name);
         }, 6200);
     }
 
+    // --- PROMO SYSTEM ---
+    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+
+    function activatePromo() {
+        if(!user) return toast("Login first!");
+        const input = document.getElementById('promo-input');
+        const code = input.value.toUpperCase();
+        
+        const errSound = new Audio('https://files.catbox.moe/czo3o9.mp3');
+        const okSound = new Audio('https://files.catbox.moe/5nmsv9.mp3');
+
+        if(PROMOS[code]) {
+            db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
+                if(snap.exists()) {
+                    errSound.play();
+                    input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
+                    toast("Already used!");
+                } else {
+                    okSound.play();
+                    db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]);
+                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true);
+                    toast("Success! +" + PROMOS[code]);
+                    closePromoModal();
+                }
+            });
+        } else {
+            errSound.play();
+            input.classList.add('error'); setTimeout(() => input.classList.remove('error'), 400);
+            toast("Wrong code!");
+        }
+    }
+
+    // --- OTHER ---
     function renderInventory(inv) {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
         Object.keys(inv).forEach(k => {
             const i = inv[k];
-            g.innerHTML += `
-                <div class="inv-item">
-                    <img src="${i.img}" style="width:80px">
-                    <div style="font-size:10px; margin:5px 0;">${i.name}</div>
-                    <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; width:100%;" onclick="openSellModal('${k}', ${i.price}, '${i.img}')">SELL ${i.price}B</button>
-                    <div style="position:absolute; bottom:0; left:0; width:100%; height:3px; background:${i.color}; border-radius:10px;"></div>
-                </div>`;
+            g.innerHTML += `<div class="inv-item">
+                <img src="${i.img}" style="width:80px">
+                <div style="font-size:10px;">${i.name}</div>
+                <div style="color:var(--main); font-size:12px;">${i.price} B</div>
+            </div>`;
         });
     }
 
-    function openSellModal(k, p, img) {
-        pendingSell = { k, p };
-        document.getElementById('sell-price').innerText = p;
-        document.getElementById('sell-preview').innerHTML = `<img src="${img}" style="width:100px;">`;
-        document.getElementById('sell-modal').style.display = 'flex';
-        document.getElementById('confirm-sell').onclick = () => {
-            db.ref('users/'+user.uid+'/inventory/'+pendingSell.k).remove();
-            db.ref('users/'+user.uid+'/balance').set(balance + pendingSell.p);
-            closeSellModal();
-            toast("Sold!");
-        };
-    }
-
-    function closeSellModal() { document.getElementById('sell-modal').style.display = 'none'; }
     function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; document.getElementById('m-status').innerText = "ROLLING..."; }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function joinEvent() { if(user) db.ref('events/emerald/users/'+user.uid).set({ name: user.displayName.split(' ')[0] }); }
     function mineCat() { toast("Meow! Energy +1"); }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
