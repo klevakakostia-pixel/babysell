@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - FULL VERSION</title>
+    <title>BABYSELL - PROMO EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -21,7 +21,6 @@
         @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes catPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 20px var(--main)); } }
 
         /* HEADER */
         .header { 
@@ -37,7 +36,7 @@
         }
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); background: rgba(0,255,170,0.05); }
 
-        .balance-card { border: 1px solid var(--main); padding: 4px 10px; border-radius: 4px; background: #000; font-family: 'Orbitron'; }
+        .balance-card { border: 1px solid var(--main); padding: 4px 10px; border-radius: 4px; background: #000; font-family: 'Orbitron'; min-width: 80px; text-align: center; }
 
         /* PAGES */
         .page { display: none; padding: 20px; animation: fadeInUp 0.5s ease-out; }
@@ -68,6 +67,7 @@
         /* CAT MINER */
         .cat-page-content { text-align: center; padding-top: 50px; }
         .cat-img { width: 250px; cursor: pointer; animation: catPulse 4s infinite ease-in-out; transition: 0.1s; }
+        @keyframes catPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 20px var(--main)); } }
         .cat-img:active { transform: scale(0.95); }
 
         /* INVENTORY */
@@ -83,13 +83,21 @@
 
         /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; text-align: center; animation: modalPop 0.3s forwards; }
+        .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; text-align: center; animation: modalPop 0.3s forwards; }
 
-        /* ROULETTE STRIP */
+        /* ROULETTE */
         .roulette-win { position: relative; width: 100%; height: 130px; background: #000; margin: 20px 0; overflow: hidden; border: 1px solid #222; }
         .strip { display: flex; position: absolute; left: 0; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1); }
         .item { min-width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
         .item img { width: 80px; }
+
+        /* INPUTS */
+        .promo-input { 
+            background: #000; border: 1px solid #333; color: var(--main); 
+            padding: 10px; width: 100%; border-radius: 5px; text-align: center; 
+            font-family: 'Orbitron'; margin-bottom: 15px; outline: none;
+        }
+        .promo-input:focus { border-color: var(--main); }
 
         /* TOAST */
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
@@ -106,6 +114,7 @@
         <button class="btn-nav active" id="btn-market" onclick="showPage('market')">MARKET</button>
         <button class="btn-nav" id="btn-inventory" onclick="showPage('inventory')">INVENTORY (<span id="inv-count">0</span>)</button>
         <button class="btn-nav" id="btn-miner" onclick="showPage('miner')">CAT MINER</button>
+        <button class="btn-nav" id="btn-promo-nav" onclick="openPromoModal()" style="border-color: #ff9d00; color: #ff9d00;">PROMO</button>
     </div>
     <div class="user-block" style="display:flex; align-items:center; gap:10px;">
         <div class="balance-card" id="u-bal">0 B</div>
@@ -147,14 +156,23 @@
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 600px;">
         <h2 id="m-status" style="font-family:'Orbitron';">ROLLING...</h2>
         <div class="roulette-win">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow:0 0 10px var(--main);"></div>
+            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10;"></div>
             <div id="strip" class="strip"></div>
         </div>
         <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; font-weight:bold; padding:10px 40px;" onclick="startSpin()">SPIN</button>
-        <button onclick="closeModal()" style="display:block; margin:15px auto; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
+        <button onclick="closeModal()" style="display:block; margin:10px auto; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
+    </div>
+</div>
+
+<div id="promo-modal" class="modal">
+    <div class="modal-box" style="max-width: 400px;">
+        <h2 style="font-family:'Orbitron'; margin-bottom: 20px; color: #ff9d00;">ENTER PROMOCODE</h2>
+        <input type="text" id="promo-input" class="promo-input" placeholder="CODE HERE">
+        <button class="btn-nav" style="background:#ff9d00; color:#000; font-weight:bold; width: 100%;" onclick="activatePromo()">ACTIVATE</button>
+        <button onclick="closePromoModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
     </div>
 </div>
 
@@ -187,6 +205,8 @@
         { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 }
     ];
 
+    const PROMOS = { "START": 5000, "BABY": 1000, "FREE": 2000 };
+
     let user = null, balance = 0, pendingSell = null;
 
     auth.onAuthStateChanged(u => {
@@ -216,10 +236,36 @@
     function showPage(p) {
         document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
         document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('page-' + p).classList.add('active');
-        document.getElementById('btn-' + p).classList.add('active');
+        if(document.getElementById('page-' + p)) {
+            document.getElementById('page-' + p).classList.add('active');
+            document.getElementById('btn-' + p).classList.add('active');
+        }
     }
 
+    // --- PROMO LOGIC ---
+    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+
+    function activatePromo() {
+        if(!user) return toast("Login first!");
+        const code = document.getElementById('promo-input').value.toUpperCase();
+        if(PROMOS[code]) {
+            db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
+                if(snap.exists()) {
+                    toast("Already used!");
+                } else {
+                    db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]);
+                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true);
+                    toast("Bonus +" + PROMOS[code] + " B!");
+                    closePromoModal();
+                }
+            });
+        } else {
+            toast("Invalid code!");
+        }
+    }
+
+    // --- CASE LOGIC ---
     function openCase() {
         if(!user) return toast("Login first!");
         if(balance < 1000) return toast("Need 1,000 B");
@@ -236,6 +282,7 @@
     }
 
     function startSpin() {
+        if(balance < 1000) return;
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
         let r = Math.random()*100, win;
