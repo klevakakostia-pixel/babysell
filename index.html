@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - EMERALD SKIES</title>
+    <title>BABYSELL - ULTIMATE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -12,7 +12,7 @@
         
         :root { 
             --main: #00ffaa; --bg: #0b0b0f; --glass: rgba(255, 255, 255, 0.03); 
-            --accent-pink: #ff2d55;
+            --accent-pink: #ff2d55; --modal-bg: rgba(0, 0, 0, 0.95);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,7 +33,7 @@
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 40px; height: 70px; background: rgba(11, 11, 15, 0.9);
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .user-block { display: flex; align-items: center; gap: 15px; }
         #u-pic { width: 40px; height: 40px; border-radius: 5px; border: 1px solid var(--main); }
@@ -49,10 +49,14 @@
             background: radial-gradient(circle at 30%, transparent, rgba(0,0,0,0.8));
             box-shadow: inset 0 0 150px 50px rgba(0,0,0,0.9);
         }
-        .event-content { position: relative; z-index: 5; max-width: 400px; }
+        .event-content { position: relative; z-index: 5; max-width: 450px; }
         .event-title { font-family: 'Orbitron'; font-size: 42px; color: #fff; text-shadow: 0 0 20px rgba(0,255,170,0.5); margin-bottom: 10px; }
+        
+        /* EVENT LEADERBOARD (РЕАЛЬНІ ТИПИ) */
         .leaderboard-mini { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 10px; border-left: 3px solid var(--main); margin-bottom: 20px; font-family: 'Orbitron'; font-size: 12px; }
         .leader-row { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2px; }
+        .leader-name { color: #fff; }
+        .leader-points { color: var(--main); font-weight: bold; }
 
         /* BUTTONS */
         .btn-event { 
@@ -62,21 +66,10 @@
         }
         .btn-event:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 45, 85, 0.5); }
 
-        /* NAVIGATION TABS (BELOW EVENT) */
-        .sub-nav {
-            display: flex; justify-content: center; gap: 30px; padding: 20px;
-            background: #0d0d12; border-bottom: 1px solid #1a1a1a;
-        }
-        .tab-link { 
-            color: #666; font-family: 'Orbitron'; font-size: 13px; text-decoration: none; 
-            transition: 0.3s; cursor: pointer; 
-        }
-        .tab-link:hover, .tab-link.active { color: var(--main); text-shadow: 0 0 10px var(--main); }
-
-        /* CASES SECTION (SECTION 2) */
-        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        /* CASES SECTION (SECTION 2 - SCROLL DOWN) */
+        .main-container { max-width: 1200px; margin: 60px auto; padding: 0 20px; }
         .case-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
             gap: 25px; margin-top: 20px;
         }
         .case-card {
@@ -89,33 +82,61 @@
         .case-name { font-family: 'Orbitron'; font-size: 13px; margin: 15px 0 5px; }
         .case-price { color: var(--main); font-weight: bold; font-size: 18px; font-family: 'Orbitron'; }
 
-        /* FOOTER / OTHER MENUS */
-        .page-section { display: none; animation: fadeIn 0.4s; }
-        .page-section.active { display: block; }
+        /* STYLISH ROULETTE MODAL (ЗАМІСТЬ СІРОГО ВІКНА) */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; 
+            backdrop-filter: blur(10px); animation: fadeIn 0.3s;
+        }
+        .modal-content { 
+            background: #08080a; border: 2px solid rgba(255,255,255,0.05); border-radius: 20px; 
+            width: 90%; max-width: 700px; padding: 40px; text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,170,0.05);
+        }
+        .modal-header { font-family: 'Orbitron'; font-size: 18px; color: #fff; margin-bottom: 10px; }
+        .modal-sub { font-size: 12px; color: #666; font-family: 'Orbitron'; margin-bottom: 30px; }
+
+        .roulette-wrapper { 
+            position: relative; width: 100%; height: 140px; background: #050507; 
+            border: 1px solid #1a1a1e; margin: 30px 0; overflow: hidden; border-radius: 10px; 
+        }
+        .roulette-line { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 10; box-shadow: 0 0 15px var(--main); }
+        .strip { display: flex; position: absolute; left: 0; top: 0; height: 100%; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1); }
+        .item-box { min-width: 130px; height: 100%; border-right: 1px solid #111; display: flex; align-items: center; justify-content: center; }
+        .item-box img { width: 70px; }
+
+        .btn-modal { 
+            background: var(--main); color: #000; border: none; padding: 12px 30px; border-radius: 8px; 
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer; margin: 0 10px; 
+            transition: 0.2s;
+        }
+        .btn-modal:hover { box-shadow: 0 0 15px var(--main); }
+        .btn-close { background: #1a1a1e; color: #888; }
+        .btn-close:hover { background: #222; color: #fff; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     </style>
 </head>
 <body>
 
 <div class="live-drops">
     <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
+    <div class="drop-item"><img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png"></div>
     <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
+    <div class="drop-item"><img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png"></div>
     <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
+    <div class="drop-item"><img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png"></div>
     <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
-    <div class="drop-item"><img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png"></div>
+    <div class="drop-item"><img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png"></div>
 </div>
 
 <header class="header">
-    <h2 style="font-family:'Orbitron'; color:var(--main); letter-spacing:2px;">BABYSELL</h2>
+    <h2 style="font-family:'Orbitron'; color:var(--main); letter-spacing:2px; font-size:18px;">BABYSELL</h2>
     <div class="user-block">
         <div style="text-align:right;">
-            <div id="u-name" style="font-family:'Orbitron'; font-size:12px;">GUEST_LOGIN</div>
-            <div id="u-bal" style="color:var(--main); font-weight:bold;">0 B</div>
+            <div id="u-name" style="font-family:'Orbitron'; font-size:11px;">GUEST_LOGIN</div>
+            <div id="u-bal" style="color:var(--main); font-weight:bold; font-size:16px;">0 B</div>
         </div>
         <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-pic">
         <button onclick="login()" id="login-btn" style="background:var(--main); border:none; padding:5px 10px; border-radius:3px; font-family:'Orbitron'; font-size:10px; cursor:pointer;">LOGIN</button>
@@ -127,47 +148,54 @@
         <div class="event-content">
             <h1 class="event-title">EMERALD SKIES</h1>
             <div class="leaderboard-mini">
-                <div class="leader-row"><span>1. Pro_Player</span> <span>798 624</span></div>
-                <div class="leader-row"><span>2. Cat_Lover</span> <span>666 499</span></div>
-                <div class="leader-row"><span>3. Mystery_X</span> <span>433 482</span></div>
+                <div style="font-size:10px; color:#aaa; margin-bottom:8px;">EVENT LEADERS</div>
+                <div class="leader-row"><span class="leader-name">1. Shady_Shadow</span> <span class="leader-points">941 200</span></div>
+                <div class="leader-row"><span class="leader-name">2. BlazeMaster</span> <span class="leader-points">888 499</span></div>
+                <div class="leader-row"><span class="leader-name">3. CyberP0unk</span> <span class="leader-points">715 630</span></div>
+                <div class="leader-row"><span class="leader-name">4. Golden爪aw</span> <span class="leader-points">666 001</span></div>
+                <div class="leader-row"><span class="leader-name">5. Anon_Type</span> <span class="leader-points">503 112</span></div>
             </div>
             <button class="btn-event" onclick="joinEvent()">TO EVENT ★</button>
         </div>
     </section>
 
-    <nav class="sub-nav">
-        <a class="tab-link active" onclick="switchSubTab('all')">ALL CASES</a>
-        <a class="tab-link" onclick="switchSubTab('neural')">NEURAL CAT</a>
-        <a class="tab-link" onclick="switchSubTab('upgrades')">UPGRADES</a>
-        <a class="tab-link" onclick="switchSubTab('contracts')">CONTRACTS</a>
-    </nav>
-
     <div class="main-container">
-        <div id="cases-area" class="page-section active">
-            <h2 style="font-family:'Orbitron'; font-size:16px; margin-bottom:20px; border-left:3px solid var(--main); padding-left:15px;">MYSTERY BOXES</h2>
+        <div id="cases-area">
+            <h2 style="font-family:'Orbitron'; font-size:16px; margin-bottom:30px; border-left:3px solid var(--main); padding-left:15px; letter-spacing:1px;">MYSTERY BOXES</h2>
             <div class="case-grid">
-                <div class="case-card" onclick="alert('Opening Case...')">
+                <div class="case-card" onclick="openCaseModal('STREET NIGHTMARE', 500)">
                     <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
                     <div class="case-name">STREET NIGHTMARE</div>
                     <div class="case-price">500 B</div>
                 </div>
-                <div class="case-card" onclick="alert('Opening Case...')">
+                <div class="case-card" onclick="openCaseModal('EMERALD BOX', 1200)">
                     <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
                     <div class="case-name">EMERALD BOX</div>
                     <div class="case-price">1,200 B</div>
                 </div>
-                <div class="case-card" onclick="alert('Opening Case...')">
-                    <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-                    <div class="case-name">CYBER CRATE</div>
+                <div class="case-card" onclick="openCaseModal('CYBER CAT', 2500)">
+                    <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png" style="border-radius:10px;">
+                    <div class="case-name">CYBER CAT</div>
                     <div class="case-price">2,500 B</div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <div id="cat-area" class="page-section" style="text-align:center;">
-            <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png" style="width:250px; border-radius:20px; cursor:pointer;" onclick="alert('Meow!')">
-            <h2 style="font-family:'Orbitron'; margin-top:20px;">NEURAL CAT MINER</h2>
-            <p>Click to earn bonus points!</p>
+<div id="case-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" id="modal-title">CASE OPENING</div>
+        <div class="modal-sub">Attempting to extract data from mystery box...</div>
+
+        <div class="roulette-wrapper">
+            <div class="roulette-line"></div>
+            <div id="strip" class="strip"></div>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:20px;">
+            <button class="btn-modal" id="spin-btn" onclick="startSpin()">OPEN CASE</button>
+            <button class="btn-modal btn-close" onclick="closeModal()">CANCEL</button>
         </div>
     </div>
 </div>
@@ -184,37 +212,86 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
+    let balance = 0;
+    let currentCasePrice = 0;
+
     auth.onAuthStateChanged(user => {
         if(user) {
             document.getElementById('u-name').innerText = user.displayName.split(' ')[0].toUpperCase();
             document.getElementById('u-pic').src = user.photoURL;
             document.getElementById('login-btn').style.display = 'none';
             db.ref('users/'+user.uid+'/balance').on('value', s => {
-                document.getElementById('u-bal').innerText = (s.val() || 0).toLocaleString() + " B";
+                balance = s.val() || 0;
+                document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
         }
     });
 
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
-    function switchSubTab(tab) {
-        // Reset active links
-        document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
-        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-        
-        // Target specific section
-        if(tab === 'all') {
-            document.getElementById('cases-area').classList.add('active');
-        } else if(tab === 'neural') {
-            document.getElementById('cat-area').classList.add('active');
-        }
-        event.currentTarget.classList.add('active');
+    function joinEvent() {
+        // Scroll to cases as an example
+        document.getElementById('cases-area').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function joinEvent() {
-        alert("Joining EMERALD SKIES event!");
-        // Scroll to cases as an example
-        document.querySelector('.sub-nav').scrollIntoView({ behavior: 'smooth' });
+    // --- STYLISH ROULETTE MODAL LOGIC ---
+    function openCaseModal(name, price) {
+        if (!auth.currentUser) return alert("Please Login First!");
+        if (balance < price) return alert("Not Enough Balance!");
+
+        currentCasePrice = price;
+        document.getElementById('modal-title').innerText = name + " OPENING";
+        document.getElementById('case-modal').style.display = 'flex';
+        
+        generateStrip(name);
+    }
+
+    function closeModal() {
+        document.getElementById('case-modal').style.display = 'none';
+        const strip = document.getElementById('strip');
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0)';
+    }
+
+    function generateStrip(caseName) {
+        const strip = document.getElementById('strip');
+        strip.innerHTML = "";
+        const caseImg = caseName === 'CYBER CAT' ? 'https://i.postimg.cc/Fs5xJ0r7/FVIFV.png' : 'https://i.postimg.cc/ZnHQ1pwz/AAA.png';
+        const rarity = caseName === 'CYBER CAT' ? 'legendary' : 'rare';
+
+        // We generate 60 items for a long spin
+        for(let i=0; i<65; i++) {
+            const isWinner = (i === 55); // We force land on 55th item
+            strip.innerHTML += `
+                <div class="item-box">
+                    <img src="${caseImg}" style="${caseName === 'CYBER CAT' ? 'border-radius:5px;' : ''}">
+                </div>
+            `;
+        }
+    }
+
+    function startSpin() {
+        const btn = document.getElementById('spin-btn');
+        btn.disabled = true;
+
+        // Deduct money via Firebase
+        db.ref('users/'+auth.currentUser.uid+'/balance').set(balance - currentCasePrice);
+
+        const strip = document.getElementById('strip');
+        const itemWidth = 131; // 130px + 1px border
+        const winningIndex = 55; // We always land on the 55th item
+        const randomOffset = Math.floor(Math.random() * 80) + 20; // Random position inside the box
+        
+        const targetX = (winningIndex * itemWidth) - (700 / 2) + randomOffset;
+
+        strip.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0.1, 1)';
+        strip.style.transform = `translateX(-${targetX}px)`;
+
+        setTimeout(() => {
+            alert("SUCCESS! Reward data extracted and added to system.");
+            btn.disabled = false;
+            closeModal();
+        }, 6500);
     }
 </script>
 
