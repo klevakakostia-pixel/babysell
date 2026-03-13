@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - COMPACT EDITION</title>
+    <title>BABYSELL - ONLINE STATUS</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -33,43 +33,42 @@
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); background: rgba(0,255,170,0.05); }
 
         .user-block { display: flex; align-items: center; gap: 10px; }
-        .balance-card { background: #000; border: 1px solid var(--main); padding: 4px 10px; border-radius: 4px; text-align: right; }
+        .balance-card { background: #000; border: 1px solid var(--main); padding: 4px 10px; border-radius: 4px; }
 
         /* PAGES */
-        .page { display: none; padding: 30px; animation: fadeIn 0.4s; }
+        .page { display: none; padding: 20px; animation: fadeIn 0.4s; }
         .page.active { display: block; }
 
-        /* COMPACT CASE CARD */
-        .case-container { display: flex; justify-content: center; padding-top: 50px; }
+        /* EVENT BANNER (Inside Market) */
+        .event-mini-banner {
+            max-width: 1000px; margin: 0 auto 30px; border-radius: 12px; height: 200px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+            border: 1px solid #1a1a1a;
+        }
+        
+        /* MARKET GRID */
+        .market-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
         .case-card {
             background: #0c0c0f; border: 1px solid #1a1a1a; border-radius: 15px; 
-            padding: 25px; width: 280px; text-align: center; cursor: pointer; transition: 0.3s;
+            padding: 20px; width: 220px; text-align: center; cursor: pointer; transition: 0.3s;
         }
         .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
-        .case-card img { width: 160px; height: auto; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); transition: 0.3s; }
-        .case-card:hover img { transform: scale(1.05); }
-        .case-title { font-family: 'Orbitron'; font-size: 14px; margin-top: 15px; letter-spacing: 1px; }
-        .case-price { color: var(--main); font-weight: bold; font-size: 18px; margin-top: 5px; }
+        .case-card img { width: 120px; margin-bottom: 10px; }
 
-        /* EVENT SECTION */
-        .event-hero {
-            max-width: 900px; margin: 0 auto; border-radius: 15px; height: 350px;
-            background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
-            display: flex; align-items: center; padding: 40px; position: relative; overflow: hidden;
-        }
-        .event-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.9) 30%, transparent); }
-        .leaderboard { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid #222; margin-top: 15px; width: 250px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #111; font-size: 10px; }
+        /* STATUS LIST (ONLINE) */
+        .status-list { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; width: 200px; border: 1px solid #222; }
+        .status-row { display: flex; justify-content: space-between; font-size: 9px; padding: 3px 0; border-bottom: 1px solid #111; }
+        .dot-online { color: var(--main); font-weight: bold; text-transform: uppercase; }
 
-        /* INVENTORY GRID */
+        /* INVENTORY */
         .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; position: relative; }
         .inv-item img { width: 80px; }
-        .inv-item .name { font-size: 10px; font-family: 'Orbitron'; margin: 8px 0; color: #aaa; }
 
-        /* ROULETTE MODAL */
+        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-box { background: #050507; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 700px; text-align: center; }
+        .modal-box { background: #050507; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; text-align: center; }
         .roulette-win { position: relative; width: 100%; height: 140px; background: #000; margin: 20px 0; overflow: hidden; border: 1px solid #111; }
         .strip { display: flex; position: absolute; left: 0; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1); }
         .item { min-width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #0a0a0a; }
@@ -85,7 +84,6 @@
         <h2 style="font-family:'Orbitron'; color:var(--main); font-size: 16px; margin-right: 10px;">BABYSELL</h2>
         <button class="btn-nav active" id="btn-market" onclick="showPage('market')">MARKET</button>
         <button class="btn-nav" id="btn-inventory" onclick="showPage('inventory')">INVENTORY (<span id="inv-count">0</span>)</button>
-        <button class="btn-nav" id="btn-event" onclick="showPage('event')">EVENT</button>
     </div>
     <div class="user-block">
         <div class="balance-card">
@@ -97,11 +95,23 @@
 </header>
 
 <div id="page-market" class="page active">
-    <div class="case-container">
+    <div class="event-mini-banner">
+        <div>
+            <h1 style="font-family:'Orbitron'; font-size: 20px; color: #fff;">EMERALD SKIES EVENT</h1>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Register to participate in the giveaway!</p>
+            <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; padding:8px 20px;" onclick="joinEvent()">JOIN NOW</button>
+        </div>
+        <div class="status-list">
+            <div style="font-size: 8px; color: #555; margin-bottom: 5px; font-family: 'Orbitron';">PARTICIPANTS</div>
+            <div id="p-list"></div>
+        </div>
+    </div>
+
+    <div class="market-grid">
         <div class="case-card" onclick="openCase()">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <div class="case-title">HARDCORE CASE</div>
-            <div class="case-price">1,000 B</div>
+            <div style="font-family:'Orbitron'; font-size:12px;">HARDCORE CASE</div>
+            <div style="color:var(--main); font-weight:bold; font-size:16px;">1,000 B</div>
         </div>
     </div>
 </div>
@@ -111,23 +121,11 @@
     <div class="inv-grid" id="inv-grid"></div>
 </div>
 
-<div id="page-event" class="page">
-    <div class="event-hero">
-        <div style="position:relative; z-index:5;">
-            <h1 style="font-family:'Orbitron'; font-size: 24px; margin-bottom:5px;">EMERALD SKIES</h1>
-            <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; padding:10px 20px;" onclick="joinEvent()">JOIN EVENT</button>
-            <div class="leaderboard">
-                <div id="p-list"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div id="case-modal" class="modal">
     <div class="modal-box">
         <h2 id="m-status" style="font-family:'Orbitron'; font-size: 16px;">ROLLING...</h2>
         <div class="roulette-win">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow: 0 0 10px var(--main);"></div>
+            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10;"></div>
             <div id="strip" class="strip"></div>
         </div>
         <button class="btn-nav" style="background:var(--main); color:#000; font-weight:bold; padding: 10px 30px;" id="spin-btn" onclick="startSpin()">SPIN</button>
@@ -172,10 +170,11 @@
         }
     });
 
+    // Оновлений статус ONLINE
     db.ref('events/emerald/users').limitToLast(5).on('value', s => {
         const list = document.getElementById('p-list'); list.innerHTML = "";
         if(s.exists()) Object.values(s.val()).reverse().forEach(v => {
-            list.innerHTML += `<div class="leader-row"><span>${v.name}</span><span style="color:var(--main)">LIVE</span></div>`;
+            list.innerHTML += `<div class="status-row"><span>${v.name}</span><span class="dot-online">ONLINE</span></div>`;
         });
     });
 
@@ -193,7 +192,7 @@
             grid.innerHTML += `
                 <div class="inv-item">
                     <img src="${item.img}">
-                    <div class="name">${item.name}</div>
+                    <div style="font-size:10px; margin:5px 0;">${item.name}</div>
                     <button style="background:var(--accent); border:none; color:#fff; font-size:9px; padding:3px 8px; border-radius:3px; cursor:pointer;" onclick="sellItem('${key}', ${item.price})">SELL ${item.price}B</button>
                     <div style="position:absolute; bottom:0; left:0; width:100%; height:3px; background:${item.color}; border-radius: 0 0 10px 10px;"></div>
                 </div>`;
