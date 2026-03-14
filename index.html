@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - HYPER ELITE V5</title>
+    <title>BABYSELL - ULTIMATE CASE SYSTEM</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -11,91 +11,83 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
         
         :root { 
-            --main: #00ffaa; 
-            --bg: #050507; 
-            --accent: #ff2d55; 
-            --glass: rgba(255, 255, 255, 0.03);
-            --panel: rgba(15, 15, 20, 0.95);
+            --main: #00ffaa; --bg: #050507; --accent: #ff2d55; 
+            --rare: #ebca42; --classified: #d32ee6; --common: #4b69ff;
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
         body { 
             background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #1a1a2e, #050507);
+            overflow-x: hidden; background-attachment: fixed;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050507 70%);
         }
 
         /* ANIMATIONS */
-        @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes itemScale { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        @keyframes scanline { 0% { top: -100%; } 100% { top: 100%; } }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes shine { from { left: -100%; } to { left: 100%; } }
 
-        /* UI */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 85px; background: rgba(0,0,0,0.9); 
+            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); 
             backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
             position: sticky; top: 0; z-index: 1000;
         }
 
         .btn-nav { 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
-            color: #ccc; padding: 12px 24px; border-radius: 8px; 
-            font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); 
+            color: #ccc; padding: 10px 22px; border-radius: 8px; font-family: 'Orbitron'; 
+            font-size: 11px; cursor: pointer; transition: 0.3s;
         }
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); box-shadow: 0 0 15px rgba(0,255,170,0.2); }
 
-        .page { display: none; padding: 40px; animation: pageIn 0.6s ease-out forwards; }
+        .page { display: none; padding: 40px; animation: fadeIn 0.5s ease-out; }
         .page.active { display: block; }
 
-        /* EVENT */
-        .event-banner {
-            max-width: 1100px; margin: 0 auto 40px; height: 200px;
-            background: linear-gradient(90deg, #000 40%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
-            border-radius: 20px; border: 1px solid rgba(0,255,170,0.1);
-            display: flex; align-items: center; padding: 0 60px; justify-content: space-between;
-            position: relative; overflow: hidden;
+        /* MARKET & CASE */
+        .case-preview {
+            max-width: 350px; margin: 40px auto; background: rgba(15,15,20,0.8);
+            border: 1px solid #222; border-radius: 30px; padding: 50px; text-align: center;
+            cursor: pointer; transition: 0.4s; position: relative; overflow: hidden;
+            animation: float 4s ease-in-out infinite;
         }
-        .event-banner::after { content: ""; position: absolute; width: 100%; height: 100%; top: 0; left: 0; background: linear-gradient(transparent, rgba(0,255,170,0.05)); pointer-events: none; }
-
-        .feed-box { background: rgba(0,0,0,0.7); width: 280px; height: 130px; border-radius: 12px; padding: 15px; border-left: 3px solid var(--main); font-size: 12px; overflow: hidden; }
-
-        /* MARKET & INV */
-        .case-card {
-            background: var(--panel); border: 1px solid #222; padding: 40px;
-            border-radius: 30px; text-align: center; max-width: 300px; margin: 0 auto;
-            transition: 0.4s; cursor: pointer;
-        }
-        .case-card:hover { transform: translateY(-10px); border-color: var(--main); }
-
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 25px; }
-        .inv-item { 
-            background: var(--panel); border: 1px solid #1a1a1c; border-radius: 20px;
-            padding: 20px; text-align: center; transition: 0.3s;
-            animation: itemScale 0.5s backwards;
-        }
-        .inv-item:hover { border-color: var(--main); transform: scale(1.02); }
-        .inv-item img { width: 100%; filter: drop-shadow(0 10px 15px #000); margin-bottom: 10px; }
-
-        .btn-action { 
-            width: 100%; padding: 10px; border-radius: 6px; border: none; font-family: 'Orbitron'; 
-            font-size: 10px; cursor: pointer; transition: 0.2s; margin-top: 6px;
+        .case-preview:hover { border-color: var(--main); transform: scale(1.03); }
+        .case-preview::before {
+            content: ''; position: absolute; top: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shine 3s infinite;
         }
 
-        /* MODALS */
-        .modal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); 
-            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(12px);
+        /* ROULETTE MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .roulette-container { 
+            width: 100%; max-width: 800px; background: #0a0a0c; border: 1px solid #222; 
+            padding: 40px; border-radius: 25px; text-align: center; position: relative;
         }
-        .modal-box { 
-            background: #0a0a0c; border: 1px solid #333; padding: 35px; border-radius: 25px;
-            width: 90%; max-width: 550px; text-align: center; animation: pageIn 0.3s ease-out;
+        .view-window { 
+            position: relative; width: 100%; height: 160px; background: #000; 
+            margin: 25px 0; overflow: hidden; border-radius: 12px; border: 1px solid #333;
         }
+        .pointer-line { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; will-change: transform; transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1); }
+        .strip-item { 
+            min-width: 160px; height: 100%; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; border-right: 1px solid #111; position: relative;
+        }
+        .strip-item img { width: 100px; z-index: 2; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
+        .rarity-bg { position: absolute; bottom: 0; width: 100%; height: 5px; }
+
+        /* INVENTORY */
+        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .inv-card { 
+            background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px;
+            padding: 20px; text-align: center; transition: 0.3s; animation: fadeIn 0.4s backwards;
+        }
+        .inv-card:hover { border-color: var(--main); transform: translateY(-5px); }
+        .rarity-tag { font-size: 10px; font-family: 'Orbitron'; margin-bottom: 8px; display: block; }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; animation: pageIn 0.3s forwards; }
+        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; animation: fadeIn 0.3s forwards; border-left: 5px solid var(--main); }
     </style>
 </head>
 <body>
@@ -107,67 +99,45 @@
         <button class="btn-nav active" id="tab-market" onclick="showPage('market')">MARKET</button>
         <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
     </div>
-    <div style="display:flex; align-items:center; gap:25px;">
-        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:20px; font-weight:bold;">0 B</div>
-        <div id="u-prof" style="display:none; align-items:center; gap:12px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 30px; border: 1px solid #333;">
-            <span id="u-name" style="font-family:'Orbitron'; font-size:11px; color:var(--main);">...</span>
-            <img id="u-ava" src="" style="width:32px; height:32px; border-radius:50%; border:2px solid var(--main);">
+    <div style="display:flex; align-items:center; gap:20px;">
+        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px; font-weight:bold;">0 B</div>
+        <div id="u-prof" style="display:none; align-items:center; gap:10px;">
+            <img id="u-ava" src="" style="width:35px; border-radius:50%; border:2px solid var(--main);">
         </div>
         <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:bold;">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
-    <div class="event-banner">
-        <div>
-            <h1 style="font-family:'Orbitron'; color:var(--main); font-size:35px; text-shadow: 0 0 15px rgba(0,255,170,0.4);">EMERALD SKIES</h1>
-            <button id="join-ev-btn" class="btn-nav" style="margin-top:20px; background:var(--main); color:#000; font-weight:bold; padding:12px 35px;" onclick="joinEvent()">JOIN EVENT</button>
-        </div>
-        <div class="feed-box" id="ev-feed"></div>
-    </div>
-
-    <div class="case-card" onclick="openCaseModal()">
-        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:180px; margin-bottom:20px;">
-        <h2 style="font-family:'Orbitron';">HARDCORE CASE</h2>
-        <div style="color:var(--main); font-size:26px; font-weight:bold; margin-top:10px;">1,000 B</div>
+    <div class="case-preview" onclick="openCaseModal()">
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:200px;">
+        <h2 style="font-family:'Orbitron'; margin-top:20px; letter-spacing:2px;">HARDCORE CASE</h2>
+        <p style="color:var(--main); font-size:24px; font-weight:bold; margin-top:10px;">1,000 B</p>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:35px;">
-        <h2 style="font-family:'Orbitron'; color:var(--main); letter-spacing:2px;">COLLECTION</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">COLLECTION</h2>
         <button class="btn-nav" style="background:var(--accent); color:#fff; border:none;" onclick="confirmSellAll()">SELL ALL SKINS</button>
     </div>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="modal-box">
-        <h2 style="font-family:'Orbitron'; margin-bottom:25px; color:var(--main);">OPENING...</h2>
-        <div style="position:relative; width:100%; height:140px; background:#000; overflow:hidden; border:1px solid #333; border-radius:15px;">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow:0 0 15px var(--main);"></div>
-            <div id="strip" style="display:flex; position:absolute; left:0; transition:6s cubic-bezier(0.1, 0, 0.1, 1);"></div>
+    <div class="roulette-container">
+        <h2 style="font-family:'Orbitron'; letter-spacing:3px;">HARDCORE CASE</h2>
+        <div class="view-window">
+            <div class="pointer-line"></div>
+            <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn-nav" style="width:100%; margin-top:25px; background:var(--main); color:#000; font-weight:bold; height:50px;" onclick="startSpin()">SPIN 1,000 B</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer;">CLOSE</button>
+        <button id="spin-btn" class="btn-nav" style="width:100%; height:55px; background:var(--main); color:#000; font-weight:bold; font-size:14px;" onclick="startSpin()">SPIN FOR 1,000 B</button>
+        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:20px; cursor:pointer; font-family:'Orbitron'; font-size:10px;">CANCEL / CLOSE</button>
     </div>
 </div>
-
-<div id="confirm-modal" class="modal">
-    <div class="modal-box" style="max-width:380px;">
-        <h3 id="confirm-msg" style="font-family:'Orbitron'; margin-bottom:25px;">ARE YOU SURE?</h3>
-        <div style="display:flex; gap:12px;">
-            <button id="confirm-yes" class="btn-nav" style="flex:1; background:var(--main); color:#000;">CONFIRM</button>
-            <button onclick="closeModals()" class="btn-nav" style="flex:1;">CANCEL</button>
-        </div>
-    </div>
-</div>
-
-<footer style="text-align:center; padding:100px 0; opacity:0.1;">
-    <img src="https://i.postimg.cc/pLrKrWW0/fyvfyv.png" style="width:70px; cursor:pointer;" onclick="adminPanel()">
-</footer>
 
 <script>
+    // Firebase Setup
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -178,13 +148,14 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
+    // Skins with chances (Total 100)
     const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, inspect: "https://steamcommunity.com/market/" },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, inspect: "https://steamcommunity.com/market/" }
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", rarity: "Common", inspect: "https://steamcommunity.com/market/" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", rarity: "Classified", inspect: "https://steamcommunity.com/market/" },
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special", inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" }
     ];
 
-    let user = null, balance = 0, userInv = {}, myNick = "";
+    let user = null, balance = 0, userInv = {};
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -192,76 +163,77 @@
             document.getElementById('l-btn').style.display = 'none';
             document.getElementById('u-prof').style.display = 'flex';
             document.getElementById('u-ava').src = u.photoURL;
-            
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
-
-            db.ref('users/'+u.uid+'/nick').on('value', s => {
-                myNick = s.val() || u.displayName.split(' ')[0];
-                document.getElementById('u-name').innerText = myNick.toUpperCase();
-            });
-
             db.ref('users/'+u.uid+'/inventory').on('value', s => {
                 userInv = s.val() || {};
                 renderInventory();
             });
-
-            db.ref('event_participants/'+u.uid).on('value', s => {
-                if(s.exists()) {
-                    const btn = document.getElementById('join-ev-btn');
-                    btn.innerText = "EVENT JOINED";
-                    btn.disabled = true;
-                    btn.style.opacity = "0.5";
-                }
-            });
-
-            db.ref('global_feed').limitToLast(5).on('value', s => {
-                const f = document.getElementById('ev-feed'); f.innerHTML = "";
-                s.forEach(c => {
-                    const d = c.val();
-                    f.innerHTML = `<div style="margin-bottom:5px; border-bottom:1px solid #111; padding-bottom:3px;"><b>${d.nick}</b> ${d.msg}</div>` + f.innerHTML;
-                });
-            });
         }
     });
 
-    // --- MARKET ---
+    // ROULETTE LOGIC
+    function getRandomSkin() {
+        const rand = Math.random() * 100;
+        let cumulative = 0;
+        for (const skin of SKINS) {
+            cumulative += skin.chance;
+            if (rand <= cumulative) return skin;
+        }
+        return SKINS[0];
+    }
+
     function openCaseModal() {
         if(!user) return login();
         document.getElementById('case-modal').style.display = 'flex';
         const strip = document.getElementById('strip');
-        strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
-        for(let i=0; i<80; i++) {
-            const s = SKINS[Math.floor(Math.random()*SKINS.length)];
-            strip.innerHTML += `<div style="min-width:140px; height:140px; display:flex; align-items:center; justify-content:center;"><img src="${s.img}" style="width:90px;"></div>`;
+
+        // Generate 80 random items for the strip
+        for(let i=0; i<85; i++) {
+            const s = getRandomSkin();
+            strip.innerHTML += `
+                <div class="strip-item">
+                    <img src="${s.img}">
+                    <div class="rarity-bg" style="background:${s.color}"></div>
+                </div>`;
         }
     }
 
     function startSpin() {
         if(balance < 1000) return toast("INSUFFICIENT FUNDS");
-        document.getElementById('spin-btn').disabled = true;
+        const spinBtn = document.getElementById('spin-btn');
+        spinBtn.disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
-        const win = SKINS[Math.floor(Math.random()*SKINS.length)];
         const strip = document.getElementById('strip');
-        strip.children[70].innerHTML = `<img src="${win.img}" style="width:90px;">`;
+        const winIndex = 75; // Item that will stop on pointer
+        const winSkin = getRandomSkin();
         
-        const move = (70 * 140) - (document.getElementById('case-modal').offsetWidth / 2) + 70;
-        strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
-        strip.style.transform = `translateX(-${move}px)`;
+        // Inject win skin into the specific position
+        strip.children[winIndex].innerHTML = `<img src="${winSkin.img}"><div class="rarity-bg" style="background:${winSkin.color}"></div>`;
+
+        // Exact pixel calculation
+        const itemWidth = 160;
+        const windowWidth = document.querySelector('.view-window').offsetWidth;
+        const centerOffset = windowWidth / 2;
+        const finalPos = (winIndex * itemWidth) - centerOffset + (itemWidth / 2);
+        const randomCorrection = Math.floor(Math.random() * 60) - 30; // Randomize stop position within the item
+
+        strip.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
+        strip.style.transform = `translateX(-${finalPos + randomCorrection}px)`;
 
         setTimeout(() => {
-            db.ref('users/'+user.uid+'/inventory').push(win);
-            db.ref('global_feed').push({ nick: myNick, msg: `won ${win.name}!` });
-            toast("WON: " + win.name);
-            document.getElementById('spin-btn').disabled = false;
-        }, 6200);
+            db.ref('users/'+user.uid+'/inventory').push(winSkin);
+            toast("UNBOXED: " + winSkin.name);
+            spinBtn.disabled = false;
+        }, 7200);
     }
 
-    // --- INVENTORY ---
     function renderInventory() {
         const grid = document.getElementById('inv-grid');
         grid.innerHTML = "";
@@ -269,46 +241,32 @@
         Object.keys(userInv).forEach(id => {
             const item = userInv[id];
             grid.innerHTML += `
-                <div class="inv-item" style="animation-delay: ${delay}s">
-                    <img src="${item.img}">
-                    <div style="font-family:'Orbitron'; font-size:11px; margin-bottom:10px;">${item.name}</div>
-                    <button class="btn-action" style="background:#222; color:#fff;" onclick="window.location.href='${item.inspect}'">INSPECT</button>
-                    <button class="btn-action" style="background:var(--accent); color:#fff;" onclick="confirmSell('${id}', ${item.price})">SELL ${item.price} B</button>
+                <div class="inv-card" style="animation-delay: ${delay}s">
+                    <span class="rarity-tag" style="color:${item.color}">${item.rarity}</span>
+                    <img src="${item.img}" style="width:120px;">
+                    <div style="font-family:'Orbitron'; font-size:11px; margin:10px 0;">${item.name}</div>
+                    <button class="btn-nav" style="width:100%; font-size:9px; margin-bottom:5px;" onclick="window.location.href='${item.inspect}'">INSPECT</button>
+                    <button class="btn-nav" style="width:100%; border-color:var(--accent); color:var(--accent); font-size:9px;" onclick="sellItem('${id}', ${item.price})">SELL ${item.price} B</button>
                 </div>`;
             delay += 0.05;
         });
     }
 
-    function confirmSell(id, pr) {
-        document.getElementById('confirm-msg').innerText = `SELL THIS ITEM FOR ${pr} B?`;
-        document.getElementById('confirm-modal').style.display = 'flex';
-        document.getElementById('confirm-yes').onclick = () => {
+    function sellItem(id, price) {
+        if(confirm(`Sell for ${price} B?`)) {
             db.ref('users/'+user.uid+'/inventory/'+id).remove();
-            db.ref('users/'+user.uid+'/balance').set(balance + pr);
-            toast("ITEM SOLD"); closeModals();
-        };
+            db.ref('users/'+user.uid+'/balance').set(balance + price);
+            toast("SOLD SUCCESS");
+        }
     }
 
     function confirmSellAll() {
         let total = 0;
         Object.values(userInv).forEach(i => total += i.price);
-        if(total === 0) return toast("EMPTY INVENTORY");
-        
-        document.getElementById('confirm-msg').innerText = `SELL ALL FOR ${total} B?`;
-        document.getElementById('confirm-modal').style.display = 'flex';
-        document.getElementById('confirm-yes').onclick = () => {
-            db.ref('users/'+user.uid+'/inventory').remove();
-            db.ref('users/'+user.uid+'/balance').set(balance + total);
-            toast("COLLECTION SOLD"); closeModals();
-        };
-    }
-
-    // --- UTILS ---
-    function joinEvent() {
-        if(!user) return login();
-        db.ref('event_participants/'+user.uid).set(true);
-        db.ref('global_feed').push({ nick: myNick, msg: "joined the event!" });
-        toast("SUCCESSFULLY JOINED");
+        if(total === 0 || !confirm(`Sell all items for ${total} B?`)) return;
+        db.ref('users/'+user.uid+'/inventory').remove();
+        db.ref('users/'+user.uid+'/balance').set(balance + total);
+        toast("ALL SOLD");
     }
 
     function showPage(p) {
@@ -319,16 +277,7 @@
     }
 
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-    
-    function adminPanel() {
-        const p = prompt("ACCESS CODE:");
-        if(p === "kov6alex666") {
-            db.ref('users/'+user.uid+'/balance').set(balance + 100000);
-            toast("ADMIN CASH ADDED");
-        }
-    }
-
+    function closeModals() { document.getElementById('case-modal').style.display = 'none'; }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
