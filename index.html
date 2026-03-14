@@ -3,45 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - FIXED V4</title>
+    <title>BABYSELL - ELITE EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
         
-        :root { --main: #00ffaa; --bg: #08080a; --accent: #ff2d55; --panel: #0c0c0f; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; opacity: 0; animation: fadeInPage 0.8s forwards; }
-
-        @keyframes fadeInPage { to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 30px; height: 70px; background: rgba(0,0,0,0.9); border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); }
-        .user-profile { display: none; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 30px; border: 1px solid #333; }
-        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--main); }
+        :root { --main: #00ffaa; --bg: #08080a; --accent: #ff2d55; --panel: rgba(15, 15, 20, 0.8); }
         
-        .btn-nav { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: #888; padding: 8px 16px; border-radius: 5px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
+            background: radial-gradient(circle at top right, #111, #08080a);
+            min-height: 100vh; overflow-x: hidden;
+        }
 
-        .page { display: none; padding: 25px; animation: slideUp 0.4s ease-out; }
+        /* ANIMATIONS */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 20px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
+
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 30px; height: 75px; background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(15px); border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000;
+        }
+
+        .btn-nav { 
+            background: rgba(255,255,255,0.05); border: 1px solid #333; color: #aaa; 
+            padding: 10px 18px; border-radius: 8px; font-family: 'Orbitron'; font-size: 11px;
+            cursor: pointer; transition: 0.4s;
+        }
+        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); background: rgba(0,255,170,0.05); }
+
+        .page { display: none; padding: 30px; animation: fadeIn 0.6s ease-out forwards; }
         .page.active { display: block; }
 
-        /* ROULETTE STYLES */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-box { background: var(--panel); border: 1px solid #222; padding: 30px; border-radius: 20px; width: 95%; max-width: 600px; text-align: center; }
-        .roulette-win { position: relative; width: 100%; height: 140px; background: #000; margin: 20px 0; overflow: hidden; border: 1px solid #222; border-radius: 10px; }
-        .strip { display: flex; position: absolute; left: 0; transition: 6s cubic-bezier(0.1, 0, 0.1, 1); }
-        .strip-item { min-width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .strip-item img { width: 90px; }
-        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 10; box-shadow: 0 0 15px var(--main); }
+        /* CASE & ROULETTE */
+        .case-container {
+            background: var(--panel); border: 1px solid #222; padding: 40px; 
+            border-radius: 25px; text-align: center; transition: 0.5s;
+            max-width: 300px; margin: 0 auto;
+        }
+        .case-container:hover { border-color: var(--main); transform: scale(1.02); }
 
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .inv-item { background: var(--panel); border: 1px solid #1a1a1a; padding: 15px; border-radius: 15px; text-align: center; transition: 0.3s; }
-        .inv-item img { width: 100px; cursor: pointer; }
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .modal-box { 
+            background: #0d0d0f; border: 1px solid #333; padding: 30px; 
+            border-radius: 20px; width: 90%; max-width: 500px; text-align: center;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        /* INVENTORY ITEMS */
+        .inv-item { 
+            background: var(--panel); border: 1px solid #222; padding: 20px; 
+            border-radius: 15px; text-align: center; transition: 0.3s;
+        }
+        .inv-item:hover { border-color: var(--main); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .inv-item img { width: 110px; margin-bottom: 10px; filter: drop-shadow(0 5px 15px #000); }
+
+        .btn-sell { background: var(--accent); color: #fff; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 10px; width: 100%; margin-top: 5px; }
+        .btn-inspect { background: #333; color: #fff; border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 10px; width: 100%; }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 12px 25px; margin-top: 10px; font-size: 11px; font-family: 'Orbitron'; border-left: 4px solid var(--main); }
+        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; font-size: 12px; border-left: 5px solid var(--main); }
     </style>
 </head>
 <body>
@@ -49,54 +77,59 @@
 <div id="notif"></div>
 
 <header class="header">
-    <div style="display:flex; gap:10px;">
+    <div style="display:flex; gap:12px;">
         <button class="btn-nav active" onclick="showPage('market')">MARKET</button>
-        <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
-        <button class="btn-nav" onclick="showPage('settings')">SETTINGS</button>
+        <button class="btn-nav" id="inv-tab-btn" onclick="showPage('inventory')">INVENTORY</button>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
-        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-weight:bold;">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
-        <div id="u-prof" class="user-profile">
-            <span id="u-nick-display" style="font-family:'Orbitron'; font-size:12px; color:var(--main);">PLAYER</span>
-            <img id="u-avatar-img" src="" class="user-avatar">
+    <div style="display:flex; align-items:center; gap:20px;">
+        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px; font-weight:bold;">0 B</div>
+        <div id="u-prof" style="display:none; align-items:center; gap:10px;">
+            <img id="u-ava" src="" style="width:35px; border-radius:50%; border:2px solid var(--main);">
         </div>
+        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
-    <div style="max-width:1000px; margin:0 auto 30px; height:180px; background:linear-gradient(90deg,#000,transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover; border-radius:15px; border:1px solid #1a1a1a; display:flex; align-items:center; padding:0 40px; justify-content:space-between;">
-        <div>
-            <h1 style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
-            <button id="join-btn" class="btn-nav" style="background:var(--main); color:#000; margin-top:15px; font-weight:bold;" onclick="joinEvent()">JOIN EVENT</button>
-        </div>
-        <div id="event-feed" style="width:250px; height:120px; background:rgba(0,0,0,0.6); padding:10px; border-radius:10px; font-size:11px; overflow:hidden; border-left:2px solid var(--main);"></div>
-    </div>
-
-    <div style="text-align:center;">
-        <div style="display:inline-block; background:var(--panel); padding:40px; border-radius:20px; border:1px solid #1a1a1a; cursor:pointer;" onclick="openCaseModal()">
-            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:150px;">
-            <h3 style="font-family:'Orbitron'; margin-top:10px;">HARDCORE CASE</h3>
-            <span style="color:var(--main); font-size:22px;">1,000 B</span>
-        </div>
+    <div class="case-container" onclick="openCaseModal()">
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:200px;">
+        <h2 style="font-family:'Orbitron'; margin:15px 0;">HARDCORE CASE</h2>
+        <div style="color:var(--main); font-size:22px; font-weight:bold;">1,000 B</div>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
-    <div id="inv-grid" class="inv-grid"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">YOUR COLLECTION</h2>
+        <button class="btn-nav" style="background:var(--accent); color:#fff; border:none;" onclick="confirmSellAll()">SELL ALL SKINS</button>
+    </div>
+    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:20px;"></div>
+</div>
+
+<div id="confirm-modal" class="modal">
+    <div class="modal-box">
+        <h3 id="confirm-text" style="font-family:'Orbitron'; margin-bottom:20px;">ARE YOU SURE?</h3>
+        <div style="display:flex; gap:15px;">
+            <button id="confirm-yes" class="btn-nav" style="flex:1; background:var(--main); color:#000;">YES, PROCEED</button>
+            <button onclick="closeModals()" class="btn-nav" style="flex:1;">CANCEL</button>
+        </div>
+    </div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="modal-box">
-        <h2 style="font-family:'Orbitron';">HARDCORE CASE</h2>
-        <div class="roulette-win">
-            <div class="pointer"></div>
-            <div id="strip" class="strip"></div>
+    <div class="modal-box" style="max-width:600px;">
+        <h2 style="font-family:'Orbitron'; margin-bottom:20px;">OPENING...</h2>
+        <div id="roulette" style="position:relative; width:100%; height:140px; background:#000; overflow:hidden; border:1px solid #333; border-radius:10px;">
+            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:10; box-shadow: 0 0 10px var(--main);"></div>
+            <div id="strip" style="display:flex; position:absolute; left:0; transition:6s cubic-bezier(0.1, 0, 0.1, 1);"></div>
         </div>
-        <button id="spin-btn" class="btn-nav" style="background:var(--main); color:#000; padding:12px 40px; font-weight:bold;" onclick="startSpin()">SPIN 1,000 B</button>
-        <button onclick="closeModals()" style="display:block; margin:10px auto; color:#444; background:none; border:none; cursor:pointer;">CLOSE</button>
+        <button id="spin-btn" class="btn-nav" style="width:100%; margin-top:20px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">SPIN 1,000 B</button>
     </div>
 </div>
+
+<footer style="text-align:center; padding:50px; opacity:0.2;">
+    <img src="https://i.postimg.cc/pLrKrWW0/fyvfyv.png" style="width:80px; cursor:pointer;" onclick="adminLogin()">
+</footer>
 
 <script>
     const firebaseConfig = { 
@@ -110,53 +143,31 @@
     const auth = firebase.auth(), db = firebase.database();
 
     const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000 },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200 },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150 }
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, inspect: "https://steamcommunity.com/market/" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, inspect: "https://steamcommunity.com/market/" },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, inspect: "https://steamcommunity.com/market/" }
     ];
 
-    let user = null, balance = 0, currentNick = "";
+    let user = null, balance = 0, userInv = {};
 
     auth.onAuthStateChanged(u => {
         if(u) {
             user = u;
             document.getElementById('l-btn').style.display = 'none';
             document.getElementById('u-prof').style.display = 'flex';
-            document.getElementById('u-avatar-img').src = u.photoURL;
-
+            document.getElementById('u-ava').src = u.photoURL;
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
-
-            db.ref('users/'+u.uid+'/nick').on('value', s => {
-                currentNick = s.val() || u.displayName.split(' ')[0];
-                document.getElementById('u-nick-display').innerText = currentNick.toUpperCase();
-            });
-
-            // ПЕРЕВІРКА ІВЕНТУ (Щоб не заходити двічі)
-            db.ref('event_participants/'+u.uid).on('value', s => {
-                if(s.exists()) {
-                    const btn = document.getElementById('join-btn');
-                    btn.innerText = "ALREADY JOINED";
-                    btn.disabled = true;
-                    btn.style.opacity = "0.5";
-                }
-            });
-
-            db.ref('users/'+u.uid+'/inventory').on('value', s => renderInventory(s.val() || {}));
-            
-            db.ref('global_feed').limitToLast(5).on('value', s => {
-                const f = document.getElementById('event-feed'); f.innerHTML = "";
-                s.forEach(c => {
-                    const d = c.val();
-                    f.innerHTML = `<div style="border-bottom:1px solid #111; padding:2px;"><b>${d.nick}</b> ${d.msg}</div>` + f.innerHTML;
-                });
+            db.ref('users/'+u.uid+'/inventory').on('value', s => {
+                userInv = s.val() || {};
+                renderInventory();
             });
         }
     });
 
-    // --- РУЛЕТКА ---
+    // --- CASE LOGIC ---
     function openCaseModal() {
         if(!user) return login();
         document.getElementById('case-modal').style.display = 'flex';
@@ -165,62 +176,92 @@
         strip.innerHTML = "";
         for(let i=0; i<80; i++) {
             const s = SKINS[Math.floor(Math.random()*SKINS.length)];
-            strip.innerHTML += `<div class="strip-item"><img src="${s.img}"></div>`;
+            strip.innerHTML += `<div style="min-width:140px; height:140px; display:flex; align-items:center; justify-content:center;"><img src="${s.img}" style="width:90px;"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < 1000) return toast("NO BALANCE");
+        if(balance < 1000) return toast("NO MONEY");
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
         const win = SKINS[Math.floor(Math.random()*SKINS.length)];
         const strip = document.getElementById('strip');
-        strip.children[70].innerHTML = `<img src="${win.img}">`;
+        strip.children[70].innerHTML = `<img src="${win.img}" style="width:90px;">`;
         
-        const move = (70 * 140) - (document.querySelector('.roulette-win').offsetWidth / 2) + 70;
+        const move = (70 * 140) - (document.getElementById('roulette').offsetWidth / 2) + 70;
         strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
         strip.style.transform = `translateX(-${move}px)`;
 
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            db.ref('global_feed').push({ nick: currentNick, msg: `won ${win.name}!` });
-            toast("WON " + win.name);
+            toast("WON: " + win.name);
             document.getElementById('spin-btn').disabled = false;
         }, 6200);
     }
 
-    function joinEvent() {
-        if(!user) return login();
-        db.ref('event_participants/'+user.uid).set(true);
-        db.ref('global_feed').push({ nick: currentNick, msg: "joined the event!", uid: user.uid });
-        toast("JOINED!");
-    }
-
-    function renderInventory(inv) {
-        const g = document.getElementById('inv-grid'); g.innerHTML = "";
-        Object.keys(inv).forEach(k => {
-            const i = inv[k];
-            g.innerHTML += `<div class="inv-item">
-                <img src="${i.img}" onclick="toast('INSPECTED')">
-                <p style="font-size:10px; margin:5px 0;">${i.name}</p>
-                <button class="btn-nav" style="border-color:var(--accent); color:var(--accent); width:100%;" onclick="sellItem('${k}',${i.price})">SELL ${i.price}</button>
-            </div>`;
+    // --- INVENTORY LOGIC ---
+    function renderInventory() {
+        const grid = document.getElementById('inv-grid');
+        grid.innerHTML = "";
+        Object.keys(userInv).forEach(id => {
+            const item = userInv[id];
+            grid.innerHTML += `
+                <div class="inv-item" style="animation: fadeIn 0.4s ease forwards;">
+                    <img src="${item.img}">
+                    <div style="font-family:'Orbitron'; font-size:11px; margin-bottom:10px;">${item.name}</div>
+                    <button class="btn-inspect" onclick="window.open('${item.inspect}')">INSPECT IN GAME</button>
+                    <button class="btn-sell" onclick="confirmSell('${id}', ${item.price})">SELL ${item.price} B</button>
+                </div>`;
         });
     }
 
-    function sellItem(id, p) {
-        db.ref('users/'+user.uid+'/inventory/'+id).remove();
-        db.ref('users/'+user.uid+'/balance').set(balance + p);
-        toast("SOLD!");
+    // --- CONFIRMATIONS ---
+    function confirmSell(id, price) {
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-text').innerText = `SELL FOR ${price} B?`;
+        modal.style.display = 'flex';
+        document.getElementById('confirm-yes').onclick = () => {
+            db.ref('users/'+user.uid+'/inventory/'+id).remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + price);
+            toast("ITEM SOLD!");
+            closeModals();
+        };
     }
 
+    function confirmSellAll() {
+        const count = Object.keys(userInv).length;
+        if(count === 0) return toast("INVENTORY EMPTY");
+        let total = 0;
+        Object.values(userInv).forEach(i => total += i.price);
+
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-text').innerText = `SELL ALL ${count} ITEMS FOR ${total} B?`;
+        modal.style.display = 'flex';
+        document.getElementById('confirm-yes').onclick = () => {
+            db.ref('users/'+user.uid+'/inventory').remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + total);
+            toast("ALL ITEMS SOLD!");
+            closeModals();
+        };
+    }
+
+    // --- UTILS ---
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+        if(event) event.target.classList.add('active');
     }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModals() { document.getElementById('case-modal').style.display = 'none'; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    function adminLogin() {
+        const p = prompt("ACCESS CODE:");
+        if(p === "kov6alex666") {
+            db.ref('users/'+user.uid+'/balance').set(balance + 100000);
+            toast("ADMIN FUNDS GRANTED!");
+        }
+    }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
