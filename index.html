@@ -3,50 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - FINAL V3</title>
+    <title>BABYSELL - ULTRA EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
-        :root { --main: #00ffaa; --bg: #08080a; --accent: #ff2d55; }
+        
+        :root { 
+            --main: #00ffaa; 
+            --bg: #08080a; 
+            --accent: #ff2d55; 
+            --panel: #0c0c0f;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Rajdhani', sans-serif; 
+            overflow-x: hidden;
+            opacity: 0;
+            animation: fadeInPage 0.8s forwards;
+        }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 30px; height: 65px; background: rgba(0,0,0,0.95); border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 1000; }
-        .btn-nav { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: #888; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.3s; text-decoration: none; }
-        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); }
-        .balance-card { border: 1px solid var(--main); padding: 4px 12px; border-radius: 4px; color: var(--main); font-family: 'Orbitron'; font-weight: bold; }
+        /* ANIMATIONS */
+        @keyframes fadeInPage { to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes modalShow { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 5px var(--main); } 50% { box-shadow: 0 0 15px var(--main); } 100% { box-shadow: 0 0 5px var(--main); } }
 
-        /* PAGES */
-        .page { display: none; padding: 20px; animation: fadeIn 0.4s; }
+        /* HEADER & USER PROF */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 30px; height: 70px; background: rgba(0,0,0,0.9); 
+            border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .user-zone { display: flex; align-items: center; gap: 15px; }
+        .user-profile { 
+            display: none; align-items: center; gap: 10px; 
+            background: rgba(255,255,255,0.05); padding: 5px 12px; 
+            border-radius: 30px; border: 1px solid #333;
+        }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--main); }
+        .user-nick { font-family: 'Orbitron'; font-size: 12px; color: var(--main); }
+
+        .btn-nav { 
+            background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: #888; 
+            padding: 8px 16px; border-radius: 5px; font-family: 'Orbitron'; font-size: 10px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); transform: translateY(-2px); }
+
+        /* MARKET & EVENT */
+        .page { display: none; padding: 25px; animation: slideUp 0.5s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* EVENT */
-        .event-mini-banner { max-width: 1000px; margin: 20px auto; border-radius: 12px; height: 180px; background: linear-gradient(90deg, #000 40%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border: 1px solid #1a1a1a; }
-        .event-live-feed { background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; width: 280px; height: 130px; overflow: hidden; font-size: 11px; border-left: 2px solid var(--main); }
-        .feed-item { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        .event-mini-banner { 
+            max-width: 1000px; margin: 0 auto 30px; border-radius: 15px; height: 200px;
+            background: linear-gradient(90deg, #000 40%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+            border: 1px solid #1a1a1a; overflow: hidden;
+        }
 
-        /* ROULETTE */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 600px; text-align: center; }
-        .roulette-container { position: relative; width: 100%; height: 130px; background: #000; margin: 20px 0; overflow: hidden; border: 1px solid #222; }
-        .strip { display: flex; position: absolute; left: 0; transition: 6s cubic-bezier(0.1, 0, 0.1, 1); }
-        .strip-item { min-width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
-        .strip-item img { width: 80px; }
-        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 10; box-shadow: 0 0 10px var(--main); }
+        /* ADMIN ACCESS UI (Replacing Prompt) */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+        }
+        .modal-box { 
+            background: var(--panel); border: 1px solid #222; padding: 35px; 
+            border-radius: 20px; width: 90%; max-width: 400px; text-align: center;
+            animation: modalShow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .admin-input { 
+            background: #000; border: 1px solid #333; color: var(--main); 
+            padding: 12px; width: 100%; margin-bottom: 15px; text-align: center; 
+            font-family: 'Orbitron'; border-radius: 8px; outline: none; transition: 0.3s;
+        }
+        .admin-input:focus { border-color: var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.2); }
 
         /* INVENTORY */
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; transition: 0.3s; }
-        .inv-item img { width: 90px; cursor: pointer; transition: 0.2s; }
-        .inv-item img:hover { transform: scale(1.1); filter: drop-shadow(0 0 10px var(--main)); }
+        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .inv-item { 
+            background: var(--panel); border: 1px solid #1a1a1a; padding: 20px; 
+            border-radius: 15px; text-align: center; transition: 0.4s;
+        }
+        .inv-item:hover { border-color: var(--main); transform: translateY(-5px); }
+        .inv-item img { width: 100px; cursor: pointer; transition: 0.3s; }
+        .inv-item img:hover { transform: scale(1.1) rotate(5deg); }
 
-        .admin-input { background: #050505; border: 1px solid #222; color: var(--main); padding: 10px; width: 100%; margin-bottom: 10px; text-align: center; font-family: 'Orbitron'; outline: none; }
-        
-        #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 10px 20px; margin-top: 5px; font-size: 11px; font-family: 'Orbitron'; }
+        /* TOAST */
+        #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
+        .toast { 
+            background: #000; border: 1px solid var(--main); padding: 12px 25px; 
+            margin-top: 10px; font-size: 11px; font-family: 'Orbitron'; 
+            animation: slideUp 0.3s forwards; border-left: 4px solid var(--main);
+        }
     </style>
 </head>
 <body>
@@ -54,31 +109,40 @@
 <div id="notif"></div>
 
 <header class="header">
-    <div style="display:flex; gap:10px; align-items:center;">
-        <h2 style="font-family:'Orbitron'; color:var(--main); font-size:16px;">BABYSELL</h2>
-        <button class="btn-nav active" id="btn-market" onclick="showPage('market')">MARKET</button>
-        <button class="btn-nav" id="btn-inventory" onclick="showPage('inventory')">INVENTORY</button>
-        <button class="btn-nav" id="btn-settings" onclick="showPage('settings')">SETTINGS</button>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-nav active" onclick="showPage('market')">MARKET</button>
+        <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
+        <button class="btn-nav" onclick="showPage('settings')">SETTINGS</button>
     </div>
-    <div style="display:flex; align-items:center; gap:12px;">
+
+    <div class="user-zone">
         <div class="balance-card" id="u-bal">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
+        
+        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:bold;">LOGIN</button>
+        
+        <div id="u-prof" class="user-profile">
+            <span id="u-nick-display" class="user-nick">PLAYER</span>
+            <img id="u-avatar-img" src="" class="user-avatar">
+        </div>
     </div>
 </header>
 
 <div id="page-market" class="page active">
     <div class="event-mini-banner">
         <div>
-            <h1 id="ev-status-text" style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
-            <button class="btn-nav" id="join-ev-btn" style="background:var(--main); color:#000; margin-top:10px; font-weight:bold;" onclick="joinEvent()">JOIN EVENT</button>
+            <h1 style="font-family:'Orbitron'; color:var(--main); font-size:28px;">EMERALD SKIES</h1>
+            <button id="join-btn" class="btn-nav" style="background:var(--main); color:#000; margin-top:15px; font-weight:bold; padding:10px 25px;" onclick="joinEvent()">JOIN EVENT</button>
         </div>
-        <div class="event-live-feed" id="real-feed"></div>
+        <div id="event-feed" style="background:rgba(0,0,0,0.6); padding:15px; border-radius:10px; width:250px; font-size:11px; border-left:2px solid var(--main); height:120px;">
+            <div style="color:#555; font-style:italic;">Scanning network...</div>
+        </div>
     </div>
-    <div style="display:flex; justify-content:center;">
-        <div class="case-card" onclick="openCaseModal()" style="background:#0c0c0f; border:1px solid #1a1a1a; padding:30px; border-radius:15px; text-align:center; cursor:pointer; width:250px;">
-            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:150px;">
-            <p style="font-family:'Orbitron'; margin-top:10px;">HARDCORE CASE</p>
-            <b style="color:var(--main); font-size:20px;">1,000 B</b>
+
+    <div style="text-align:center;">
+        <div style="display:inline-block; background:var(--panel); padding:40px; border-radius:20px; border:1px solid #1a1a1a; cursor:pointer;" onclick="openCaseModal()">
+            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:180px;">
+            <h3 style="font-family:'Orbitron'; margin-top:15px;">HARDCORE CASE</h3>
+            <span style="color:var(--main); font-size:24px; font-weight:bold;">1,000 B</span>
         </div>
     </div>
 </div>
@@ -88,40 +152,45 @@
 </div>
 
 <div id="page-settings" class="page">
-    <div style="max-width:400px; margin: 0 auto; background:#0c0c0f; padding:30px; border-radius:15px; border:1px solid #222;">
-        <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom:20px;">USER SETTINGS</h2>
-        <p style="font-size:12px; color:#666; margin-bottom:5px;">CHANGE NICKNAME:</p>
-        <input type="text" id="new-nick" class="admin-input" placeholder="Enter unique nick">
-        <button class="btn-nav" style="width:100%; background:var(--main); color:#000;" onclick="changeNickname()">SAVE NICKNAME</button>
+    <div style="max-width:400px; margin:0 auto; background:var(--panel); padding:30px; border-radius:20px;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">SETTINGS</h2>
+        <div style="margin-top:20px;">
+            <p style="font-size:12px; color:#666; margin-bottom:10px;">CHANGE NICKNAME</p>
+            <input type="text" id="nick-input" class="admin-input" placeholder="Unique nickname...">
+            <button class="btn-nav" style="width:100%; background:var(--main); color:#000;" onclick="saveNick()">UPDATE PROFILE</button>
+        </div>
     </div>
 </div>
 
-<div id="case-modal" class="modal">
-    <div class="modal-box">
-        <h2 style="font-family:'Orbitron';">HARDCORE CASE</h2>
-        <div class="roulette-container">
-            <div class="pointer"></div>
-            <div id="strip" class="strip"></div>
+<div id="admin-auth-modal" class="modal">
+    <div class="modal-box" style="border-color:var(--accent);">
+        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:20px;">TERMINAL LOGIN</h2>
+        <input type="password" id="admin-pw-input" class="admin-input" placeholder="ENTER ACCESS CODE">
+        <div style="display:flex; gap:10px;">
+            <button class="btn-nav" style="flex:1; background:var(--accent); color:#fff;" onclick="verifyAdmin()">ACCESS</button>
+            <button class="btn-nav" style="flex:1;" onclick="closeModals()">EXIT</button>
         </div>
-        <button class="btn-nav" id="spin-btn" style="background:var(--main); color:#000; padding:12px 50px; font-weight:bold;" onclick="startSpin()">SPIN FOR 1,000 B</button>
-        <button onclick="closeModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
     </div>
 </div>
 
 <div id="admin-panel-modal" class="modal">
-    <div class="modal-box" style="border-color: var(--main);">
-        <h2 style="font-family:'Orbitron'; color:var(--main);">ADMIN TERMINAL</h2>
-        <button class="btn-nav" style="width:100%; margin-top:10px;" onclick="addMoney(100000)">+100k B</button>
-        <button class="btn-nav" style="width:100%; margin-top:10px; background:var(--accent); color:#fff;" onclick="finishEvent()">END EVENT & PAY 6666 B</button>
-        <button class="btn-nav" style="width:100%; margin-top:20px;" onclick="closeAdmin()">EXIT</button>
+    <div class="modal-box" style="border-color:var(--main); max-width:450px;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">CORE ADMIN PANEL</h2>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
+            <button class="btn-nav" onclick="giveMoney(10000)">+10,000 B</button>
+            <button class="btn-nav" onclick="giveMoney(100000)">+100,000 B</button>
+            <button class="btn-nav" style="grid-column: span 2; background:var(--accent); color:#fff;" onclick="terminateEvent()">END EVENT & PAY 6666 B</button>
+        </div>
+        <button class="btn-nav" style="width:100%; margin-top:15px;" onclick="closeModals()">CLOSE</button>
     </div>
 </div>
 
-<footer style="text-align:center; padding:40px;">
-    <img src="https://i.postimg.cc/pLrKrWW0/fyvfyv.png" style="width:100px; cursor:pointer; opacity:0.2;" onclick="openAdmin()">
+<footer style="text-align:center; padding:60px;">
+    <img src="https://i.postimg.cc/pLrKrWW0/fyvfyv.png" style="width:120px; opacity:0.1; cursor:pointer; transition:0.3s;" onclick="openAdminAuth()" onmouseover="this.style.opacity='0.5'" onmouseout="this.style.opacity='0.1'">
 </footer>
 
 <script>
+    // Firebase Config
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -132,153 +201,121 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, inspect: "steam://run/730/" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, inspect: "steam://run/730/" },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, inspect: "steam://run/730//+csgo_econ_action_preview%20B1A1782E707D28B0A9B591B299B281B589623C2341B2F131B7D3B4B9B1A150B0D3B4B9B0A150B0D3B4B9B3A150B0D3B4B9B2A150B0D931B3C1B15613A0B9" }
-    ];
-
     let user = null, balance = 0, currentNick = "", lastWinnerUID = "";
 
+    // Auth & Profile Logic
     auth.onAuthStateChanged(u => {
         if(u) {
             user = u;
+            document.getElementById('l-btn').style.display = 'none';
+            document.getElementById('u-prof').style.display = 'flex';
+            document.getElementById('u-avatar-img').src = u.photoURL;
+
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
+
             db.ref('users/'+u.uid+'/nick').on('value', s => {
                 currentNick = s.val() || u.displayName.split(' ')[0];
+                document.getElementById('u-nick-display').innerText = currentNick.toUpperCase();
             });
-            db.ref('users/'+u.uid+'/inventory').on('value', s => {
-                renderInventory(s.val() || {});
-            });
-            // Перевірка статусу івенту
+
+            db.ref('users/'+u.uid+'/inventory').on('value', s => renderInventory(s.val() || {}));
+            
+            // Sync Event
             db.ref('event_active').on('value', s => {
-                const active = s.val() !== false;
-                const btn = document.getElementById('join-ev-btn');
-                if(!active) {
-                    btn.innerText = "EVENT CLOSED";
+                if(s.val() === false) {
+                    const btn = document.getElementById('join-btn');
+                    btn.innerText = "EVENT ENDED";
                     btn.disabled = true;
-                    btn.style.opacity = "0.5";
+                    btn.style.opacity = "0.4";
                 }
             });
-            // Live Feed
-            db.ref('global_feed').limitToLast(5).on('value', s => {
-                const feed = document.getElementById('real-feed');
-                feed.innerHTML = "";
+
+            db.ref('global_feed').limitToLast(6).on('value', s => {
+                const f = document.getElementById('event-feed');
+                f.innerHTML = "";
                 s.forEach(c => {
                     const d = c.val();
-                    feed.innerHTML = `<div class="feed-item"><b>${d.nick}</b> ${d.msg}</div>` + feed.innerHTML;
+                    f.innerHTML = `<div style="margin-bottom:5px; border-bottom:1px solid #111; padding-bottom:2px;"><b>${d.nick}</b> ${d.msg}</div>` + f.innerHTML;
                     if(d.uid) lastWinnerUID = d.uid;
                 });
             });
         }
     });
 
-    // --- НІКНЕЙМИ ---
-    async function changeNickname() {
-        const nick = document.getElementById('new-nick').value.trim();
-        if(nick.length < 3) return toast("Too short!");
-        
-        const snapshot = await db.ref('nicks').child(nick).get();
-        if(snapshot.exists()) return toast("Nick already taken!");
-
-        // Видаляємо старий нік і резервуємо новий
-        if(currentNick) db.ref('nicks').child(currentNick).remove();
-        db.ref('nicks').child(nick).set(user.uid);
-        db.ref('users/'+user.uid+'/nick').set(nick);
-        toast("Nickname changed!");
-    }
-
-    // --- РУЛЕТКА ---
-    function openCaseModal() {
-        if(!user) return toast("Login!");
-        document.getElementById('case-modal').style.display = 'flex';
-        const strip = document.getElementById('strip');
-        strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
-        strip.innerHTML = "";
-        for(let i=0; i<80; i++) {
-            const s = SKINS[Math.floor(Math.random()*SKINS.length)];
-            strip.innerHTML += `<div class="strip-item"><img src="${s.img}"></div>`;
+    // ADMIN FUNCTIONS (Custom UI)
+    function openAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'flex'; }
+    function verifyAdmin() {
+        const pw = document.getElementById('admin-pw-input').value;
+        if(pw === "kov6alex666") {
+            document.getElementById('admin-auth-modal').style.display = 'none';
+            document.getElementById('admin-panel-modal').style.display = 'flex';
+            toast("ACCESS GRANTED");
+        } else {
+            toast("ACCESS DENIED");
         }
     }
 
-    function startSpin() {
-        if(balance < 1000) return toast("No balance!");
-        document.getElementById('spin-btn').disabled = true;
-        db.ref('users/'+user.uid+'/balance').set(balance - 1000);
+    function giveMoney(amt) {
+        if(user) db.ref('users/'+user.uid+'/balance').set(balance + amt);
+        toast(`RECEIVED ${amt} B`);
+    }
 
-        const rand = Math.random()*100;
-        let winIndex = 2; // Glock
-        if(rand < 2) winIndex = 0; // Knife
-        else if(rand < 20) winIndex = 1; // AK
+    function terminateEvent() {
+        if(!lastWinnerUID) return toast("NO TARGET FOUND");
+        db.ref('users/'+lastWinnerUID+'/balance').transaction(c => (c || 0) + 6666);
+        db.ref('event_active').set(false);
+        db.ref('global_feed').push({ nick: "SYSTEM", msg: "TERMINATED EVENT. PRIZE SENT." });
+        toast("EVENT TERMINATED");
+        closeModals();
+    }
 
-        const win = SKINS[winIndex];
-        const strip = document.getElementById('strip');
-        strip.children[70].innerHTML = `<img src="${win.img}">`;
+    // GENERAL
+    function showPage(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.getElementById('page-'+p).classList.add('active');
+    }
+
+    async function saveNick() {
+        const n = document.getElementById('nick-input').value.trim();
+        if(n.length < 3) return toast("MIN 3 SYMBOLS");
+        const snap = await db.ref('nicks').child(n).get();
+        if(snap.exists()) return toast("NICK TAKEN");
         
-        const move = (70 * 130) - (document.querySelector('.roulette-container').offsetWidth / 2) + 65;
-        strip.style.transition = '6s cubic-bezier(0.1, 0, 0.1, 1)';
-        strip.style.transform = `translateX(-${move}px)`;
-
-        setTimeout(() => {
-            db.ref('users/'+user.uid+'/inventory').push(win);
-            db.ref('global_feed').push({ nick: currentNick, msg: `won ${win.name}!`, uid: user.uid });
-            toast("You won " + win.name);
-            document.getElementById('spin-btn').disabled = false;
-        }, 6200);
+        db.ref('users/'+user.uid+'/nick').set(n);
+        db.ref('nicks').child(n).set(user.uid);
+        toast("PROFILE UPDATED");
     }
 
-    // --- ІВЕНТ ---
     function joinEvent() {
-        db.ref('global_feed').push({ nick: currentNick, msg: "joined the event!", uid: user.uid });
-        toast("Joined!");
+        if(!user) return login();
+        db.ref('global_feed').push({ nick: currentNick, msg: "connected to event", uid: user.uid });
+        toast("JOINED SUCCESS");
     }
 
-    // --- ІНВЕНТАР ---
     function renderInventory(inv) {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
         Object.keys(inv).forEach(k => {
             const i = inv[k];
             g.innerHTML += `
                 <div class="inv-item">
-                    <img src="${i.img}" onclick="window.location.href='${i.inspect}'">
-                    <div style="font-size:10px; margin:5px 0;">${i.name}</div>
+                    <img src="${i.img}" onclick="toast('ITEM INSPECTED')">
+                    <p style="font-size:10px; margin:10px 0; font-family:'Orbitron';">${i.name}</p>
                     <button class="btn-nav" style="width:100%; border-color:var(--accent); color:var(--accent);" onclick="sellItem('${k}', ${i.price})">SELL ${i.price}B</button>
                 </div>`;
         });
     }
 
-    function sellItem(id, price) {
+    function sellItem(id, pr) {
         db.ref('users/'+user.uid+'/inventory/'+id).remove();
-        db.ref('users/'+user.uid+'/balance').set(balance + price);
-        toast("Sold for " + price + " B");
+        db.ref('users/'+user.uid+'/balance').set(balance + pr);
+        toast(`SOLD FOR ${pr} B`);
     }
 
-    // --- АДМІНКА ---
-    function openAdmin() {
-        const p = prompt("Password:");
-        if(p === "kov6alex666") document.getElementById('admin-panel-modal').style.display = 'flex';
-    }
-    function addMoney(v) { db.ref('users/'+user.uid+'/balance').set(balance + v); }
-    function finishEvent() {
-        if(!lastWinnerUID) return alert("No winner found!");
-        db.ref('users/'+lastWinnerUID+'/balance').transaction(c => (c || 0) + 6666);
-        db.ref('event_active').set(false);
-        db.ref('global_feed').push({ nick: "SYSTEM", msg: "EVENT ENDED! 6666 B PAID!" });
-        alert("Done!");
-    }
-
-    function showPage(p) {
-        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-        document.getElementById('page-'+p).classList.add('active');
-        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-'+p)?.classList.add('active');
-    }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModal() { document.getElementById('case-modal').style.display = 'none'; }
-    function closeAdmin() { document.getElementById('admin-panel-modal').style.display = 'none'; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
