@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - OFFICIAL</title>
+    <title>BABYSELL - FINAL EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -12,7 +12,6 @@
         
         :root { 
             --main: #00ffaa; --bg: #030305; --accent: #ff2d55; 
-            --rare: #ebca42; --classified: #d32ee6; --common: #4b69ff;
             --glass: rgba(255, 255, 255, 0.03);
         }
         
@@ -20,18 +19,8 @@
         
         body { 
             background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
+            min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
         }
-
-        /* LOGO ANIMATION */
-        .logo-center {
-            position: absolute; left: 50%; transform: translateX(-50%);
-            font-family: 'Orbitron'; font-weight: 900; font-size: 28px;
-            letter-spacing: 8px; color: #fff; text-shadow: 0 0 20px var(--main);
-            animation: pulseLogo 3s infinite;
-        }
-        @keyframes pulseLogo { 0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 5px var(--main)); } 50% { opacity: 1; filter: drop-shadow(0 0 20px var(--main)); } }
 
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -40,38 +29,41 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
+        .logo-center {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            font-family: 'Orbitron'; font-weight: 900; font-size: 28px;
+            letter-spacing: 8px; color: #fff; text-shadow: 0 0 15px var(--main);
+            animation: pulseLogo 3s infinite;
+        }
+        @keyframes pulseLogo { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+
         .btn-nav { 
             background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
             color: #ccc; padding: 10px 18px; border-radius: 8px; font-family: 'Orbitron'; 
             font-size: 11px; cursor: pointer; transition: 0.3s;
         }
-        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); box-shadow: 0 0 15px rgba(0,255,170,0.2); }
+        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); }
 
-        .page { display: none; padding: 40px; animation: slideUp 0.6s ease-out; }
+        .lang-btn { background: none; border: 1px solid #333; color: #666; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: 'Orbitron'; }
+        .lang-btn.active { border-color: var(--main); color: var(--main); }
+
+        .page { display: none; padding: 40px; animation: fadeIn 0.5s ease; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CASE & EVENT */
-        .event-banner {
-            max-width: 1000px; margin: 0 auto 40px; border-radius: 20px; 
-            height: 150px; background: linear-gradient(90deg, #000, #0a2e23);
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid var(--main); position: relative; overflow: hidden;
-        }
         .case-card {
             background: #0a0a0c; padding: 40px; border-radius: 30px; text-align: center;
             max-width: 350px; margin: 0 auto; cursor: pointer; border: 1px solid #222; transition: 0.4s;
         }
-        .case-card:hover { border-color: var(--main); transform: scale(1.05); }
+        .case-card:hover { border-color: var(--main); transform: scale(1.03); }
 
-        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #333; }
         .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
         .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 8s cubic-bezier(0.1, 0, 0, 1); }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; }
+        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; border-left: 5px solid var(--main); }
     </style>
 </head>
 <body>
@@ -80,9 +72,7 @@
 
 <header class="header">
     <div style="display:flex; gap:10px; align-items:center;">
-        <div id="admin-panel" style="display:none;">
-            <button class="btn-nav" style="border-color:var(--accent); color:var(--accent);" onclick="addMoney()">+ ADMIN MONEY</button>
-        </div>
+        <div id="admin-panel" style="display:none;"><button class="btn-nav" style="border-color:var(--accent);" onclick="addMoney()">+ ADMIN</button></div>
         <button class="btn-nav active" id="tab-market" onclick="showPage('market')" data-t="nav_market">MARKET</button>
         <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')" data-t="nav_inv">INVENTORY</button>
     </div>
@@ -90,9 +80,10 @@
     <div class="logo-center">BABYSELL</div>
 
     <div style="display:flex; align-items:center; gap:15px;">
-        <div class="lang-bar" style="display:flex; gap:5px;">
-            <button class="lang-btn" onclick="setLang('uk')">UA</button>
-            <button class="lang-btn" onclick="setLang('en')">EN</button>
+        <div style="display:flex; gap:5px;">
+            <button class="lang-btn" id="l-uk" onclick="setLang('uk')">UA</button>
+            <button class="lang-btn" id="l-en" onclick="setLang('en')">EN</button>
+            <button class="lang-btn" id="l-ru" onclick="setLang('ru')">RU</button>
         </div>
         <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px;">0 B</div>
         <button id="l-btn" onclick="login()" class="btn-nav" data-t="btn_login">LOGIN</button>
@@ -100,10 +91,10 @@
 </header>
 
 <div id="page-market" class="page active">
-    <div class="event-banner">
+    <div style="max-width:1000px; margin: 0 auto 40px; border-radius: 20px; height: 150px; background: linear-gradient(90deg, #000, #0a2e23); display: flex; align-items: center; justify-content: center; border: 1px solid var(--main);">
         <div style="text-align:center;">
             <h1 data-t="ev_title" style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
-            <p data-t="ev_desc">Відкривай кейси та отримуй унікальні призи!</p>
+            <p data-t="ev_desc">Open cases and win prizes!</p>
         </div>
     </div>
     <div class="case-card" onclick="openCaseModal()">
@@ -144,7 +135,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    const ADMIN_UID = "p8zS6D3p4UfS7xV9v5g4m2n1b3v"; // Твій UID тут
+    const ADMIN_UID = "p8zS6D3p4UfS7xV9v5g4m2n1b3v"; 
 
     const LANGS = {
         uk: {
@@ -152,14 +143,21 @@
             ev_title: "СМАРАГДОВЕ НЕБО", ev_desc: "Відкривай кейси та отримуй призи!",
             case_name: "ХАРДКОР КЕЙС", inv_title: "КОЛЕКЦІЯ", btn_sellall: "ПРОДАТИ ВСЕ",
             roulette_wait: "ВІДКРИТТЯ...", btn_spin: "КРУТИТИ", btn_close: "ЗАКРИТИ",
-            btn_inspect: "ОГЛЯНУТЬ", btn_sell: "ПРОДАТИ", toast_won: "ВИ ВИГРАЛИ: "
+            btn_inspect: "ОГЛЯНУТЬ", btn_sell: "ПРОДАТИ", toast_won: "ВИ ВИГРАЛИ: ", confirm_sell: "Продати цей скін?"
         },
         en: {
             nav_market: "MARKET", nav_inv: "INVENTORY", btn_login: "LOGIN",
             ev_title: "EMERALD SKIES", ev_desc: "Open cases and get prizes!",
             case_name: "HARDCORE CASE", inv_title: "COLLECTION", btn_sellall: "SELL ALL",
             roulette_wait: "OPENING...", btn_spin: "SPIN", btn_close: "CLOSE",
-            btn_inspect: "INSPECT", btn_sell: "SELL", toast_won: "YOU WON: "
+            btn_inspect: "INSPECT", btn_sell: "SELL", toast_won: "YOU WON: ", confirm_sell: "Sell this skin?"
+        },
+        ru: {
+            nav_market: "МАРКЕТ", nav_inv: "ИНВЕНТАРЬ", btn_login: "ВОЙТИ",
+            ev_title: "ИЗУМРУДНОЕ НЕБО", ev_desc: "Открывай кейсы и получай призы!",
+            case_name: "ХАРДКОР КЕЙС", inv_title: "КОЛЛЕКЦИЯ", btn_sellall: "ПРОДАТЬ ВСЁ",
+            roulette_wait: "ОТКРЫТИЕ...", btn_spin: "КРУТИТЬ", btn_close: "ЗАКРЫТЬ",
+            btn_inspect: "ОСМОТРЕТЬ", btn_sell: "ПРОДАТЬ", toast_won: "ВЫ ВЫИГРАЛИ: ", confirm_sell: "Продать этот скин?"
         }
     };
 
@@ -188,13 +186,11 @@
         }
     });
 
-    function addMoney() { db.ref('users/'+user.uid+'/balance').set(balance + 50000); }
-
     function setLang(l) {
         currentLang = l;
-        document.querySelectorAll('[data-t]').forEach(el => {
-            el.innerText = LANGS[l][el.getAttribute('data-t')];
-        });
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('l-'+l).classList.add('active');
+        document.querySelectorAll('[data-t]').forEach(el => { el.innerText = LANGS[l][el.getAttribute('data-t')]; });
         renderInventory();
     }
 
@@ -211,18 +207,15 @@
     }
 
     function startSpin() {
-        if(balance < 1000) return toast("No money!");
+        if(balance < 1000) return toast("No balance");
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-
         const win = (Math.random()*100 < 5) ? SKINS[2] : (Math.random()*100 < 30 ? SKINS[1] : SKINS[0]);
         const strip = document.getElementById('strip');
         strip.children[80].innerHTML = `<img src="${win.img}" width="100">`;
-
         const move = (80 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
         strip.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0, 1)';
         strip.style.transform = `translateX(-${move}px)`;
-
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
             toast(LANGS[currentLang].toast_won + win.name);
@@ -244,6 +237,21 @@
         });
     }
 
+    function sell(id, p) {
+        if(confirm(LANGS[currentLang].confirm_sell)) {
+            db.ref('users/'+user.uid+'/inventory/'+id).remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + p);
+        }
+    }
+
+    function confirmSellAll() {
+        let total = 0; Object.values(userInv).forEach(i => total += i.price);
+        if(total > 0 && confirm("Sell all items?")) {
+            db.ref('users/'+user.uid+'/inventory').remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + total);
+        }
+    }
+
     function openSteam(link) {
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none'; iframe.src = link;
@@ -251,26 +259,13 @@
         setTimeout(() => document.body.removeChild(iframe), 500);
     }
 
-    function sell(id, p) {
-        db.ref('users/'+user.uid+'/inventory/'+id).remove();
-        db.ref('users/'+user.uid+'/balance').set(balance + p);
-    }
-
-    function confirmSellAll() {
-        let total = 0; Object.values(userInv).forEach(i => total += i.price);
-        if(total > 0 && confirm("Sell all?")) {
-            db.ref('users/'+user.uid+'/inventory').remove();
-            db.ref('users/'+user.uid+'/balance').set(balance + total);
-        }
-    }
-
+    function addMoney() { db.ref('users/'+user.uid+'/balance').set(balance + 100000); }
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-'+p).classList.add('active');
     }
-
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function closeModals() { document.getElementById('case-modal').style.display = 'none'; }
     function toast(m) {
@@ -278,6 +273,7 @@
         t.className = 'toast'; t.innerText = m;
         n.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
+    setLang('uk');
 </script>
 </body>
 </html>
