@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - MULTILINGUAL</title>
+    <title>BABYSELL - OFFICIAL</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
         
         :root { 
             --main: #00ffaa; --bg: #030305; --accent: #ff2d55; 
@@ -24,60 +24,54 @@
             background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
         }
 
-        /* ANIMATIONS */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* LOGO ANIMATION */
+        .logo-center {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            font-family: 'Orbitron'; font-weight: 900; font-size: 28px;
+            letter-spacing: 8px; color: #fff; text-shadow: 0 0 20px var(--main);
+            animation: pulseLogo 3s infinite;
+        }
+        @keyframes pulseLogo { 0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 5px var(--main)); } 50% { opacity: 1; filter: drop-shadow(0 0 20px var(--main)); } }
 
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 85px; background: rgba(0,0,0,0.9); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0 40px; height: 90px; background: rgba(0,0,0,0.9); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.2);
             position: sticky; top: 0; z-index: 1000;
         }
 
-        .lang-bar { display: flex; gap: 8px; margin-right: 20px; }
-        .lang-btn { background: none; border: 1px solid #333; color: #666; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 10px; transition: 0.3s; }
-        .lang-btn.active { border-color: var(--main); color: var(--main); }
-
         .btn-nav { 
             background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
-            color: #ccc; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron'; 
+            color: #ccc; padding: 10px 18px; border-radius: 8px; font-family: 'Orbitron'; 
             font-size: 11px; cursor: pointer; transition: 0.3s;
         }
-        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); }
+        .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); box-shadow: 0 0 15px rgba(0,255,170,0.2); }
 
-        .page { display: none; padding: 40px; animation: slideUp 0.6s ease-out forwards; }
+        .page { display: none; padding: 40px; animation: slideUp 0.6s ease-out; }
         .page.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* CASE & EVENT */
         .event-banner {
-            max-width: 1000px; margin: 0 auto 40px; background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
-            border: 1px solid rgba(0,255,170,0.2); border-radius: 20px; height: 180px;
-            display: flex; align-items: center; padding: 0 50px; position: relative;
+            max-width: 1000px; margin: 0 auto 40px; border-radius: 20px; 
+            height: 150px; background: linear-gradient(90deg, #000, #0a2e23);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--main); position: relative; overflow: hidden;
         }
-        .event-banner::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.4); border-radius: 20px; }
-        .event-banner div { position: relative; z-index: 1; }
-
         .case-card {
             background: #0a0a0c; padding: 40px; border-radius: 30px; text-align: center;
             max-width: 350px; margin: 0 auto; cursor: pointer; border: 1px solid #222; transition: 0.4s;
         }
-        .case-card:hover { border-color: var(--main); transform: translateY(-10px); }
-        .case-card img { width: 200px; animation: float 4s ease-in-out infinite; }
+        .case-card:hover { border-color: var(--main); transform: scale(1.05); }
 
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .inv-card { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 20px; padding: 20px; text-align: center; }
-        .inv-card img { width: 130px; margin-bottom: 10px; }
-
+        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .roulette-container { width: 90%; max-width: 800px; text-align: center; }
-        .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border-radius: 15px; border: 1px solid #333; }
+        .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #333; }
         .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
         .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 8s cubic-bezier(0.1, 0, 0, 1); }
-        .s-item { min-width: 160px; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
-        .s-item img { width: 100px; }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; animation: slideUp 0.3s forwards; }
+        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; }
     </style>
 </head>
 <body>
@@ -85,32 +79,35 @@
 <div id="notif"></div>
 
 <header class="header">
-    <div style="display:flex; align-items:center;">
-        <div class="lang-bar">
-            <button class="lang-btn active" onclick="setLang('uk')">UA</button>
-            <button class="lang-btn" onclick="setLang('en')">EN</button>
-            <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <div id="admin-panel" style="display:none;">
+            <button class="btn-nav" style="border-color:var(--accent); color:var(--accent);" onclick="addMoney()">+ ADMIN MONEY</button>
         </div>
-        <div style="display:flex; gap:12px;">
-            <button class="btn-nav active" id="tab-market" onclick="showPage('market')" data-t="nav_market">MARKET</button>
-            <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')" data-t="nav_inv">INVENTORY</button>
-        </div>
+        <button class="btn-nav active" id="tab-market" onclick="showPage('market')" data-t="nav_market">MARKET</button>
+        <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')" data-t="nav_inv">INVENTORY</button>
     </div>
-    <div style="display:flex; align-items:center; gap:25px;">
+
+    <div class="logo-center">BABYSELL</div>
+
+    <div style="display:flex; align-items:center; gap:15px;">
+        <div class="lang-bar" style="display:flex; gap:5px;">
+            <button class="lang-btn" onclick="setLang('uk')">UA</button>
+            <button class="lang-btn" onclick="setLang('en')">EN</button>
+        </div>
         <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px;">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:bold;" data-t="btn_login">LOGIN</button>
+        <button id="l-btn" onclick="login()" class="btn-nav" data-t="btn_login">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
     <div class="event-banner">
-        <div>
-            <h1 data-t="ev_title">EMERALD SKIES</h1>
+        <div style="text-align:center;">
+            <h1 data-t="ev_title" style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
             <p data-t="ev_desc">Відкривай кейси та отримуй унікальні призи!</p>
         </div>
     </div>
     <div class="case-card" onclick="openCaseModal()">
-        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
+        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:200px;">
         <h2 style="font-family:'Orbitron'; margin-top:15px;" data-t="case_name">HARDCORE CASE</h2>
         <p style="color:var(--main); font-size:24px; font-weight:bold;">1,000 B</p>
     </div>
@@ -121,12 +118,12 @@
         <h2 style="font-family:'Orbitron'; color:var(--main);" data-t="inv_title">COLLECTION</h2>
         <button class="btn-nav" style="background:var(--accent); color:white; border:none;" onclick="confirmSellAll()" data-t="btn_sellall">SELL ALL</button>
     </div>
-    <div id="inv-grid" class="inv-grid"></div>
+    <div id="inv-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="roulette-container">
-        <h2 style="font-family:'Orbitron';" data-t="roulette_wait">WAITING...</h2>
+    <div style="width:90%; max-width:800px; text-align:center;">
+        <h2 style="font-family:'Orbitron';" data-t="roulette_wait">OPENING...</h2>
         <div class="view-window">
             <div class="pointer"></div>
             <div id="strip" class="strip"></div>
@@ -147,34 +144,28 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
+    const ADMIN_UID = "p8zS6D3p4UfS7xV9v5g4m2n1b3v"; // Твій UID тут
+
     const LANGS = {
         uk: {
             nav_market: "МАРКЕТ", nav_inv: "ІНВЕНТАР", btn_login: "УВІЙТИ",
             ev_title: "СМАРАГДОВЕ НЕБО", ev_desc: "Відкривай кейси та отримуй призи!",
             case_name: "ХАРДКОР КЕЙС", inv_title: "КОЛЕКЦІЯ", btn_sellall: "ПРОДАТИ ВСЕ",
             roulette_wait: "ВІДКРИТТЯ...", btn_spin: "КРУТИТИ", btn_close: "ЗАКРИТИ",
-            toast_won: "ВИ ВИГРАЛИ: ", toast_sold: "ПРОДАНО", btn_inspect: "ОГЛЯНУТЬ", btn_sell: "ПРОДАТИ"
+            btn_inspect: "ОГЛЯНУТЬ", btn_sell: "ПРОДАТИ", toast_won: "ВИ ВИГРАЛИ: "
         },
         en: {
             nav_market: "MARKET", nav_inv: "INVENTORY", btn_login: "LOGIN",
-            ev_title: "EMERALD SKIES", ev_desc: "Open cases and get unique prizes!",
+            ev_title: "EMERALD SKIES", ev_desc: "Open cases and get prizes!",
             case_name: "HARDCORE CASE", inv_title: "COLLECTION", btn_sellall: "SELL ALL",
             roulette_wait: "OPENING...", btn_spin: "SPIN", btn_close: "CLOSE",
-            toast_won: "YOU WON: ", toast_sold: "SOLD", btn_inspect: "INSPECT", btn_sell: "SELL"
-        },
-        ru: {
-            nav_market: "МАРКЕТ", nav_inv: "ИНВЕНТАРЬ", btn_login: "ВОЙТИ",
-            ev_title: "ИЗУМРУДНОЕ НЕБО", ev_desc: "Открывай кейсы и получай призы!",
-            case_name: "ХАРДКОР КЕЙС", inv_title: "КОЛЛЕКЦИЯ", btn_sellall: "ПРОДАТЬ ВСЁ",
-            roulette_wait: "ОТКРЫТИЕ...", btn_spin: "КРУТИТЬ", btn_close: "ЗАКРЫТЬ",
-            toast_won: "ВЫ ВЫИГРАЛИ: ", toast_sold: "ПРОДАНО", btn_inspect: "ОСМОТРЕТЬ", btn_sell: "ПРОДАТЬ"
+            btn_inspect: "INSPECT", btn_sell: "SELL", toast_won: "YOU WON: "
         }
     };
 
     let currentLang = 'uk';
-
     const SKINS = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", inspect: "steam://run/730//+csgo_econ_action_preview%20S76561198084057371A15357827299D7371585802521921350" },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", inspect: "steam://run/730//+csgo_econ_action_preview%209282345D064028938A96B291BA91A296AA23083E7E91D24391FABAE296F9928CEC" },
         { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", inspect: "steam://run/730//+csgo_econ_action_preview%20S76561198084057371A15357827299D7371585802521921350" },
         { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" }
     ];
@@ -185,6 +176,7 @@
         if(u) {
             user = u;
             document.getElementById('l-btn').style.display = 'none';
+            if(u.uid === ADMIN_UID) document.getElementById('admin-panel').style.display = 'block';
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
@@ -196,12 +188,12 @@
         }
     });
 
+    function addMoney() { db.ref('users/'+user.uid+'/balance').set(balance + 50000); }
+
     function setLang(l) {
         currentLang = l;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === l));
         document.querySelectorAll('[data-t]').forEach(el => {
-            const key = el.getAttribute('data-t');
-            el.innerText = LANGS[l][key];
+            el.innerText = LANGS[l][el.getAttribute('data-t')];
         });
         renderInventory();
     }
@@ -214,18 +206,18 @@
         strip.innerHTML = "";
         for(let i=0; i<100; i++) {
             let s = SKINS[Math.floor(Math.random()*SKINS.length)];
-            strip.innerHTML += `<div class="s-item"><img src="${s.img}"></div>`;
+            strip.innerHTML += `<div style="min-width:160px; display:flex; align-items:center; justify-content:center;"><img src="${s.img}" width="100"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < 1000) return alert("No money!");
+        if(balance < 1000) return toast("No money!");
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
         const win = (Math.random()*100 < 5) ? SKINS[2] : (Math.random()*100 < 30 ? SKINS[1] : SKINS[0]);
         const strip = document.getElementById('strip');
-        strip.children[80].innerHTML = `<img src="${win.img}">`;
+        strip.children[80].innerHTML = `<img src="${win.img}" width="100">`;
 
         const move = (80 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
         strip.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0, 1)';
@@ -243,19 +235,18 @@
         Object.keys(userInv).forEach(id => {
             const i = userInv[id];
             g.innerHTML += `
-                <div class="inv-card">
-                    <img src="${i.img}">
+                <div style="background:var(--glass); border:1px solid #222; border-radius:20px; padding:20px; text-align:center;">
+                    <img src="${i.img}" width="130">
                     <div style="font-family:Orbitron; font-size:12px; color:${i.color}">${i.name}</div>
                     <button class="btn-nav" style="width:100%; margin:10px 0;" onclick="openSteam('${i.inspect}')">${LANGS[currentLang].btn_inspect}</button>
-                    <button class="btn-nav" style="width:100%; border-color:var(--accent);" onclick="sell('${id}',${i.price})">${LANGS[currentLang].btn_sell} ${i.price} B</button>
+                    <button class="btn-nav" style="width:100%; border-color:var(--accent);" onclick="sell('${id}',${i.price})">${LANGS[currentLang].btn_sell}</button>
                 </div>`;
         });
     }
 
     function openSteam(link) {
         const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = link;
+        iframe.style.display = 'none'; iframe.src = link;
         document.body.appendChild(iframe);
         setTimeout(() => document.body.removeChild(iframe), 500);
     }
@@ -263,12 +254,10 @@
     function sell(id, p) {
         db.ref('users/'+user.uid+'/inventory/'+id).remove();
         db.ref('users/'+user.uid+'/balance').set(balance + p);
-        toast(LANGS[currentLang].toast_sold);
     }
 
     function confirmSellAll() {
-        let total = 0;
-        Object.values(userInv).forEach(i => total += i.price);
+        let total = 0; Object.values(userInv).forEach(i => total += i.price);
         if(total > 0 && confirm("Sell all?")) {
             db.ref('users/'+user.uid+'/inventory').remove();
             db.ref('users/'+user.uid+'/balance').set(balance + total);
@@ -289,9 +278,6 @@
         t.className = 'toast'; t.innerText = m;
         n.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
-
-    // Initialize text
-    setLang('uk');
 </script>
 </body>
 </html>
