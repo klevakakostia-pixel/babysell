@@ -45,19 +45,6 @@
         .page { display: none; padding: 20px; animation: fadeInUp 0.5s ease-out; }
         .page.active { display: block; }
 
-        /* EVENT BANNER */
-        .event-mini-banner {
-            max-width: 1000px; margin: 0 auto 30px; border-radius: 12px; height: 180px;
-            background: url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
-            border: 1px solid #1a1a1a; position: relative; overflow: hidden;
-        }
-        .event-mini-banner::after {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
-            pointer-events: none;
-        }
-
         /* CAT MINER */
         .cat-img { width: 250px; cursor: pointer; transition: 0.1s; filter: drop-shadow(0 0 20px rgba(0,255,170,0.1)); }
         .cat-img:active { animation: clickShake 0.1s; }
@@ -84,28 +71,23 @@
         .strip-item { min-width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; }
         .strip-item img { width: 80px; }
 
-        /* PROMO */
-        .promo-input { background: #000; border: 1px solid #333; color: var(--main); padding: 12px; width: 100%; border-radius: 5px; text-align: center; font-family: 'Orbitron'; margin-bottom: 15px; outline: none; }
-        .promo-input.error { animation: shake 0.3s; border-color: var(--promo-err); }
-
         /* ADMIN SECTION */
         .admin-footer { margin-top: 100px; padding: 60px 40px; text-align: center; border-top: 1px solid #111; }
-        .admin-trigger-img { 
-            width: 180px; 
-            cursor: pointer; 
-            transition: 0.4s; 
-            filter: grayscale(1) opacity(0.3);
-        }
-        .admin-trigger-img:hover { 
-            filter: grayscale(0) opacity(1) drop-shadow(0 0 15px var(--accent));
-            transform: scale(1.05);
-        }
+        .admin-trigger-img { width: 180px; cursor: pointer; transition: 0.4s; filter: grayscale(1) opacity(0.3); }
+        .admin-trigger-img:hover { filter: grayscale(0) opacity(1) drop-shadow(0 0 15px var(--accent)); transform: scale(1.05); }
         .admin-input { background: #050505; border: 1px solid #1a1a1a; color: var(--main); padding: 12px; margin-bottom: 12px; width: 100%; font-family: 'Orbitron'; outline: none; text-align: center; }
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 
         /* TOAST */
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
         .toast { background: #000; border: 1px solid var(--main); padding: 10px 20px; margin-top: 5px; font-size: 11px; font-family: 'Orbitron'; animation: fadeInUp 0.3s; }
+        
+        /* INSPECT BUTTON */
+        .btn-inspect { 
+            display: block; width: 100%; margin-top: 5px; background: rgba(0,255,170,0.1); 
+            border: 1px solid var(--main); color: var(--main); font-size: 9px; padding: 3px; 
+            border-radius: 3px; text-decoration: none; font-family: 'Orbitron';
+        }
     </style>
 </head>
 <body>
@@ -128,13 +110,6 @@
 </header>
 
 <div id="page-market" class="page active">
-    <div class="event-mini-banner">
-        <div style="z-index:5;">
-            <h1 style="font-family:'Orbitron'; font-size: 22px;">EMERALD SKIES</h1>
-            <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; margin-top:10px;" onclick="joinEvent()">JOIN EVENT</button>
-        </div>
-        <div id="p-list" style="background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; width: 160px; z-index: 5; font-size: 10px;"></div>
-    </div>
     <div class="market-grid">
         <div class="case-card" onclick="openCase()">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
@@ -148,7 +123,6 @@
     <div style="text-align:center; padding-top:50px;">
         <h1 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">CAT MINER CORE</h1>
         <img src="https://i.postimg.cc/Fs5xJ0r7/FVIFV.png" class="cat-img" onclick="mineCat()">
-        <p style="margin-top:20px; color:#444; font-family:'Orbitron'; font-size:11px;">CLICK TO MINE ENERGY</p>
     </div>
 </div>
 
@@ -187,22 +161,17 @@
         <input type="text" id="adm-login" class="admin-input" placeholder="USERNAME">
         <input type="password" id="adm-pass" class="admin-input" placeholder="PASSWORD">
         <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff;" onclick="checkAdminAuth()">LOGIN</button>
-        <button onclick="closeAdminAuth()" style="margin-top:10px; background:none; border:none; color:#444; cursor:pointer;">EXIT</button>
     </div>
 </div>
 
 <div id="admin-panel-modal" class="modal">
     <div class="modal-box" style="max-width: 450px; border-color: var(--main);">
         <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">SYSTEM TERMINAL</h2>
-        <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CURRENCY CONTROL:</p>
         <div class="admin-grid">
             <button class="btn-nav" onclick="addMoney(100000)">+100k B</button>
             <button class="btn-nav" style="background:var(--accent); color:#fff;" onclick="resetBalance()">RESET BAL</button>
         </div>
-        <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">GENERATE ITEM:</p>
         <div class="admin-grid" id="admin-item-list"></div>
-        <p style="font-size:10px; color:#444; text-align:left; margin-bottom:5px;">CLEANUP:</p>
-        <button class="btn-nav" style="width:100%; margin-bottom:15px; border-color:var(--accent);" onclick="sellAllItems()">WIPE INVENTORY</button>
         <button class="btn-nav" style="width:100%;" onclick="closeAdminPanel()">EXIT</button>
     </div>
 </div>
@@ -225,14 +194,16 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
+    // СКІНИ ТА ПОСИЛАННЯ
+    const GLOCK_LINK = "steam://run/730//+csgo_econ_action_preview%20B1A1782E707D28B0A9B591B299B281B589623C2341B2F131B7D3B4B9B1A150B0D3B4B9B0A150B0D3B4B9B3A150B0D3B4B9B2A150B0D931B3C1B15613A0B9";
+
     const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#eb4b4b", price: 15000 },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200 },
-        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", color: "#00ffaa", price: 400 },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 }
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#eb4b4b", price: 15000, inspect: "#" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200, inspect: "#" },
+        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", color: "#00ffaa", price: 400, inspect: "#" },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150, inspect: GLOCK_LINK }
     ];
 
-    const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
     let user = null, balance = 0, currentInventory = {};
 
     auth.onAuthStateChanged(u => {
@@ -293,50 +264,38 @@
         strip.style.transform = `translateX(-${pos}px)`;
         setTimeout(() => {
             sndOk.play();
-            document.getElementById('m-status').innerText = "WON: " + win.name;
             db.ref('users/'+user.uid+'/inventory').push(win);
             toast("New Skin: " + win.name);
         }, 6200);
     }
 
-    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
-    
-    function activatePromo() {
-        if(!user) return toast("Login first!");
-        const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
-        if(PROMOS[code]) {
-            db.ref('users/'+user.uid+'/used_promos/'+code).get().then(snap => {
-                if(snap.exists()) { sndErr.play(); toast("Used!"); }
-                else { 
-                    sndOk.play();
-                    db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); 
-                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true); 
-                    toast("Success!"); closePromoModal(); 
-                }
-            });
-        } else { sndErr.play(); toast("Invalid!"); }
+    function renderInventory(inv) {
+        const g = document.getElementById('inv-grid'); g.innerHTML = "";
+        Object.keys(inv).forEach(k => {
+            const i = inv[k];
+            g.innerHTML += `<div class="inv-item">
+                <img src="${i.img}" style="width:80px">
+                <div style="font-size:10px; margin:5px 0;">${i.name}</div>
+                <a href="${i.inspect}" class="btn-inspect">INSPECT</a>
+                <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; width:100%; margin-top:5px;" onclick="sellItem('${k}', ${i.price})">SELL ${i.price}B</button>
+            </div>`;
+        });
     }
 
     function sellAllItems() {
-        const count = Object.keys(currentInventory).length;
-        if(count === 0) return toast("Empty");
         let totalGain = 0;
         Object.values(currentInventory).forEach(item => totalGain += (item.price || 0));
         if(confirm(`Sell all for ${totalGain} B?`)) {
             sndOk.play();
             db.ref('users/'+user.uid+'/inventory').remove();
             db.ref('users/'+user.uid+'/balance').set(balance + totalGain);
-            toast(`Sold! +${totalGain} B`);
-            closeAdminPanel();
         }
     }
 
     function openAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'flex'; }
-    function closeAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'none'; }
     function checkAdminAuth() {
         if(document.getElementById('adm-login').value === "BabyIceFace666" && document.getElementById('adm-pass').value === "kov6alex666") {
-            sndOk.play(); closeAdminAuth(); document.getElementById('admin-panel-modal').style.display = 'flex';
+            sndOk.play(); document.getElementById('admin-auth-modal').style.display = 'none'; document.getElementById('admin-panel-modal').style.display = 'flex';
         } else { sndErr.play(); toast("DENIED"); }
     }
     function closeAdminPanel() { document.getElementById('admin-panel-modal').style.display = 'none'; }
@@ -348,32 +307,23 @@
         toast("Added: " + SKINS[idx].name);
     }
 
-    function renderInventory(inv) {
-        const g = document.getElementById('inv-grid'); g.innerHTML = "";
-        Object.keys(inv).forEach(k => {
-            const i = inv[k];
-            g.innerHTML += `<div class="inv-item">
-                <img src="${i.img}" style="width:80px">
-                <div style="font-size:10px; margin:5px 0;">${i.name}</div>
-                <button class="btn-nav" style="background:var(--accent); color:#fff; border:none; width:100%;" onclick="sellItem('${k}', ${i.price})">SELL ${i.price}B</button>
-            </div>`;
-        });
-    }
-
-    function sellItem(k, p) { 
-        if(confirm("Sell?")) { 
-            sndOk.play();
-            db.ref('users/'+user.uid+'/inventory/'+k).remove(); 
-            db.ref('users/'+user.uid+'/balance').set(balance + p); 
-        } 
-    }
+    function sellItem(k, p) { if(confirm("Sell?")) { sndOk.play(); db.ref('users/'+user.uid+'/inventory/'+k).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); } }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function mineCat() { toast("Meow! Energy +1"); }
+    function mineCat() { toast("Meow!"); }
     function closeModal() { document.getElementById('case-modal').style.display = 'none'; document.getElementById('spin-btn').disabled = false; }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
         n.appendChild(t); setTimeout(() => t.remove(), 3000);
+    }
+    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
+    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
+    function activatePromo() {
+        const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
+        const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
+        if(PROMOS[code]) {
+            sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); closePromoModal();
+        } else { sndErr.play(); toast("Invalid"); }
     }
 </script>
 </body>
