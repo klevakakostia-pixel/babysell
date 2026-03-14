@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ADMIN CONTROL</title>
+    <title>BABYSELL - REALTIME EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -11,35 +11,37 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
         :root { --main: #00ffaa; --bg: #08080a; --accent: #ff2d55; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 30px; height: 65px; background: rgba(0,0,0,0.95); border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 1000; }
-        .btn-nav { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: #888; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; }
+        .btn-nav { background: rgba(255,255,255,0.03); border: 1px solid #1a1a1a; color: #888; padding: 6px 12px; border-radius: 4px; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; transition: 0.3s; }
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); }
         .balance-card { border: 1px solid var(--main); padding: 4px 12px; border-radius: 4px; color: var(--main); font-family: 'Orbitron'; font-weight: bold; }
 
-        /* EVENT BLOCK */
-        .event-mini-banner { max-width: 1000px; margin: 20px auto; border-radius: 12px; height: 180px; background: linear-gradient(90deg, #000 30%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border: 1px solid #1a1a1a; }
-        .event-live-feed { background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; width: 250px; height: 120px; overflow-y: auto; font-size: 11px; border-left: 2px solid var(--main); }
-        .feed-item { margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+        /* EVENT */
+        .event-mini-banner { max-width: 1000px; margin: 20px auto; border-radius: 12px; height: 180px; background: linear-gradient(90deg, #000 40%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border: 1px solid #1a1a1a; }
+        .event-live-feed { background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; width: 280px; height: 130px; overflow-y: hidden; font-size: 11px; border-left: 2px solid var(--main); }
+        .feed-item { margin-bottom: 6px; border-bottom: 1px solid #111; padding-bottom: 2px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
         .feed-item b { color: var(--main); }
 
-        /* MODALS */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
-        .admin-input { background: #050505; border: 1px solid #222; color: var(--main); padding: 12px; width: 100%; margin-bottom: 10px; text-align: center; font-family: 'Orbitron'; }
-
-        /* MARKET & ITEMS */
+        /* PAGES */
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
-        .market-grid { display: flex; justify-content: center; padding: 20px; }
+        .market-grid { display: flex; justify-content: center; gap: 20px; }
         .case-card { background: #0c0c0f; border: 1px solid #1a1a1a; border-radius: 15px; padding: 20px; width: 220px; text-align: center; cursor: pointer; }
+        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .inv-item { background: #0c0c0f; border: 1px solid #1a1a1a; padding: 15px; border-radius: 10px; text-align: center; }
 
-        /* ADMIN TRIGGER (PHOTO) */
+        /* ADMIN */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-box { background: #0a0a0c; border: 1px solid #222; padding: 25px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; }
+        .admin-input { background: #050505; border: 1px solid #222; color: var(--main); padding: 10px; width: 100%; margin-bottom: 10px; text-align: center; font-family: 'Orbitron'; outline: none; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+
         .admin-footer { text-align: center; padding: 40px; }
-        .admin-trigger-img { width: 150px; cursor: pointer; filter: grayscale(1) opacity(0.3); transition: 0.3s; }
-        .admin-trigger-img:hover { filter: grayscale(0) opacity(1); }
+        .admin-trigger-img { width: 130px; cursor: pointer; filter: grayscale(1) opacity(0.3); transition: 0.3s; }
+        .admin-trigger-img:hover { filter: grayscale(0) opacity(1); transform: scale(1.05); }
 
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
         .toast { background: #000; border: 1px solid var(--main); padding: 10px 20px; margin-top: 5px; font-size: 11px; font-family: 'Orbitron'; }
@@ -50,58 +52,73 @@
 <div id="notif"></div>
 
 <header class="header">
-    <div style="display:flex; gap:10px;">
-        <button class="btn-nav active" onclick="showPage('market')">MARKET</button>
-        <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <h2 style="font-family:'Orbitron'; color:var(--main); font-size:16px; margin-right:15px;">BABYSELL</h2>
+        <button class="btn-nav active" id="btn-market" onclick="showPage('market')">MARKET</button>
+        <button class="btn-nav" id="btn-inventory" onclick="showPage('inventory')">INVENTORY (<span id="inv-count">0</span>)</button>
     </div>
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:12px;">
         <div class="balance-card" id="u-bal">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
+        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:bold;">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
     <div class="event-mini-banner">
         <div>
-            <h1 id="event-title" style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
-            <p id="event-desc" style="font-size:12px; color:#666;">EVENT ACTIVE: Win items to be the TOP player!</p>
+            <h1 id="ev-title" style="font-family:'Orbitron'; color:var(--main);">EMERALD SKIES</h1>
+            <button class="btn-nav" id="join-ev-btn" style="background:var(--main); color:#000; margin-top:10px; font-weight:bold;" onclick="joinEventReal()">JOIN EVENT</button>
         </div>
-        <div class="event-live-feed" id="event-feed"></div>
+        <div class="event-live-feed" id="real-feed">
+            <div style="color:#444; font-style:italic;">Waiting for real actions...</div>
+        </div>
     </div>
+
     <div class="market-grid">
-        <div class="case-card" onclick="openCaseMock()">
-            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:120px;">
+        <div class="case-card" onclick="openCase()">
+            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:130px;">
             <p style="font-family:'Orbitron'; margin-top:10px;">HARDCORE CASE</p>
-            <b style="color:var(--main);">1,000 B</b>
+            <b style="color:var(--main); font-size:18px;">1,000 B</b>
         </div>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
-    <h2 style="text-align:center; color:var(--main);">YOUR INVENTORY</h2>
-    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); gap:15px; margin-top:20px;"></div>
+    <div id="inv-grid" class="inv-grid"></div>
 </div>
 
 <div id="admin-auth-modal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
-        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:15px;">TERMINAL</h2>
+        <h3 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:15px;">SYSTEM LOGIN</h3>
         <input type="text" id="adm-login" class="admin-input" placeholder="LOGIN">
         <input type="password" id="adm-pass" class="admin-input" placeholder="PASSWORD">
-        <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff;" onclick="checkAdminAuth()">ACCESS</button>
+        <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff;" onclick="checkAdminAuth()">ACCESS TERMINAL</button>
     </div>
 </div>
 
 <div id="admin-panel-modal" class="modal">
-    <div class="modal-box" style="border-color: var(--main); max-width: 450px;">
-        <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom:20px;">ADMIN PANEL</h2>
+    <div class="modal-box" style="max-width: 500px; border-color: var(--main);">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">CONTROL PANEL</h2>
         
-        <div style="background:#111; padding:15px; border-radius:10px; border:1px dashed var(--accent);">
-            <h3 style="color:var(--accent); font-size:14px; margin-bottom:10px;">EVENT MANAGEMENT</h3>
-            <p style="font-size:10px; color:#888; margin-bottom:10px;">Ends current event and pays 6666 B to the last winner in feed.</p>
-            <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff; font-weight:bold;" onclick="finishEvent()">END EVENT & PAY 6666 B</button>
+        <div style="margin-top:15px; text-align:left;">
+            <p style="font-size:10px; color:#666;">ECONOMY:</p>
+            <div class="admin-grid">
+                <button class="btn-nav" onclick="addMoney(100000)">+100,000 B</button>
+                <button class="btn-nav" style="border-color:var(--accent);" onclick="resetBalance()">RESET BALANCE</button>
+            </div>
         </div>
 
-        <button class="btn-nav" style="width:100%; margin-top:15px;" onclick="closeAdmin()">CLOSE</button>
+        <div style="margin-top:15px; text-align:left;">
+            <p style="font-size:10px; color:#666;">ITEMS (GIVE TO SELF):</p>
+            <div class="admin-grid" id="admin-items"></div>
+        </div>
+
+        <div style="margin-top:15px; border-top:1px solid #222; padding-top:15px;">
+            <p style="font-size:10px; color:var(--accent); font-weight:bold;">EVENT MANAGEMENT:</p>
+            <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff; margin-top:5px;" onclick="finishEventReal()">END EVENT & PAY 6666 B</button>
+        </div>
+
+        <button class="btn-nav" style="width:100%; margin-top:20px;" onclick="closeAdmin()">EXIT</button>
     </div>
 </div>
 
@@ -110,7 +127,6 @@
 </footer>
 
 <script>
-    // Config
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -120,6 +136,12 @@
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
+
+    const SKINS = [
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000 },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200 },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150 }
+    ];
 
     let user = null, balance = 0, lastWinnerID = null;
 
@@ -131,71 +153,97 @@
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
-            // Слухаємо глобальний фід івенту
-            db.ref('event_feed').limitToLast(5).on('value', s => {
-                const feed = document.getElementById('event-feed');
+            db.ref('users/'+u.uid+'/inventory').on('value', s => {
+                renderInventory(s.val() || {});
+                document.getElementById('inv-count').innerText = Object.keys(s.val() || {}).length;
+            });
+            // Слухаємо реальний фід івенту
+            db.ref('real_event_feed').limitToLast(6).on('value', s => {
+                const feed = document.getElementById('real-feed');
                 feed.innerHTML = "";
                 s.forEach(child => {
-                    const data = child.val();
-                    feed.innerHTML = `<div class="feed-item"><b>${data.name}</b> won ${data.item}</div>` + feed.innerHTML;
-                    lastWinnerID = data.uid; // Запам'ятовуємо останнього
+                    const d = child.val();
+                    feed.innerHTML = `<div class="feed-item"><b>${d.name}</b> ${d.msg}</div>` + feed.innerHTML;
+                    if(d.uid) lastWinnerID = d.uid;
                 });
             });
         }
     });
 
-    // Імітація відкриття кейсу для тесту
-    function openCaseMock() {
+    // --- РЕАЛЬНІ ДІЇ ---
+    function joinEventReal() {
+        if(!user) return toast("Login first!");
+        db.ref('real_event_feed').push({
+            name: user.displayName.split(' ')[0],
+            msg: "joined the event!",
+            uid: user.uid
+        });
+        toast("Joined!");
+    }
+
+    function openCase() {
         if(!user) return toast("Login first!");
         if(balance < 1000) return toast("Need 1,000 B");
         
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-        const item = "Glock-18 Fade";
-        toast("You won " + item);
+        const win = SKINS[Math.floor(Math.random()*SKINS.length)];
+        db.ref('users/'+user.uid+'/inventory').push(win);
         
-        // Записуємо в глобальний фід івенту
-        db.ref('event_feed').push({
-            uid: user.uid,
+        // Відразу в реальний фід
+        db.ref('real_event_feed').push({
             name: user.displayName.split(' ')[0],
-            item: item,
-            time: Date.now()
+            msg: `won ${win.name}!`,
+            uid: user.uid
         });
+        toast("Won: " + win.name);
     }
 
-    // --- ADMIN LOGIC ---
+    // --- ПОВНА АДМІНКА ---
     function openAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'flex'; }
     function checkAdminAuth() {
         if(document.getElementById('adm-login').value === "BabyIceFace666" && document.getElementById('adm-pass').value === "kov6alex666") {
             document.getElementById('admin-auth-modal').style.display = 'none';
             document.getElementById('admin-panel-modal').style.display = 'flex';
-        } else { toast("WRONG CREDENTIALS"); }
+            loadAdminItems();
+        } else { toast("DENIED"); }
     }
-    function closeAdmin() { document.getElementById('admin-panel-modal').style.display = 'none'; }
 
-    // ТА САМА ФУНКЦІЯ ЗАВЕРШЕННЯ ІВЕНТУ
-    function finishEvent() {
-        if(!lastWinnerID) return toast("No winners found in feed!");
-        
-        // 1. Нараховуємо 6666 B останньому переможцю
-        db.ref('users/' + lastWinnerID + '/balance').transaction(current => (current || 0) + 6666);
-        
-        // 2. Оновлюємо візуал івенту для всіх
-        db.ref('event_status').set({ active: false, winner: lastWinnerID });
-        
-        // 3. Локальне сповіщення
-        alert("EVENT FINISHED! 6666 B sent to the last winner.");
-        
-        document.getElementById('event-title').innerText = "EVENT CLOSED";
-        document.getElementById('event-desc').innerText = "Admin has ended the event. Prize 6666 B distributed.";
+    function addMoney(val) { if(user) db.ref('users/'+user.uid+'/balance').set(balance + val); }
+    function resetBalance() { if(user) db.ref('users/'+user.uid+'/balance').set(0); }
+    
+    function loadAdminItems() {
+        const container = document.getElementById('admin-items');
+        container.innerHTML = "";
+        SKINS.forEach((s, i) => {
+            container.innerHTML += `<button class="btn-nav" onclick="giveItem(${i})">${s.name}</button>`;
+        });
+    }
+    function giveItem(i) { if(user) db.ref('users/'+user.uid+'/inventory').push(SKINS[i]); toast("Given!"); }
+
+    function finishEventReal() {
+        if(!lastWinnerID) return toast("No active users in feed!");
+        // Виплата 6666 B
+        db.ref('users/'+lastWinnerID+'/balance').transaction(c => (c || 0) + 6666);
+        db.ref('real_event_feed').push({ name: "SYSTEM", msg: "EVENT CLOSED. Prize 6666 B sent to winner!" });
+        toast("Prize distributed!");
         closeAdmin();
     }
 
-    // Common UI
+    // UI Helpers
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-        document.getElementById('page-' + p).classList.add('active');
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+        document.getElementById('page-'+p).classList.add('active');
+        document.getElementById('btn-'+p).classList.add('active');
     }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    function closeAdmin() { document.getElementById('admin-panel-modal').style.display = 'none'; }
+    function renderInventory(inv) {
+        const g = document.getElementById('inv-grid'); g.innerHTML = "";
+        Object.keys(inv).forEach(k => {
+            g.innerHTML += `<div class="inv-item"><img src="${inv[k].img}" style="width:70px"><p>${inv[k].name}</p></div>`;
+        });
+    }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
