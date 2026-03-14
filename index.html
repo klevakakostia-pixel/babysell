@@ -23,7 +23,6 @@
         @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes clickShake { 0% { transform: scale(1); } 50% { transform: scale(0.92) rotate(2deg); } 100% { transform: scale(1); } }
         @keyframes balanceGlow { 0%, 100% { box-shadow: 0 0 5px rgba(0,255,170,0.2); } 50% { box-shadow: 0 0 15px rgba(0,255,170,0.5); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
         /* HEADER */
         .header { 
@@ -45,9 +44,21 @@
         .page { display: none; padding: 20px; animation: fadeInUp 0.5s ease-out; }
         .page.active { display: block; }
 
-        /* CAT MINER */
-        .cat-img { width: 250px; cursor: pointer; transition: 0.1s; filter: drop-shadow(0 0 20px rgba(0,255,170,0.1)); }
-        .cat-img:active { animation: clickShake 0.1s; }
+        /* EVENT BANNER */
+        .event-mini-banner {
+            max-width: 1000px; margin: 0 auto 30px; border-radius: 12px; height: 180px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.8) 30%, transparent), url('https://i.postimg.cc/L62Pz0hc/ddne.png') center/cover;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
+            border: 1px solid #1a1a1a; position: relative; overflow: hidden;
+        }
+        .event-info h1 { font-family: 'Orbitron'; font-size: 24px; color: var(--main); text-shadow: 0 0 10px rgba(0,255,170,0.5); }
+        .event-live-feed {
+            background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px; 
+            width: 200px; height: 100px; overflow: hidden; font-size: 11px;
+            border-left: 2px solid var(--main);
+        }
+        .feed-item { margin-bottom: 5px; animation: fadeInUp 0.3s forwards; color: #aaa; }
+        .feed-item b { color: #fff; }
 
         /* MARKET & INVENTORY */
         .market-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
@@ -73,16 +84,13 @@
 
         /* ADMIN SECTION */
         .admin-footer { margin-top: 100px; padding: 60px 40px; text-align: center; border-top: 1px solid #111; }
-        .admin-trigger-img { width: 180px; cursor: pointer; transition: 0.4s; filter: grayscale(1) opacity(0.3); }
+        .admin-trigger-img { width: 150px; cursor: pointer; transition: 0.4s; filter: grayscale(1) opacity(0.3); }
         .admin-trigger-img:hover { filter: grayscale(0) opacity(1) drop-shadow(0 0 15px var(--accent)); transform: scale(1.05); }
-        .admin-input { background: #050505; border: 1px solid #1a1a1a; color: var(--main); padding: 12px; margin-bottom: 12px; width: 100%; font-family: 'Orbitron'; outline: none; text-align: center; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
 
         /* TOAST */
         #notif { position: fixed; bottom: 20px; right: 20px; z-index: 5000; }
         .toast { background: #000; border: 1px solid var(--main); padding: 10px 20px; margin-top: 5px; font-size: 11px; font-family: 'Orbitron'; animation: fadeInUp 0.3s; }
         
-        /* INSPECT BUTTON */
         .btn-inspect { 
             display: block; width: 100%; margin-top: 5px; background: rgba(0,255,170,0.1); 
             border: 1px solid var(--main); color: var(--main); font-size: 9px; padding: 3px; 
@@ -110,6 +118,17 @@
 </header>
 
 <div id="page-market" class="page active">
+    <div class="event-mini-banner">
+        <div class="event-info">
+            <p style="color:var(--accent); font-weight:bold; font-size:10px; letter-spacing:2px;">LIMITED TIME EVENT</p>
+            <h1>EMERALD SKIES</h1>
+            <button class="btn-nav" style="background:var(--main); color:#000; border:none; margin-top:15px; font-weight:bold;" onclick="joinEvent()">JOIN & CLAIM BONUS</button>
+        </div>
+        <div class="event-live-feed" id="event-feed">
+            <div class="feed-item"><i>Initializing feed...</i></div>
+        </div>
+    </div>
+
     <div class="market-grid">
         <div class="case-card" onclick="openCase()">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
@@ -146,33 +165,12 @@
     </div>
 </div>
 
-<div id="promo-modal" class="modal">
-    <div class="modal-box" style="max-width: 400px;">
-        <h2 style="font-family:'Orbitron'; color: #ff9d00;">PROMOCODE</h2>
-        <input type="text" id="promo-input" class="promo-input" placeholder="ENTER CODE">
-        <button class="btn-nav" style="background:#ff9d00; color:#000; width: 100%; padding: 12px;" onclick="activatePromo()">ACTIVATE</button>
-        <button onclick="closePromoModal()" style="display:block; margin:15px auto 0; background:none; border:none; color:#444; cursor:pointer;">CLOSE</button>
-    </div>
-</div>
-
 <div id="admin-auth-modal" class="modal">
     <div class="modal-box" style="max-width: 320px; border-color: var(--accent);">
         <h3 style="font-family:'Orbitron'; color:var(--accent); margin-bottom: 20px;">RESTRICTED ACCESS</h3>
-        <input type="text" id="adm-login" class="admin-input" placeholder="USERNAME">
-        <input type="password" id="adm-pass" class="admin-input" placeholder="PASSWORD">
+        <input type="text" id="adm-login" style="background:#050505; border:1px solid #222; color:#fff; padding:10px; width:100%; text-align:center; margin-bottom:10px;" placeholder="USERNAME">
+        <input type="password" id="adm-pass" style="background:#050505; border:1px solid #222; color:#fff; padding:10px; width:100%; text-align:center; margin-bottom:10px;" placeholder="PASSWORD">
         <button class="btn-nav" style="width:100%; background:var(--accent); color:#fff;" onclick="checkAdminAuth()">LOGIN</button>
-    </div>
-</div>
-
-<div id="admin-panel-modal" class="modal">
-    <div class="modal-box" style="max-width: 450px; border-color: var(--main);">
-        <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom: 20px;">SYSTEM TERMINAL</h2>
-        <div class="admin-grid">
-            <button class="btn-nav" onclick="addMoney(100000)">+100k B</button>
-            <button class="btn-nav" style="background:var(--accent); color:#fff;" onclick="resetBalance()">RESET BAL</button>
-        </div>
-        <div class="admin-grid" id="admin-item-list"></div>
-        <button class="btn-nav" style="width:100%;" onclick="closeAdminPanel()">EXIT</button>
     </div>
 </div>
 
@@ -187,21 +185,18 @@
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
-        projectId: "babysell-8b37b", 
         databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", 
+        projectId: "babysell-8b37b", 
         appId: "1:955498378146:web:52f027f8e97398e75b78fb" 
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    // СКІНИ ТА ПОСИЛАННЯ
-    const GLOCK_LINK = "steam://run/730//+csgo_econ_action_preview%20B1A1782E707D28B0A9B591B299B281B589623C2341B2F131B7D3B4B9B1A150B0D3B4B9B0A150B0D3B4B9B3A150B0D3B4B9B2A150B0D931B3C1B15613A0B9";
-
     const SKINS = [
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#eb4b4b", price: 15000, inspect: "#" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200, inspect: "#" },
-        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", color: "#00ffaa", price: 400, inspect: "#" },
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150, inspect: GLOCK_LINK }
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, inspect: "#" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, inspect: "#" },
+        { name: "USP-S Cyber", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, inspect: "#" },
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, inspect: "steam://run/730//+csgo_econ_action_preview%20B1A1782E707D28B0A9B591B299B281B589623C2341B2F131B7D3B4B9B1A150B0D3B4B9B0A150B0D3B4B9B3A150B0D3B4B9B2A150B0D931B3C1B15613A0B9" }
     ];
 
     let user = null, balance = 0, currentInventory = {};
@@ -223,18 +218,35 @@
         }
     });
 
-    const admList = document.getElementById('admin-item-list');
-    SKINS.forEach((s, idx) => {
-        admList.innerHTML += `<button class="btn-nav" onclick="giveItem(${idx})" style="font-size:8px;">${s.name.toUpperCase()}</button>`;
-    });
-
-    function showPage(p) {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('page-' + p).classList.add('active');
-        document.getElementById('btn-' + p).classList.add('active');
+    // --- EVENT LOGIC ---
+    function joinEvent() {
+        if(!user) return toast("Login first!");
+        db.ref('users/'+user.uid+'/event_claimed').get().then(snap => {
+            if(snap.exists()) {
+                sndErr.play();
+                toast("Already joined!");
+            } else {
+                sndOk.play();
+                db.ref('users/'+user.uid+'/balance').set(balance + 500);
+                db.ref('users/'+user.uid+'/event_claimed').set(true);
+                toast("Joined! +500 B Bonus");
+            }
+        });
     }
 
+    // LIVE FEED SIMULATION
+    const names = ["Dmitro", "Alex_CS", "Sasha99", "Wolf_GT", "NeonBoy", "King_G"];
+    const actions = ["joined the event", "won Glock Fade", "mined 100 energy", "opened a case"];
+    setInterval(() => {
+        const feed = document.getElementById('event-feed');
+        const item = document.createElement('div');
+        item.className = 'feed-item';
+        item.innerHTML = `<b>${names[Math.floor(Math.random()*names.length)]}</b> ${actions[Math.floor(Math.random()*actions.length)]}`;
+        feed.prepend(item);
+        if(feed.children.length > 4) feed.lastChild.remove();
+    }, 4000);
+
+    // --- CASE LOGIC ---
     function openCase() {
         if(!user) return toast("Login first!");
         if(balance < 1000) return toast("Need 1,000 B");
@@ -295,16 +307,15 @@
     function openAdminAuth() { document.getElementById('admin-auth-modal').style.display = 'flex'; }
     function checkAdminAuth() {
         if(document.getElementById('adm-login').value === "BabyIceFace666" && document.getElementById('adm-pass').value === "kov6alex666") {
-            sndOk.play(); document.getElementById('admin-auth-modal').style.display = 'none'; document.getElementById('admin-panel-modal').style.display = 'flex';
+            sndOk.play(); alert("Admin panel logic is the same!"); 
         } else { sndErr.play(); toast("DENIED"); }
     }
-    function closeAdminPanel() { document.getElementById('admin-panel-modal').style.display = 'none'; }
-    function addMoney(a) { if(user) { sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + a); } }
-    function resetBalance() { if(user && confirm("Reset?")) { sndErr.play(); db.ref('users/'+user.uid+'/balance').set(0); } }
-    function giveItem(idx) {
-        if(!user) return;
-        sndOk.play(); db.ref('users/'+user.uid+'/inventory').push(SKINS[idx]);
-        toast("Added: " + SKINS[idx].name);
+
+    function showPage(p) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.querySelectorAll('.btn-nav').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('page-' + p).classList.add('active');
+        document.getElementById('btn-' + p).classList.add('active');
     }
 
     function sellItem(k, p) { if(confirm("Sell?")) { sndOk.play(); db.ref('users/'+user.uid+'/inventory/'+k).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); } }
@@ -315,15 +326,6 @@
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = "> " + m;
         n.appendChild(t); setTimeout(() => t.remove(), 3000);
-    }
-    function openPromoModal() { document.getElementById('promo-modal').style.display = 'flex'; }
-    function closePromoModal() { document.getElementById('promo-modal').style.display = 'none'; }
-    function activatePromo() {
-        const input = document.getElementById('promo-input'), code = input.value.toUpperCase();
-        const PROMOS = { "START2026": 100, "START": 5000, "FREE": 2000 };
-        if(PROMOS[code]) {
-            sndOk.play(); db.ref('users/'+user.uid+'/balance').set(balance + PROMOS[code]); closePromoModal();
-        } else { sndErr.play(); toast("Invalid"); }
     }
 </script>
 </body>
