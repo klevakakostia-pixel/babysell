@@ -3,91 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ULTIMATE CASE SYSTEM</title>
+    <title>BABYSELL - FIXED INSPECT</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
-        
-        :root { 
-            --main: #00ffaa; --bg: #050507; --accent: #ff2d55; 
-            --rare: #ebca42; --classified: #d32ee6; --common: #4b69ff;
-        }
-        
+        :root { --main: #00ffaa; --bg: #050507; --rare: #ebca42; --classified: #d32ee6; --common: #4b69ff; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            overflow-x: hidden; background-attachment: fixed;
-            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050507 70%);
-        }
-
-        /* ANIMATIONS */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes shine { from { left: -100%; } to { left: 100%; } }
-
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .btn-nav { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); 
-            color: #ccc; padding: 10px 22px; border-radius: 8px; font-family: 'Orbitron'; 
-            font-size: 11px; cursor: pointer; transition: 0.3s;
-        }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050507 70%); min-height: 100vh; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; }
+        .btn-nav { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #ccc; padding: 10px 22px; border-radius: 8px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.3s; }
         .btn-nav:hover, .btn-nav.active { border-color: var(--main); color: var(--main); box-shadow: 0 0 15px rgba(0,255,170,0.2); }
-
+        
         .page { display: none; padding: 40px; animation: fadeIn 0.5s ease-out; }
         .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MARKET & CASE */
-        .case-preview {
-            max-width: 350px; margin: 40px auto; background: rgba(15,15,20,0.8);
-            border: 1px solid #222; border-radius: 30px; padding: 50px; text-align: center;
-            cursor: pointer; transition: 0.4s; position: relative; overflow: hidden;
-            animation: float 4s ease-in-out infinite;
-        }
-        .case-preview:hover { border-color: var(--main); transform: scale(1.03); }
-        .case-preview::before {
-            content: ''; position: absolute; top: 0; width: 100%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: shine 3s infinite;
-        }
-
-        /* ROULETTE MODAL */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .roulette-container { 
-            width: 100%; max-width: 800px; background: #0a0a0c; border: 1px solid #222; 
-            padding: 40px; border-radius: 25px; text-align: center; position: relative;
-        }
-        .view-window { 
-            position: relative; width: 100%; height: 160px; background: #000; 
-            margin: 25px 0; overflow: hidden; border-radius: 12px; border: 1px solid #333;
-        }
-        .pointer-line { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; will-change: transform; transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1); }
-        .strip-item { 
-            min-width: 160px; height: 100%; display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; border-right: 1px solid #111; position: relative;
-        }
-        .strip-item img { width: 100px; z-index: 2; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
-        .rarity-bg { position: absolute; bottom: 0; width: 100%; height: 5px; }
-
-        /* INVENTORY */
-        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .inv-card { 
-            background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px;
-            padding: 20px; text-align: center; transition: 0.3s; animation: fadeIn 0.4s backwards;
-        }
+        .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .inv-card { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; text-align: center; transition: 0.3s; }
         .inv-card:hover { border-color: var(--main); transform: translateY(-5px); }
-        .rarity-tag { font-size: 10px; font-family: 'Orbitron'; margin-bottom: 8px; display: block; }
+        .inv-card img { width: 130px; margin-bottom: 10px; filter: drop-shadow(0 5px 15px #000); }
 
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .roulette-box { width: 100%; max-width: 800px; background: #0a0a0c; border: 1px solid #222; padding: 40px; border-radius: 25px; text-align: center; }
+        .strip-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border-radius: 12px; border: 1px solid #333; }
+        .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 7s cubic-bezier(0.15, 0, 0.05, 1); }
+        .s-item { min-width: 160px; height: 100%; display: flex; align-items: center; justify-content: center; border-right: 1px solid #111; position: relative; }
+        .s-item img { width: 100px; }
+        
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; animation: fadeIn 0.3s forwards; border-left: 5px solid var(--main); }
+        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; border-left: 5px solid var(--main); animation: fadeIn 0.3s forwards; }
     </style>
 </head>
 <body>
@@ -100,44 +48,41 @@
         <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
     </div>
     <div style="display:flex; align-items:center; gap:20px;">
-        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px; font-weight:bold;">0 B</div>
-        <div id="u-prof" style="display:none; align-items:center; gap:10px;">
-            <img id="u-ava" src="" style="width:35px; border-radius:50%; border:2px solid var(--main);">
-        </div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:bold;">LOGIN</button>
+        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px;">0 B</div>
+        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
     </div>
 </header>
 
 <div id="page-market" class="page active">
-    <div class="case-preview" onclick="openCaseModal()">
-        <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:200px;">
-        <h2 style="font-family:'Orbitron'; margin-top:20px; letter-spacing:2px;">HARDCORE CASE</h2>
-        <p style="color:var(--main); font-size:24px; font-weight:bold; margin-top:10px;">1,000 B</p>
+    <div style="text-align:center; margin-top:50px;">
+        <div style="display:inline-block; cursor:pointer;" onclick="openCaseModal()">
+            <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png" style="width:220px;">
+            <h2 style="font-family:'Orbitron'; margin-top:20px;">HARDCORE CASE</h2>
+            <p style="color:var(--main); font-size:24px;">1,000 B</p>
+        </div>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-        <h2 style="font-family:'Orbitron'; color:var(--main);">COLLECTION</h2>
-        <button class="btn-nav" style="background:var(--accent); color:#fff; border:none;" onclick="confirmSellAll()">SELL ALL SKINS</button>
+        <h2 style="font-family:'Orbitron'; color:var(--main);">INVENTORY</h2>
+        <button class="btn-nav" style="background:crimson; color:white; border:none;" onclick="confirmSellAll()">SELL ALL</button>
     </div>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="roulette-container">
-        <h2 style="font-family:'Orbitron'; letter-spacing:3px;">HARDCORE CASE</h2>
-        <div class="view-window">
-            <div class="pointer-line"></div>
+    <div class="roulette-box">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">OPENING...</h2>
+        <div class="strip-window">
+            <div class="pointer"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn-nav" style="width:100%; height:55px; background:var(--main); color:#000; font-weight:bold; font-size:14px;" onclick="startSpin()">SPIN FOR 1,000 B</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:20px; cursor:pointer; font-family:'Orbitron'; font-size:10px;">CANCEL / CLOSE</button>
+        <button id="spin-btn" class="btn-nav" style="width:100%; height:50px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">SPIN</button>
     </div>
 </div>
 
 <script>
-    // Firebase Setup
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -148,11 +93,32 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    // Skins with chances (Total 100)
+    // ВСІ ТВОЇ ПОСИЛАННЯ ТУТ
     const SKINS = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", rarity: "Common", inspect: "https://steamcommunity.com/market/" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", rarity: "Classified", inspect: "https://steamcommunity.com/market/" },
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special", inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" }
+        { 
+            name: "Glock-18 Fade", 
+            img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", 
+            price: 150, 
+            chance: 70, 
+            color: "#4b69ff", 
+            inspect: "steam://run/730//+csgo_econ_action_preview%20S76561198084057371A15357827299D7371585802521921350" 
+        },
+        { 
+            name: "AK-47 Neon", 
+            img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", 
+            price: 1200, 
+            chance: 25, 
+            color: "#d32ee6", 
+            inspect: "steam://run/730//+csgo_econ_action_preview%20S76561198084057371A15357827299D7371585802521921350" 
+        },
+        { 
+            name: "Butterfly Knife", 
+            img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", 
+            price: 15000, 
+            chance: 5, 
+            color: "#ebca42", 
+            inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" 
+        }
     ];
 
     let user = null, balance = 0, userInv = {};
@@ -161,8 +127,6 @@
         if(u) {
             user = u;
             document.getElementById('l-btn').style.display = 'none';
-            document.getElementById('u-prof').style.display = 'flex';
-            document.getElementById('u-ava').src = u.photoURL;
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
@@ -174,14 +138,9 @@
         }
     });
 
-    // ROULETTE LOGIC
-    function getRandomSkin() {
-        const rand = Math.random() * 100;
-        let cumulative = 0;
-        for (const skin of SKINS) {
-            cumulative += skin.chance;
-            if (rand <= cumulative) return skin;
-        }
+    function getRand() {
+        let r = Math.random() * 100, c = 0;
+        for (let s of SKINS) { c += s.chance; if (r <= c) return s; }
         return SKINS[0];
     }
 
@@ -192,87 +151,74 @@
         strip.style.transition = 'none';
         strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
-
-        // Generate 80 random items for the strip
         for(let i=0; i<85; i++) {
-            const s = getRandomSkin();
-            strip.innerHTML += `
-                <div class="strip-item">
-                    <img src="${s.img}">
-                    <div class="rarity-bg" style="background:${s.color}"></div>
-                </div>`;
+            let s = getRand();
+            strip.innerHTML += `<div class="s-item"><img src="${s.img}"><div style="position:absolute;bottom:0;width:100%;height:4px;background:${s.color}"></div></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < 1000) return toast("INSUFFICIENT FUNDS");
-        const spinBtn = document.getElementById('spin-btn');
-        spinBtn.disabled = true;
+        if(balance < 1000) return toast("NO MONEY");
+        document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
+        const win = getRand();
         const strip = document.getElementById('strip');
-        const winIndex = 75; // Item that will stop on pointer
-        const winSkin = getRandomSkin();
-        
-        // Inject win skin into the specific position
-        strip.children[winIndex].innerHTML = `<img src="${winSkin.img}"><div class="rarity-bg" style="background:${winSkin.color}"></div>`;
+        strip.children[75].innerHTML = `<img src="${win.img}"><div style="position:absolute;bottom:0;width:100%;height:4px;background:${win.color}"></div>`;
 
-        // Exact pixel calculation
-        const itemWidth = 160;
-        const windowWidth = document.querySelector('.view-window').offsetWidth;
-        const centerOffset = windowWidth / 2;
-        const finalPos = (winIndex * itemWidth) - centerOffset + (itemWidth / 2);
-        const randomCorrection = Math.floor(Math.random() * 60) - 30; // Randomize stop position within the item
-
+        const move = (75 * 160) - (document.querySelector('.strip-window').offsetWidth / 2) + 80;
         strip.style.transition = 'transform 7s cubic-bezier(0.15, 0, 0.05, 1)';
-        strip.style.transform = `translateX(-${finalPos + randomCorrection}px)`;
+        strip.style.transform = `translateX(-${move}px)`;
 
         setTimeout(() => {
-            db.ref('users/'+user.uid+'/inventory').push(winSkin);
-            toast("UNBOXED: " + winSkin.name);
-            spinBtn.disabled = false;
+            db.ref('users/'+user.uid+'/inventory').push(win);
+            toast("WON: " + win.name);
+            document.getElementById('spin-btn').disabled = false;
         }, 7200);
     }
 
     function renderInventory() {
-        const grid = document.getElementById('inv-grid');
-        grid.innerHTML = "";
-        let delay = 0;
+        const g = document.getElementById('inv-grid'); g.innerHTML = "";
         Object.keys(userInv).forEach(id => {
-            const item = userInv[id];
-            grid.innerHTML += `
-                <div class="inv-card" style="animation-delay: ${delay}s">
-                    <span class="rarity-tag" style="color:${item.color}">${item.rarity}</span>
-                    <img src="${item.img}" style="width:120px;">
-                    <div style="font-family:'Orbitron'; font-size:11px; margin:10px 0;">${item.name}</div>
-                    <button class="btn-nav" style="width:100%; font-size:9px; margin-bottom:5px;" onclick="window.location.href='${item.inspect}'">INSPECT</button>
-                    <button class="btn-nav" style="width:100%; border-color:var(--accent); color:var(--accent); font-size:9px;" onclick="sellItem('${id}', ${item.price})">SELL ${item.price} B</button>
+            const i = userInv[id];
+            g.innerHTML += `
+                <div class="inv-card">
+                    <img src="${i.img}">
+                    <div style="font-family:Orbitron; font-size:12px; color:${i.color}">${i.name}</div>
+                    <button class="btn-nav" style="width:100%; margin:10px 0;" onclick="openSteam('${i.inspect}')">INSPECT</button>
+                    <button class="btn-nav" style="width:100%; border-color:crimson;" onclick="sell('${id}',${i.price})">SELL ${i.price}</button>
                 </div>`;
-            delay += 0.05;
         });
     }
 
-    function sellItem(id, price) {
-        if(confirm(`Sell for ${price} B?`)) {
-            db.ref('users/'+user.uid+'/inventory/'+id).remove();
-            db.ref('users/'+user.uid+'/balance').set(balance + price);
-            toast("SOLD SUCCESS");
-        }
+    // НАЙКРАЩИЙ СПОСІБ ВІДКРИТИ STEAM
+    function openSteam(link) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = link;
+        document.body.appendChild(iframe);
+        setTimeout(() => document.body.removeChild(iframe), 500);
+        toast("OPENING STEAM...");
+    }
+
+    function sell(id, p) {
+        db.ref('users/'+user.uid+'/inventory/'+id).remove();
+        db.ref('users/'+user.uid+'/balance').set(balance + p);
     }
 
     function confirmSellAll() {
         let total = 0;
         Object.values(userInv).forEach(i => total += i.price);
-        if(total === 0 || !confirm(`Sell all items for ${total} B?`)) return;
-        db.ref('users/'+user.uid+'/inventory').remove();
-        db.ref('users/'+user.uid+'/balance').set(balance + total);
-        toast("ALL SOLD");
+        if(total > 0 && confirm("Sell everything?")) {
+            db.ref('users/'+user.uid+'/inventory').remove();
+            db.ref('users/'+user.uid+'/balance').set(balance + total);
+        }
     }
 
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
-        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-'+p).classList.add('active');
     }
 
