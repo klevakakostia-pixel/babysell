@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - NEW UPDATE V6</title>
+    <title>BABYSELL - VOID UPDATE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -14,6 +14,7 @@
             --main: #00ffaa; --bg: #030305; --accent: #ff2d55; 
             --glass: rgba(255, 255, 255, 0.03);
             --rare-spec: #ebca42;
+            --soon-color: #555; /* Колір для заблокованого кейсу */
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -39,7 +40,6 @@
             position: sticky; top: 0; z-index: 1000;
         }
 
-        /* NEW PROFILE UI */
         .user-zone { display: flex; align-items: center; gap: 15px; }
         .u-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.3); }
         .u-nick { font-family: 'Orbitron'; font-size: 11px; color: var(--main); }
@@ -55,24 +55,51 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CASES & NEW TAG */
-        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 900px; margin: 0 auto; }
+        /* CASES GRID */
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
+        
+        /* БАЗОВІ СТИЛІ КАРТКИ */
         .case-card {
             background: #0a0a0c; padding: 40px; border-radius: 30px; text-align: center;
-            cursor: pointer; border: 1px solid #222; transition: 0.4s; position: relative; overflow: hidden;
+            border: 1px solid #222; transition: 0.4s; position: relative; overflow: hidden;
         }
-        .case-card:hover { border-color: var(--main); transform: translateY(-5px); }
+        
+        /* СТИЛІ ДЛЯ АКТИВНИХ КЕЙСІВ */
+        .case-card.active-case { cursor: pointer; }
+        .case-card.active-case:hover { border-color: var(--main); transform: translateY(-5px); }
         .case-card img { width: 100%; max-width: 200px; animation: float 4s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* THE NEW TAG */
+        /* NEW TAG */
         .new-tag {
             position: absolute; top: 20px; right: -30px; background: var(--accent);
             color: white; font-family: 'Orbitron'; font-weight: bold; font-size: 9px;
             padding: 5px 35px; transform: rotate(40deg); box-shadow: 0 0 15px var(--accent);
-            animation: pulseNew 1.5s infinite;
+            animation: pulseNew 1.5s infinite; z-index: 10;
         }
         @keyframes pulseNew { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* --- СТИЛІ ДЛЯ КЕЙСУ SOON --- */
+        .case-card.soon-case {
+            border-color: #111; filter: grayscale(100%) blur(1px); opacity: 0.6;
+            cursor: not-allowed; /* Курсор "заборонено" */
+        }
+        
+        /* ТЕКСТ SOON ПОЦЕНТРУ */
+        .soon-overlay {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.5); z-index: 5;
+        }
+        .soon-text {
+            font-family: 'Orbitron'; font-weight: 900; font-size: 50px;
+            letter-spacing: 10px; color: rgba(255,255,255,0.1); text-transform: uppercase;
+            transform: rotate(-15deg);
+            animation: pulseSoonText 2s infinite;
+        }
+        @keyframes pulseSoonText {
+            0%, 100% { color: rgba(255,255,255,0.1); text-shadow: none; }
+            50% { color: rgba(0, 255, 170, 0.3); text-shadow: 0 0 20px var(--main); }
+        }
 
         /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
@@ -103,9 +130,7 @@
 
     <div class="user-zone">
         <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px;">0 B</div>
-        
         <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000;">LOGIN</button>
-        
         <div id="l-prof" style="display:none; align-items:center; gap:10px;">
             <img id="l-ava" src="" class="u-avatar">
             <span id="l-nick" class="u-nick">...</span>
@@ -115,17 +140,26 @@
 
 <div id="page-market" class="page active">
     <div class="cases-grid">
-        <div class="case-card" onclick="openCaseModal('hardcore')">
+        <div class="case-card active-case" onclick="openCaseModal('hardcore')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
             <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">HARDCORE CASE</h2>
             <p style="color:var(--main); font-size:22px;">1,000 B</p>
         </div>
         
-        <div class="case-card" onclick="openCaseModal('ultra')">
+        <div class="case-card active-case" onclick="openCaseModal('ultra')">
             <div class="new-tag">NEW</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
             <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">ULTRA ELITE CASE</h2>
             <p style="color:var(--rare-spec); font-size:22px;">5,000 B</p>
+        </div>
+
+        <div class="case-card soon-case">
+            <div class="soon-overlay">
+                <div class="soon-text">SOON</div>
+            </div>
+            <img src="https://i.postimg.cc/qBxFKy4z/Gemini-Generated-Image-pcy8cmpcy8cmpcy8.png">
+            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px; color:#333;">????? CASE</h2>
+            <p style="color:#333; font-size:22px;">???,??? B</p>
         </div>
     </div>
 </div>
@@ -169,7 +203,6 @@
         { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special", inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" }
     ];
     
-    // UPDATED AWP PRICES (higher)
     const ULTRA_SKINS = [
         { name: "AWP | Mil-Spec", img: "https://i.postimg.cc/1z1XbL2S/330x192-(1).png", price: 1200, chance: 40, color: "#4b69ff", rarity: "Mil-Spec", inspect: "" },
         { name: "AWP | Restricted", img: "https://i.postimg.cc/LXNsYhXF/330x192.png", price: 2500, chance: 25, color: "#8847ff", rarity: "Restricted", inspect: "" },
@@ -186,11 +219,10 @@
     auth.onAuthStateChanged(u => {
         if(u) {
             user = u;
-            // UPDATE PROFILE UI
             document.getElementById('l-btn').style.display = 'none';
             document.getElementById('l-prof').style.display = 'flex';
-            document.getElementById('l-ava').src = u.photoURL; // Set Avatar
-            document.getElementById('l-nick').innerText = u.displayName.split(' ')[0]; // Set Nickname
+            document.getElementById('l-ava').src = u.photoURL;
+            document.getElementById('l-nick').innerText = u.displayName.split(' ')[0];
 
             if(u.uid === ADMIN_UID) document.getElementById('admin-panel').style.display = 'block';
             db.ref('users/'+u.uid+'/balance').on('value', s => {
