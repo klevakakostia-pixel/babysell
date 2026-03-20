@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - VOID UPDATE</title>
+    <title>BABYSELL - DREAM UPDATE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -14,7 +14,6 @@
             --main: #00ffaa; --bg: #030305; --accent: #ff2d55; 
             --glass: rgba(255, 255, 255, 0.03);
             --rare-spec: #ebca42;
-            --soon-color: #555; /* Колір для заблокованого кейсу */
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -24,7 +23,13 @@
             min-height: 100vh; background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 170, 0.05) 0%, transparent 50%);
         }
 
-        /* LOGO & PROFILE */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 40px; height: 90px; background: rgba(0,0,0,0.9); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
         .logo-center {
             position: absolute; left: 50%; transform: translateX(-50%);
             font-family: 'Orbitron'; font-weight: 900; font-size: 26px;
@@ -32,13 +37,6 @@
             animation: pulseLogo 3s infinite;
         }
         @keyframes pulseLogo { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
-
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 90px; background: rgba(0,0,0,0.9); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.2);
-            position: sticky; top: 0; z-index: 1000;
-        }
 
         .user-zone { display: flex; align-items: center; gap: 15px; }
         .u-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--main); box-shadow: 0 0 10px rgba(0,255,170,0.3); }
@@ -55,53 +53,34 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* CASES GRID */
         .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
         
-        /* БАЗОВІ СТИЛІ КАРТКИ */
         .case-card {
             background: #0a0a0c; padding: 40px; border-radius: 30px; text-align: center;
             border: 1px solid #222; transition: 0.4s; position: relative; overflow: hidden;
         }
         
-        /* СТИЛІ ДЛЯ АКТИВНИХ КЕЙСІВ */
         .case-card.active-case { cursor: pointer; }
         .case-card.active-case:hover { border-color: var(--main); transform: translateY(-5px); }
         .case-card img { width: 100%; max-width: 200px; animation: float 4s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* NEW TAG */
         .new-tag {
             position: absolute; top: 20px; right: -30px; background: var(--accent);
             color: white; font-family: 'Orbitron'; font-weight: bold; font-size: 9px;
             padding: 5px 35px; transform: rotate(40deg); box-shadow: 0 0 15px var(--accent);
             animation: pulseNew 1.5s infinite; z-index: 10;
         }
-        @keyframes pulseNew { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        /* --- СТИЛІ ДЛЯ КЕЙСУ SOON --- */
-        .case-card.soon-case {
-            border-color: #111; filter: grayscale(100%) blur(1px); opacity: 0.6;
-            cursor: not-allowed; /* Курсор "заборонено" */
-        }
-        
-        /* ТЕКСТ SOON ПОЦЕНТРУ */
-        .soon-overlay {
-            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); z-index: 5;
-        }
+        .case-card.soon-case { border-color: #111; filter: grayscale(100%) blur(1px); opacity: 0.6; cursor: not-allowed; }
+        .soon-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5; }
         .soon-text {
             font-family: 'Orbitron'; font-weight: 900; font-size: 50px;
             letter-spacing: 10px; color: rgba(255,255,255,0.1); text-transform: uppercase;
-            transform: rotate(-15deg);
-            animation: pulseSoonText 2s infinite;
+            transform: rotate(-15deg); animation: pulseSoonText 2s infinite;
         }
-        @keyframes pulseSoonText {
-            0%, 100% { color: rgba(255,255,255,0.1); text-shadow: none; }
-            50% { color: rgba(0, 255, 170, 0.3); text-shadow: 0 0 20px var(--main); }
-        }
+        @keyframes pulseSoonText { 0%, 100% { color: rgba(255,255,255,0.1); } 50% { color: rgba(0, 255, 170, 0.3); text-shadow: 0 0 20px var(--main); } }
 
-        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #333; }
         .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
@@ -122,8 +101,8 @@
 <header class="header">
     <div style="display:flex; gap:10px;">
         <div id="admin-panel" style="display:none;"><button class="btn-nav" style="border-color:var(--accent);" onclick="addMoney()">+ ADMIN</button></div>
-        <button class="btn-nav active" id="tab-market" onclick="showPage('market')">МАРКЕТ</button>
-        <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">ІНВЕНТАР</button>
+        <button class="btn-nav active" id="tab-market" onclick="showPage('market')">MARKET</button>
+        <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
     </div>
 
     <div class="logo-center">BABYSELL</div>
@@ -142,23 +121,21 @@
     <div class="cases-grid">
         <div class="case-card active-case" onclick="openCaseModal('hardcore')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">HARDCORE CASE</h2>
+            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">MYSTERIOUS NIGHTS</h2>
             <p style="color:var(--main); font-size:22px;">1,000 B</p>
         </div>
         
         <div class="case-card active-case" onclick="openCaseModal('ultra')">
-            <div class="new-tag">NEW</div>
+            <div class="new-tag">HOT</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">ULTRA ELITE CASE</h2>
+            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">TARGETED NIGHTMARES</h2>
             <p style="color:var(--rare-spec); font-size:22px;">5,000 B</p>
         </div>
 
         <div class="case-card soon-case">
-            <div class="soon-overlay">
-                <div class="soon-text">SOON</div>
-            </div>
+            <div class="soon-overlay"><div class="soon-text">SOON</div></div>
             <img src="https://i.postimg.cc/qBxFKy4z/Gemini-Generated-Image-pcy8cmpcy8cmpcy8.png">
-            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px; color:#333;">????? CASE</h2>
+            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px; color:#333;">CT DREAMS</h2>
             <p style="color:#333; font-size:22px;">???,??? B</p>
         </div>
     </div>
@@ -166,20 +143,20 @@
 
 <div id="page-inventory" class="page">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-        <h2 style="font-family:'Orbitron'; color:var(--main);">COLLECTION</h2>
-        <button class="btn-nav" style="background:var(--accent); color:white; border:none;" onclick="confirmSellAll()">SELL ALL</button>
+        <h2 style="font-family:'Orbitron'; color:var(--main);">YOUR COLLECTION</h2>
+        <button class="btn-nav" style="background:var(--accent); color:white; border:none;" onclick="confirmSellAll()">SELL ALL ITEMS</button>
     </div>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
 <div id="case-modal" class="modal">
     <div style="width:90%; max-width:800px; text-align:center;">
-        <h2 style="font-family:'Orbitron'; color:var(--main);">OPENING...</h2>
+        <h2 style="font-family:'Orbitron'; color:var(--main);">UNBOXING...</h2>
         <div class="view-window">
             <div class="pointer"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn-nav" style="width:100%; height:50px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">SPIN</button>
+        <button id="spin-btn" class="btn-nav" style="width:100%; height:50px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">OPEN CASE</button>
         <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer;">CLOSE</button>
     </div>
 </div>
@@ -195,23 +172,21 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    const ADMIN_UID = "ВАШ_UID_ТУТ"; // Уставь свой UID
-
     const HARDCORE_SKINS = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", rarity: "Common", inspect: "steam://run/730//+csgo_econ_action_preview%209282345D064028938A96B291BA91A296AA23083E7E91D24391FABAE296F9928CEC" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", rarity: "Classified", inspect: "steam://run/730//+csgo_econ_action_preview%20S76561198084057371A15357827299D7371585802521921350" },
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special", inspect: "steam://run/730//+csgo_econ_action_preview%20D9C97F7B2E4C63D8C15ADDF91CDDF1DFE9DAE10423772BDA9945DCB1D0A9DDF65DAA5A" }
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", rarity: "Mil-Spec" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", rarity: "Classified" },
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special" }
     ];
     
     const ULTRA_SKINS = [
-        { name: "AWP | Mil-Spec", img: "https://i.postimg.cc/1z1XbL2S/330x192-(1).png", price: 1200, chance: 40, color: "#4b69ff", rarity: "Mil-Spec", inspect: "" },
-        { name: "AWP | Restricted", img: "https://i.postimg.cc/LXNsYhXF/330x192.png", price: 2500, chance: 25, color: "#8847ff", rarity: "Restricted", inspect: "" },
-        { name: "AWP | Classified", img: "https://i.postimg.cc/x8ZT57Mm/330x192-(2).png", price: 4500, chance: 15, color: "#d32ee6", rarity: "Classified", inspect: "" },
-        { name: "AWP | Covert Blue", img: "https://i.postimg.cc/NfWjr3gq/330x192-(3).png", price: 9000, chance: 8, color: "#eb4b4b", rarity: "Covert", inspect: "" },
-        { name: "AWP | Covert Red", img: "https://i.postimg.cc/yNK6L03Y/330x192-(4).png", price: 11000, chance: 5, color: "#eb4b4b", rarity: "Covert", inspect: "" },
-        { name: "AWP | Covert Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", price: 15000, chance: 3, color: "#eb4b4b", rarity: "Covert", inspect: "" },
-        { name: "Desert Eagle | Contraband", img: "https://i.postimg.cc/1X8y8H2X/330x192-(6).png", price: 35000, chance: 1.5, color: "#e4ae39", rarity: "Contraband", inspect: "" },
-        { name: "Butterfly Knife | Rare", img: "https://i.postimg.cc/yN0gdV9f/330x192-(7).png", price: 150000, chance: 0.5, color: "#ebca42", rarity: "Rare Special", inspect: "" }
+        { name: "AWP | Mil-Spec", img: "https://i.postimg.cc/1z1XbL2S/330x192-(1).png", price: 1200, chance: 40, color: "#4b69ff", rarity: "Mil-Spec" },
+        { name: "AWP | Restricted", img: "https://i.postimg.cc/LXNsYhXF/330x192.png", price: 2500, chance: 25, color: "#8847ff", rarity: "Restricted" },
+        { name: "AWP | Classified", img: "https://i.postimg.cc/x8ZT57Mm/330x192-(2).png", price: 4500, chance: 15, color: "#d32ee6", rarity: "Classified" },
+        { name: "AWP | Covert Blue", img: "https://i.postimg.cc/NfWjr3gq/330x192-(3).png", price: 9000, chance: 8, color: "#eb4b4b", rarity: "Covert" },
+        { name: "AWP | Covert Red", img: "https://i.postimg.cc/yNK6L03Y/330x192-(4).png", price: 11000, chance: 5, color: "#eb4b4b", rarity: "Covert" },
+        { name: "AWP | Covert Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", price: 15000, chance: 3, color: "#eb4b4b", rarity: "Covert" },
+        { name: "Desert Eagle | Contraband", img: "https://i.postimg.cc/1X8y8H2X/330x192-(6).png", price: 35000, chance: 1.5, color: "#e4ae39", rarity: "Contraband" },
+        { name: "Butterfly Knife | Rare", img: "https://i.postimg.cc/yN0gdV9f/330x192-(7).png", price: 150000, chance: 0.5, color: "#ebca42", rarity: "Rare Special" }
     ];
 
     let user = null, balance = 0, userInv = {}, currentActiveCaseSkins = [], currentCaseCost = 0;
@@ -223,8 +198,6 @@
             document.getElementById('l-prof').style.display = 'flex';
             document.getElementById('l-ava').src = u.photoURL;
             document.getElementById('l-nick').innerText = u.displayName.split(' ')[0];
-
-            if(u.uid === ADMIN_UID) document.getElementById('admin-panel').style.display = 'block';
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
@@ -249,7 +222,6 @@
         if(!user) return login();
         if(caseType === 'hardcore') { currentActiveCaseSkins = HARDCORE_SKINS; currentCaseCost = 1000; } 
         else if (caseType === 'ultra') { currentActiveCaseSkins = ULTRA_SKINS; currentCaseCost = 5000; }
-        
         document.getElementById('case-modal').style.display = 'flex';
         const strip = document.getElementById('strip');
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
@@ -261,7 +233,7 @@
     }
 
     function startSpin() {
-        if(balance < currentCaseCost) return toast("No balance");
+        if(balance < currentCaseCost) return toast("Insufficient balance");
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - currentCaseCost);
         const win = getWeightedSkin(currentActiveCaseSkins);
@@ -272,7 +244,7 @@
         strip.style.transform = `translateX(-${move}px)`;
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("WON: " + win.name);
+            toast("UNBOXED: " + win.name);
             document.getElementById('spin-btn').disabled = false;
         }, 8200);
     }
@@ -286,14 +258,13 @@
                     <span style="font-size:10px; font-family:Orbitron; color:${i.color};">${i.rarity}</span>
                     <img src="${i.img}">
                     <div style="font-family:Orbitron; font-size:11px; color:#fff">${i.name}</div>
-                    <button class="btn-nav" style="width:100%; margin:10px 0; font-size:9px;" onclick="openSteam('${i.inspect}')">INSPECT</button>
-                    <button class="btn-nav" style="width:100%; border-color:var(--accent); font-size:9px;" onclick="sell('${id}',${i.price})">SELL ${i.price}</button>
+                    <button class="btn-nav" style="width:100%; margin:10px 0; font-size:9px;" onclick="sell('${id}',${i.price})">SELL FOR ${i.price} B</button>
                 </div>`;
         });
     }
 
     function sell(id, p) {
-        if(confirm("Sell for " + p + " B?")) {
+        if(confirm("Sell this item for " + p + " B?")) {
             db.ref('users/'+user.uid+'/inventory/'+id).remove();
             db.ref('users/'+user.uid+'/balance').set(balance + p);
         }
@@ -301,21 +272,12 @@
 
     function confirmSellAll() {
         let total = 0; Object.values(userInv).forEach(i => total += i.price);
-        if(total > 0 && confirm("Sell all for " + total + " B?")) {
+        if(total > 0 && confirm("Sell all items for " + total + " B?")) {
             db.ref('users/'+user.uid+'/inventory').remove();
             db.ref('users/'+user.uid+'/balance').set(balance + total);
         }
     }
 
-    function openSteam(link) {
-        if(!link) return;
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none'; iframe.src = link;
-        document.body.appendChild(iframe);
-        setTimeout(() => document.body.removeChild(iframe), 500);
-    }
-
-    function addMoney() { db.ref('users/'+user.uid+'/balance').set(balance + 100000); }
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
