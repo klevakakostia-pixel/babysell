@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - PROMO UPDATE</title>
+    <title>BABYSELL - ULTIMATE UPDATE</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -52,8 +52,8 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* CASES GRID */
         .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
-        
         .case-card {
             background: #0a0a0c; padding: 40px; border-radius: 30px; text-align: center;
             border: 1px solid #222; transition: 0.4s; position: relative; overflow: hidden;
@@ -63,10 +63,17 @@
         .case-card img { width: 100%; max-width: 200px; animation: float 4s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* PROMO MODAL STYLES */
+        /* SOON CASE */
+        .case-card.soon-case { border-color: #111; filter: grayscale(100%) blur(1px); opacity: 0.6; cursor: not-allowed; }
+        .soon-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); z-index: 5; }
+        .soon-text { font-family: 'Orbitron'; font-weight: 900; font-size: 50px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); animation: pulseSoon 2s infinite; }
+        @keyframes pulseSoon { 50% { color: rgba(0, 255, 170, 0.4); text-shadow: 0 0 20px var(--main); } }
+
+        /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .promo-content { background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--promo-gold); width: 350px; text-align: center; }
-        .promo-input { background: #000; border: 1px solid #333; color: var(--promo-gold); padding: 15px; width: 100%; border-radius: 10px; margin: 20px 0; font-family: 'Orbitron'; text-align: center; font-size: 16px; }
+        .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #333; }
+        .pointer { position: absolute; left: 50%; top: 0; width: 3px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 20px var(--main); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 8s cubic-bezier(0.1, 0, 0, 1); }
 
         .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .inv-card { background: var(--glass); border: 1px solid #222; border-radius: 15px; padding: 15px; text-align: center; }
@@ -82,6 +89,7 @@
 
 <header class="header">
     <div style="display:flex; gap:10px;">
+        <div id="admin-panel" style="display:none;"><button class="btn-nav" style="border-color:var(--accent);" onclick="addMoney()">+ ADMIN</button></div>
         <button class="btn-nav active" id="tab-market" onclick="showPage('market')">MARKET</button>
         <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
     </div>
@@ -111,17 +119,39 @@
             <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px;">TARGETED NIGHTMARES</h2>
             <p style="color:var(--rare-spec); font-size:22px;">5,000 B</p>
         </div>
+        <div class="case-card soon-case">
+            <div class="soon-overlay"><div class="soon-text">SOON</div></div>
+            <img src="https://i.postimg.cc/qBxFKy4z/Gemini-Generated-Image-pcy8cmpcy8cmpcy8.png">
+            <h2 style="font-family:'Orbitron'; margin-top:10px; font-size:16px; color:#333;">CT DREAMS</h2>
+            <p style="color:#333; font-size:22px;">???,??? B</p>
+        </div>
     </div>
 </div>
 
 <div id="page-inventory" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">COLLECTION</h2>
+        <button class="btn-nav" style="background:var(--accent); color:white; border:none;" onclick="confirmSellAll()">SELL ALL</button>
+    </div>
     <div id="inv-grid" class="inv-grid"></div>
 </div>
 
+<div id="case-modal" class="modal">
+    <div style="width:90%; max-width:800px; text-align:center;">
+        <h2 style="font-family:'Orbitron'; color:var(--main);">UNBOXING...</h2>
+        <div class="view-window">
+            <div class="pointer"></div>
+            <div id="strip" class="strip"></div>
+        </div>
+        <button id="spin-btn" class="btn-nav" style="width:100%; height:50px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">SPIN</button>
+        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer;">CLOSE</button>
+    </div>
+</div>
+
 <div id="promo-modal" class="modal">
-    <div class="promo-content">
-        <h2 style="font-family:'Orbitron'; color:var(--promo-gold);">REDEEM CODE</h2>
-        <input type="text" id="promo-field" class="promo-input" placeholder="ENTER CODE HERE">
+    <div style="background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--promo-gold); width: 350px; text-align: center;">
+        <h2 style="font-family:'Orbitron'; color:var(--promo-gold);">PROMO CODE</h2>
+        <input type="text" id="promo-field" style="background:#000; border:1px solid #333; color:var(--promo-gold); padding:15px; width:100%; border-radius:10px; margin:20px 0; text-align:center; font-family:'Orbitron';" placeholder="ENTER CODE">
         <button class="btn-nav" style="width:100%; background:var(--promo-gold); color:#000;" onclick="redeemPromo()">ACTIVATE</button>
         <button onclick="closeModals()" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">CLOSE</button>
     </div>
@@ -138,7 +168,21 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    let user = null, balance = 0;
+    const ADMIN_UID = "YOUR_UID_HERE"; // Встав сюди свій UID для адмінки
+
+    const HARDCORE_SKINS = [
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff", rarity: "Mil-Spec" },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", price: 1200, chance: 25, color: "#d32ee6", rarity: "Classified" },
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", price: 15000, chance: 5, color: "#ebca42", rarity: "Rare Special" }
+    ];
+    
+    const ULTRA_SKINS = [
+        { name: "AWP | Restricted", img: "https://i.postimg.cc/LXNsYhXF/330x192.png", price: 2500, chance: 60, color: "#8847ff", rarity: "Restricted" },
+        { name: "AWP | Covert Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", price: 15000, chance: 35, color: "#eb4b4b", rarity: "Covert" },
+        { name: "Butterfly Knife | Rare", img: "https://i.postimg.cc/yN0gdV9f/330x192-(7).png", price: 150000, chance: 5, color: "#ebca42", rarity: "Rare Special" }
+    ];
+
+    let user = null, balance = 0, userInv = {}, currentActiveCaseSkins = [], currentCaseCost = 0;
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -147,37 +191,88 @@
             document.getElementById('l-prof').style.display = 'flex';
             document.getElementById('l-ava').src = u.photoURL;
             document.getElementById('l-nick').innerText = u.displayName.split(' ')[0];
+            if(u.uid === ADMIN_UID) document.getElementById('admin-panel').style.display = 'block';
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
+            db.ref('users/'+u.uid+'/inventory').on('value', s => {
+                userInv = s.val() || {};
+                renderInventory();
+            });
         }
     });
-
-    function openPromo() { if(!user) return login(); document.getElementById('promo-modal').style.display = 'flex'; }
-    
-    function redeemPromo() {
-        const code = document.getElementById('promo-field').value.trim().toUpperCase();
-        if(code === "START2026") {
-            db.ref('users/'+user.uid+'/used_promos/'+code).once('value', s => {
-                if(s.exists()) {
-                    toast("ALREADY USED!");
-                } else {
-                    db.ref('users/'+user.uid+'/balance').set(balance + 100);
-                    db.ref('users/'+user.uid+'/used_promos/'+code).set(true);
-                    toast("SUCCESS! +100 B");
-                    closeModals();
-                }
-            });
-        } else {
-            toast("INVALID CODE");
-        }
-    }
 
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+        if(document.getElementById('tab-'+p)) document.getElementById('tab-'+p).classList.add('active');
     }
+
+    function openCaseModal(type) {
+        if(!user) return login();
+        currentActiveCaseSkins = (type === 'hardcore') ? HARDCORE_SKINS : ULTRA_SKINS;
+        currentCaseCost = (type === 'hardcore') ? 1000 : 5000;
+        document.getElementById('case-modal').style.display = 'flex';
+        const strip = document.getElementById('strip');
+        strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
+        strip.innerHTML = "";
+        for(let i=0; i<100; i++) {
+            let s = currentActiveCaseSkins[Math.floor(Math.random()*currentActiveCaseSkins.length)];
+            strip.innerHTML += `<div style="min-width:160px; display:flex; align-items:center; justify-content:center;"><img src="${s.img}" width="100"></div>`;
+        }
+    }
+
+    function startSpin() {
+        if(balance < currentCaseCost) return toast("Insufficient balance");
+        document.getElementById('spin-btn').disabled = true;
+        db.ref('users/'+user.uid+'/balance').set(balance - currentCaseCost);
+        const win = currentActiveCaseSkins[Math.floor(Math.random()*currentActiveCaseSkins.length)];
+        const strip = document.getElementById('strip');
+        strip.children[80].innerHTML = `<img src="${win.img}" width="100">`;
+        const move = (80 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
+        strip.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0, 1)';
+        strip.style.transform = `translateX(-${move}px)`;
+        setTimeout(() => {
+            db.ref('users/'+user.uid+'/inventory').push(win);
+            toast("WON: " + win.name);
+            document.getElementById('spin-btn').disabled = false;
+        }, 8200);
+    }
+
+    function renderInventory() {
+        const g = document.getElementById('inv-grid'); g.innerHTML = "";
+        Object.keys(userInv).forEach(id => {
+            const i = userInv[id];
+            g.innerHTML += `<div class="inv-card">
+                <span style="color:${i.color};font-size:10px;">${i.rarity}</span>
+                <img src="${i.img}"><br><b>${i.name}</b><br>
+                <button class="btn-nav" style="width:100%;margin-top:10px;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
+            </div>`;
+        });
+    }
+
+    function sell(id, p) {
+        db.ref('users/'+user.uid+'/inventory/'+id).remove();
+        db.ref('users/'+user.uid+'/balance').set(balance + p);
+    }
+
+    function openPromo() { document.getElementById('promo-modal').style.display = 'flex'; }
+    function redeemPromo() {
+        const c = document.getElementById('promo-field').value.trim().toUpperCase();
+        if(c === "START2026") {
+            db.ref('users/'+user.uid+'/used_promos/'+c).once('value', s => {
+                if(s.exists()) return toast("ALREADY USED!");
+                db.ref('users/'+user.uid+'/balance').set(balance + 100);
+                db.ref('users/'+user.uid+'/used_promos/'+c).set(true);
+                toast("SUCCESS! +100 B");
+                closeModals();
+            });
+        } else { toast("INVALID CODE"); }
+    }
+
+    function addMoney() { db.ref('users/'+user.uid+'/balance').set(balance + 100000); }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     function toast(m) {
