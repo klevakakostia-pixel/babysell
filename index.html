@@ -3,108 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - PREMIUM CASE SYSTEM</title>
+    <title>BABYSELL - REAL SKINS EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        :root { --main: #00ffaa; --bg: #030305; --rare: #ebca42; --covert: #eb4b4b; }
+        :root { --main: #00ffaa; --bg: #010101; --prime-gold: linear-gradient(90deg, #ffd700, #fff3a0, #ffd700); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* LIVE FEED WITH NAMES */
-        .live-drops { height: 80px; background: rgba(0,0,0,0.8); display: flex; align-items: center; gap: 15px; padding: 0 20px; overflow: hidden; border-bottom: 2px solid rgba(0,255,170,0.3); }
-        .drop-card { min-width: 140px; background: #0a0a0c; border-radius: 10px; border-bottom: 3px solid var(--main); padding: 8px; text-align: center; font-size: 11px; animation: slideIn 0.5s ease; position: relative; }
-        .drop-name { position: absolute; top: -5px; left: 5px; background: var(--main); color: #000; font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: bold; }
-        @keyframes slideIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #lizard-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 50px; height: 90px; background: #000; border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 32px; letter-spacing: 12px; color: #fff; text-shadow: 0 0 25px var(--main); position: absolute; left: 50%; transform: translateX(-50%); }
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 30px; height: 75px; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,255,170,0.1); position: sticky; top: 0; z-index: 1000; 
+        }
 
-        /* BUTTONS */
-        .btn { background: #111; border: 1px solid #222; color: #fff; padding: 12px 28px; border-radius: 14px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; font-size: 12px; }
-        .btn:hover { border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.2); }
-        .btn-main { background: var(--main); color: #000; font-weight: 900; border: none; box-shadow: 0 0 20px var(--main); animation: glowBtn 2s infinite; }
-        @keyframes glowBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); box-shadow: 0 0 40px var(--main); } }
+        .btn-prime {
+            background: var(--prime-gold); background-size: 200% auto;
+            color: #000; border: none; padding: 8px 18px; border-radius: 6px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 10px;
+            cursor: pointer; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            animation: shine 3s linear infinite; margin-right: 12px;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
 
-        /* CASES */
-        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 60px auto; padding: 0 20px; }
-        .case { background: linear-gradient(180deg, #0a0a0d 0%, #050507 100%); padding: 60px 30px; border-radius: 45px; border: 1px solid #1a1a1f; text-align: center; cursor: pointer; transition: 0.5s; }
-        .case:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
-        .case img { width: 100%; max-width: 240px; filter: drop-shadow(0 0 30px #000); }
-        .case h3 { font-family: 'Orbitron'; margin-top: 25px; letter-spacing: 3px; font-size: 18px; }
-        .price { font-family: 'Orbitron'; font-size: 28px; color: var(--main); margin-top: 12px; }
+        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 24px; letter-spacing: 8px; position: absolute; left: 50%; transform: translateX(-50%); text-shadow: 0 0 20px var(--main); }
 
-        /* ROULETTE ULTIMATE */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
-        .roulette-box { width: 95%; max-width: 950px; background: #08080a; padding: 70px 40px; border-radius: 50px; border: 1px solid #222; position: relative; overflow: hidden; }
-        .window { position: relative; width: 100%; height: 200px; background: #000; margin: 40px 0; overflow: hidden; border: 3px solid #151515; border-radius: 25px; }
-        .line { position: absolute; left: 50%; top: 0; width: 4px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 40px var(--main); transform: translateX(-50%); }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 8s cubic-bezier(0.15, 0, 0.05, 1); }
-        .item { min-width: 200px; text-align: center; }
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .case { 
+            background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(10px); padding: 25px; border-radius: 25px; 
+            border: 1px solid rgba(255,255,255,0.03); text-align: center; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .case:hover { transform: translateY(-5px); border-color: var(--main); }
+        .case img { width: 100%; max-width: 130px; }
+        .price { color: var(--main); font-family: 'Orbitron'; font-size: 18px; margin-top: 10px; font-weight: bold; }
 
-        /* JACKPOT FX */
-        .jackpot-win { animation: goldFlash 1s infinite; border-color: var(--rare) !important; }
-        @keyframes goldFlash { 0%, 100% { box-shadow: inset 0 0 20px transparent; } 50% { box-shadow: inset 0 0 100px rgba(235, 202, 66, 0.3); } }
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .roulette-box { width: 90%; max-width: 800px; background: #08080a; padding: 40px; border-radius: 30px; border: 1px solid #222; text-align: center; }
+        .window { position: relative; width: 100%; height: 150px; background: #000; margin: 20px 0; overflow: hidden; border-radius: 10px; border: 1px solid #222; }
+        .line { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 15px var(--main); transform: translateX(-50%); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 8s cubic-bezier(0.1, 0, 0.05, 1); }
+        .item { min-width: 150px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .item img { max-width: 110px; }
 
-        #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 2px solid var(--main); padding: 22px 45px; margin-top: 12px; font-family: 'Orbitron'; border-left: 8px solid var(--main); box-shadow: 0 15px 60px #000; font-weight: 900; }
+        .btn { background: #111; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron'; cursor: pointer; }
+        .btn-main { background: var(--main); color: #000; font-weight: 900; border: none; }
     </style>
 </head>
 <body>
 
-<div class="live-drops" id="live-drops"></div>
+<canvas id="lizard-bg"></canvas>
+<div id="notif" style="position:fixed; bottom:20px; right:20px; z-index:9999;"></div>
 
 <header class="header">
-    <div style="display:flex; gap:15px;">
+    <div style="display:flex; gap:10px;">
         <button class="btn" onclick="showPage('market')">MARKET</button>
         <button class="btn" onclick="showPage('inventory')">INVENTORY</button>
     </div>
     <div class="logo">BABYSELL</div>
-    <div style="display:flex; gap:20px; align-items:center;">
-        <div id="u-bal" style="font-family:'Orbitron'; font-size:24px; color:var(--main); font-weight:900;">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn btn-main">LOG IN</button>
-        <img id="l-ava" src="" style="display:none; width:45px; border-radius:50%; border:2px solid var(--main); cursor:pointer;">
+    <div style="display:flex; align-items:center;">
+        <button class="btn-prime" onclick="openPrime()">BUY PRIME</button>
+        <div id="u-bal" style="font-family:'Orbitron'; font-size:18px; color:var(--main); margin-right:15px; font-weight:bold;">0 B</div>
+        <button id="l-btn" onclick="login()" class="btn btn-main">LOGIN</button>
+        <img id="l-ava" src="" style="display:none; width:35px; border-radius:50%; border:2px solid var(--main);">
     </div>
 </header>
 
-<div id="page-market" class="page">
+<div id="page-market">
     <div class="cases-grid">
-        <div class="case" onclick="openCaseModal('hardcore')">
+        <div class="case" onclick="openCaseModal('hand_drawn')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <h3>MYSTERIOUS NIGHTS</h3>
+            <h3>HAND DRAWN NIGHTS</h3>
             <div class="price">1,000 B</div>
         </div>
-        <div class="case" onclick="openCaseModal('ultra')">
+        <div class="case" onclick="openCaseModal('real_skins')">
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h3>TARGETED NIGHTMARES</h3>
+            <h3>TARGETED REALITY</h3>
             <div class="price">5,000 B</div>
         </div>
     </div>
 </div>
 
-<div id="page-inventory" class="page" style="display:none; padding:50px;">
-    <h1 style="font-family:'Orbitron'; text-align:center; margin-bottom:50px; color:var(--main);">COLLECTION</h1>
-    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:30px;"></div>
+<div id="page-inventory" style="display:none; padding:40px;">
+    <h2 style="font-family:Orbitron; margin-bottom:20px;">YOUR COLLECTION</h2>
+    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:20px;"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="roulette-box" id="roulette-box">
-        <h2 id="win-text" style="font-family:'Orbitron'; letter-spacing:12px; font-size:24px;">GOOD LUCK!</h2>
+    <div class="roulette-box">
+        <h2 id="win-status" style="font-family:'Orbitron'; letter-spacing:5px;">OPENING...</h2>
         <div class="window">
             <div class="line"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn btn-main" style="width:100%; height:80px; font-size:22px;" onclick="startSpin()">OPEN CASE</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:30px; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px;">CANCEL</button>
+        <button id="spin-btn" class="btn btn-main" style="width:100%; height:60px; font-size:18px;" onclick="startSpin()">SPIN FOR BALANCE</button>
+        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-family:Orbitron;">CLOSE</button>
+    </div>
+</div>
+
+<div id="prime-modal" class="modal">
+    <div class="prime-box" style="background: #0a0a0c; border: 2px solid #ffd700; padding: 35px; border-radius: 25px; text-align: center;">
+        <h2 style="font-family:Orbitron; color:#ffd700;">PRIME STATUS</h2>
+        <p style="margin:15px 0; color:#ccc;">To buy Prime and get x2 Luck, contact:</p>
+        <a href="https://t.me/crypto_number" target="_blank" style="display:block; background:#0088cc; color:#fff; text-decoration:none; padding:15px; border-radius:10px; font-weight:bold;">@crypto_number</a>
+        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:20px; cursor:pointer;">CLOSE</button>
     </div>
 </div>
 
 <audio id="snd-tick" src="https://www.soundjay.com/buttons/sounds/button-50.mp3"></audio>
-<audio id="snd-win" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
 
 <script>
+    // FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -115,20 +128,54 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    const CASE_HARDCORE = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200 },
-        { name: "Desert Eagle", img: "https://i.postimg.cc/1X8y8H2X/330x192-(6).png", color: "#eb4b4b", price: 2500 }
-    ];
+    // SKINS DATA
+    const SKINS = {
+        hand_drawn: [
+            { name: "Butterfly | Hand Drawn", img: "https://i.ibb.co/3ykMv6j/butterfly-drawn.png", color: "#eb4b4b", price: 5000 },
+            { name: "Karambit | Hand Drawn", img: "https://i.ibb.co/L5Z5v5n/karambit-drawn.png", color: "#d32ee6", price: 3500 },
+            { name: "M9 | Hand Drawn", img: "https://i.ibb.co/WfM6m7n/m9-drawn.png", color: "#4b69ff", price: 1200 }
+        ],
+        real_skins: [
+            { name: "AWP | Desert Hydra", img: "https://i.ibb.co/0V0z5mD/awp-hydra.png", color: "#eb4b4b", price: 12000 },
+            { name: "AK-47 | Gold Arabesque", img: "https://i.ibb.co/Xz9z5mD/ak-gold.png", color: "#ebca42", price: 15000 },
+            { name: "M4A1-S | Printstream", img: "https://i.ibb.co/Yy9z5mD/m4-print.png", color: "#d32ee6", price: 8000 }
+        ]
+    };
 
-    const CASE_ULTRA = [
-        { name: "AWP | Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", color: "#eb4b4b", price: 9000 },
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#ebca42", price: 15000 },
-        { name: "Karambit Fade", img: "https://i.postimg.cc/yN0gdV9f/330x192-(7).png", color: "#ebca42", price: 120000 }
-    ];
+    let user = null, balance = 0, currentList = [], currentCost = 0;
 
-    let user = null, balance = 0, currentSkins = [], currentPrice = 0;
+    // LIZARD ENGINE
+    const canvas = document.getElementById('lizard-bg');
+    const ctx = canvas.getContext('2d');
+    let nodes = [];
+    const totalNodes = 30, segmentDist = 12;
+    let mouse = { x: window.innerWidth/2, y: window.innerHeight/2 };
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    for (let i = 0; i < totalNodes; i++) nodes.push({ x: mouse.x, y: mouse.y });
 
+    function updateLizard() {
+        nodes[0].x += (mouse.x - nodes[0].x) * 0.1;
+        nodes[0].y += (mouse.y - nodes[0].y) * 0.1;
+        for (let i = 1; i < totalNodes; i++) {
+            let dx = nodes[i-1].x - nodes[i].x, dy = nodes[i-1].y - nodes[i].y;
+            let dist = Math.sqrt(dx*dx + dy*dy), angle = Math.atan2(dy, dx);
+            if (dist > segmentDist) {
+                nodes[i].x = nodes[i-1].x - Math.cos(angle) * segmentDist;
+                nodes[i].y = nodes[i-1].y - Math.sin(angle) * segmentDist;
+            }
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < nodes.length; i++) {
+            ctx.shadowColor = "#00ffff"; ctx.shadowBlur = 10;
+            ctx.fillStyle = `rgba(0, 255, 255, ${0.4 - (i/30)*0.3})`;
+            ctx.beginPath(); ctx.arc(nodes[i].x, nodes[i].y, 2, 0, Math.PI*2); ctx.fill();
+        }
+        requestAnimationFrame(updateLizard);
+    }
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    updateLizard();
+
+    // AUTH & DATA
     auth.onAuthStateChanged(u => {
         if(u) {
             user = u;
@@ -143,51 +190,42 @@
         }
     });
 
+    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+
     function openCaseModal(type) {
         if(!user) return login();
-        currentSkins = (type === 'hardcore') ? CASE_HARDCORE : CASE_ULTRA;
-        currentPrice = (type === 'hardcore') ? 1000 : 5000;
+        currentList = SKINS[type];
+        currentCost = (type === 'hand_drawn') ? 1000 : 5000;
+        
         document.getElementById('case-modal').style.display = 'flex';
-        document.getElementById('win-text').innerText = "OPENING...";
+        document.getElementById('win-status').innerText = "READY?";
         const strip = document.getElementById('strip');
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
         for(let i=0; i<70; i++) {
-            let s = currentSkins[Math.floor(Math.random()*currentSkins.length)];
-            strip.innerHTML += `<div class="item"><img src="${s.img}" width="140"></div>`;
+            let s = currentList[Math.floor(Math.random()*currentList.length)];
+            strip.innerHTML += `<div class="item"><img src="${s.img}"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < currentPrice) return toast("INSUFFICIENT FUNDS");
+        if(balance < currentCost) return toast("NOT ENOUGH BALANCE!");
         document.getElementById('spin-btn').disabled = true;
-        db.ref('users/'+user.uid+'/balance').set(balance - currentPrice);
+        db.ref('users/'+user.uid+'/balance').set(balance - currentCost);
 
-        const win = currentSkins[Math.floor(Math.random()*currentSkins.length)];
+        const win = currentList[Math.floor(Math.random()*currentList.length)];
         const strip = document.getElementById('strip');
-        // Заміна скіна на 65-й позиції (фінальна точка)
-        strip.children[65].innerHTML = `<img src="${win.img}" width="155" style="filter:drop-shadow(0 0 25px ${win.color})">`;
+        strip.children[65].innerHTML = `<img src="${win.img}" style="filter:drop-shadow(0 0 20px ${win.color})">`;
         
-        const move = (65 * 200) - (document.querySelector('.window').offsetWidth / 2) + 100;
-        strip.style.transition = 'transform 8s cubic-bezier(0.15, 0, 0.05, 1)';
+        const move = (65 * 150) - (document.querySelector('.window').offsetWidth / 2) + 75;
+        strip.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0.05, 1)';
         strip.style.transform = `translateX(-${move}px)`;
 
-        // SOUND TICKS
-        for(let i=0; i<50; i++) {
-            setTimeout(() => { 
-                if(document.getElementById('case-modal').style.display === 'flex') {
-                    const s = document.getElementById('snd-tick').cloneNode();
-                    s.volume = 0.3; s.play();
-                }
-            }, i*i*3.2);
-        }
+        for(let i=0; i<45; i++) setTimeout(() => { if(document.getElementById('case-modal').style.display === 'flex') document.getElementById('snd-tick').cloneNode().play(); }, i*i*3.5);
 
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            document.getElementById('snd-win').play();
-            document.getElementById('win-text').innerText = "CONGRATS! " + win.name.toUpperCase();
-            if(win.price >= 10000) document.getElementById('roulette-box').classList.add('jackpot-win');
-            toast("UNBOXED: " + win.name);
+            document.getElementById('win-status').innerText = win.name;
             document.getElementById('spin-btn').disabled = false;
         }, 8200);
     }
@@ -197,10 +235,9 @@
         if(!data) return;
         Object.keys(data).forEach(id => {
             const i = data[id];
-            g.innerHTML += `<div style="background:#0a0a0c; padding:30px; border-radius:25px; border-bottom:4px solid ${i.color}; text-align:center;">
-                <img src="${i.img}" width="150"><br>
-                <b style="font-family:Orbitron; font-size:14px; letter-spacing:1px;">${i.name}</b><br>
-                <button class="btn" style="width:100%; margin-top:20px; font-weight:bold;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
+            g.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; text-align:center; border-bottom:3px solid ${i.color}">
+                <img src="${i.img}" width="100"><br><b style="font-size:12px;">${i.name}</b><br>
+                <button class="btn" style="width:100%; margin-top:10px; font-size:11px;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
             </div>`;
         });
     }
@@ -210,28 +247,13 @@
         document.getElementById('page-market').style.display = (p==='market') ? 'block' : 'none';
         document.getElementById('page-inventory').style.display = (p==='inventory') ? 'block' : 'none';
     }
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModals() { 
-        document.getElementById('case-modal').style.display = 'none'; 
-        document.getElementById('roulette-box').classList.remove('jackpot-win');
-    }
+    function openPrime() { document.getElementById('prime-modal').style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
-        t.className = 'toast'; t.innerText = m;
-        n.appendChild(t); setTimeout(() => t.remove(), 4000);
+        t.style = "background:#000; border:1px solid var(--main); padding:10px 20px; margin-top:5px; font-family:Orbitron;";
+        t.innerText = m; n.appendChild(t); setTimeout(() => t.remove(), 3000);
     }
-
-    // LIVE FEED GENERATOR
-    const NAMES = ["Dima", "Sanya", "Artem", "Max", "Egor", "Kirill", "Nikita"];
-    setInterval(() => {
-        const feed = document.getElementById('live-drops');
-        const s = [...CASE_HARDCORE, ...CASE_ULTRA][Math.floor(Math.random()*6)];
-        const n = NAMES[Math.floor(Math.random()*NAMES.length)];
-        const div = document.createElement('div'); div.className = 'drop-card';
-        div.style.borderColor = s.color;
-        div.innerHTML = `<div class="drop-name">${n}</div><img src="${s.img}" width="45"><br>${s.name}`;
-        feed.prepend(div); if(feed.children.length > 15) feed.lastChild.remove();
-    }, 3500);
 </script>
 </body>
 </html>
