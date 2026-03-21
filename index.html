@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - ELITE CASE OPENING</title>
+    <title>BABYSELL - PROFESSIONAL CASE OPENING</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -20,155 +20,150 @@
         body { 
             background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
             min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, rgba(0, 255, 170, 0.15) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 50% 0%, rgba(0, 255, 170, 0.1) 0%, transparent 50%);
         }
 
-        /* LIVE DROPS FEED */
+        /* TOP STATS BAR */
+        .stats-bar {
+            background: #000; border-bottom: 1px solid #111; padding: 5px 40px;
+            display: flex; justify-content: center; gap: 30px; font-family: 'Orbitron'; font-size: 10px; color: #555;
+        }
+        .stats-bar span b { color: var(--main); }
+
+        /* LIVE DROPS */
         .live-drops {
-            height: 60px; background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex; align-items: center; gap: 10px; padding: 0 20px; overflow: hidden; white-space: nowrap;
+            height: 70px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; align-items: center; gap: 10px; padding: 0 15px; overflow: hidden;
         }
         .drop-item {
-            display: inline-flex; align-items: center; gap: 8px; background: var(--glass);
-            padding: 5px 12px; border-radius: 6px; border-bottom: 2px solid var(--main);
-            animation: slideIn 0.5s ease; font-size: 12px;
+            min-width: 130px; background: var(--glass); padding: 5px; border-radius: 8px;
+            border-bottom: 3px solid var(--main); font-size: 11px; text-align: center;
+            animation: slideIn 0.4s ease;
         }
-        @keyframes slideIn { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.2);
+            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15);
             position: sticky; top: 0; z-index: 1000;
         }
 
         .logo-center {
             position: absolute; left: 50%; transform: translateX(-50%);
-            font-family: 'Orbitron'; font-weight: 900; font-size: 28px;
-            letter-spacing: 8px; color: #fff; text-shadow: 0 0 20px var(--main);
+            font-family: 'Orbitron'; font-weight: 900; font-size: 30px;
+            letter-spacing: 10px; color: #fff; text-shadow: 0 0 20px var(--main);
         }
 
-        .btn-nav { 
+        /* GLOW BUTTONS */
+        .btn-glow {
             background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
-            color: #eee; padding: 12px 24px; border-radius: 12px; font-family: 'Orbitron'; 
-            font-size: 12px; cursor: pointer; transition: 0.3s; text-transform: uppercase;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.02);
+            color: #fff; padding: 12px 25px; border-radius: 12px; font-family: 'Orbitron'; 
+            font-size: 11px; cursor: pointer; transition: 0.3s; position: relative;
         }
-        .btn-nav:hover { border-color: var(--main); box-shadow: 0 0 15px rgba(0,255,170,0.2); }
-        .btn-nav.active { background: var(--main); color: #000; border: none; font-weight: bold; }
+        .btn-glow:hover { 
+            border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.4);
+            transform: translateY(-2px);
+        }
 
         .page { display: none; padding: 40px; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* CASE CARDS */
-        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1100px; margin: 40px auto; }
         .case-card {
-            background: linear-gradient(145deg, #0a0a0c 0%, #151518 100%); padding: 50px 30px; border-radius: 40px; 
-            text-align: center; border: 1px solid #222; transition: 0.5s; position: relative; overflow: hidden;
+            background: #08080a; padding: 50px 20px; border-radius: 35px; border: 1px solid #151515;
+            text-align: center; transition: 0.5s; cursor: pointer; position: relative;
         }
-        .case-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(0,255,170,0.1), transparent); opacity: 0; transition: 0.5s; }
-        .case-card:hover { border-color: var(--main); transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .case-card:hover::before { opacity: 1; }
-        .case-card img { width: 100%; max-width: 220px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); animation: float 5s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .case-card:hover { border-color: var(--main); box-shadow: 0 0 50px rgba(0,255,170,0.1); transform: scale(1.02); }
+        .case-card img { width: 100%; max-width: 200px; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
 
-        .price-tag { font-family: 'Orbitron'; font-size: 24px; color: var(--main); margin-top: 15px; text-shadow: 0 0 10px rgba(0,255,170,0.5); }
-
-        /* MODALS */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-content { background: #0a0a0c; padding: 40px; border-radius: 30px; border: 1px solid #333; width: 90%; max-width: 800px; text-align: center; }
-
-        /* FOOTER TRUST */
-        .footer-trust { margin-top: 50px; text-align: center; opacity: 0.4; font-size: 12px; letter-spacing: 2px; }
-        .footer-trust img { height: 20px; filter: grayscale(1); margin: 0 15px; vertical-align: middle; }
+        /* ROULETTE STYLES */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .roulette-container { background: #0a0a0c; width: 90%; max-width: 850px; padding: 50px; border-radius: 40px; border: 1px solid #222; position: relative; }
+        .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 30px 0; overflow: hidden; border: 2px solid #1a1a1a; border-radius: 15px; }
+        .pointer { position: absolute; left: 50%; top: 0; width: 4px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 25px var(--main); transform: translateX(-50%); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 15px 30px; margin-top: 10px; font-family: 'Orbitron'; border-left: 5px solid var(--main); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .toast { background: #000; border: 1px solid var(--main); padding: 18px 35px; margin-top: 10px; font-family: 'Orbitron'; box-shadow: 0 10px 40px rgba(0,0,0,1); }
+        
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="live-drops" id="live-drops">
-    </div>
+<div class="stats-bar">
+    <span>ONLINE: <b id="stat-online">1,243</b></span>
+    <span>OPENED: <b>45,231</b></span>
+    <span>WITHDRAWN: <b>$12,391</b></span>
+</div>
+
+<div class="live-drops" id="live-drops"></div>
 
 <div id="notif"></div>
 
 <header class="header">
     <div style="display:flex; gap:15px;">
-        <button class="btn-nav active" id="tab-market" onclick="showPage('market')">MARKET</button>
-        <button class="btn-nav" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
+        <button class="btn-glow active" id="tab-market" onclick="showPage('market')">MARKET</button>
+        <button class="btn-glow" id="tab-inventory" onclick="showPage('inventory')">INVENTORY</button>
     </div>
 
     <div class="logo-center">BABYSELL</div>
 
     <div class="user-zone">
-        <button class="btn-nav" style="border-color:var(--promo-gold); color:var(--promo-gold);" onclick="openPromo()">PROMO</button>
-        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:20px; font-weight:bold;">0 B</div>
-        <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; font-weight:900;">LOGIN</button>
+        <button class="btn-glow" style="border-color:var(--promo-gold); color:var(--promo-gold);" onclick="openPromo()">PROMO</button>
+        <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:22px;">0 B</div>
+        <button id="l-btn" onclick="login()" class="btn-glow" style="background:var(--main); color:#000; font-weight:bold;">LOG IN</button>
         <div id="l-prof" style="display:none; align-items:center; gap:12px;">
-            <img id="l-ava" src="" style="width:40px;height:40px;border-radius:50%;border:2px solid var(--main);">
-            <span id="l-nick" style="font-family:'Orbitron';font-size:12px;color:var(--main);">PLAYER</span>
+            <img id="l-ava" src="" style="width:42px; height:42px; border-radius:50%; border:2px solid var(--main);">
         </div>
     </div>
 </header>
 
 <div id="page-market" class="page active">
     <div class="cases-grid">
-        <div class="case-card active-case" onclick="openCaseModal('hardcore')">
+        <div class="case-card" onclick="openCaseModal('hardcore')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-            <h2 style="font-family:'Orbitron'; letter-spacing:2px; margin-top:20px;">MYSTERIOUS NIGHTS</h2>
-            <div class="price-tag">1,000 B</div>
+            <h3 style="font-family:'Orbitron'; margin-top:20px; letter-spacing:2px;">MYSTERIOUS NIGHTS</h3>
+            <div style="color:var(--main); font-size:24px; font-weight:bold; margin-top:10px;">1,000 B</div>
         </div>
-        <div class="case-card active-case" onclick="openCaseModal('ultra')">
-            <div style="position:absolute; top:20px; right:20px; background:var(--accent); color:#fff; padding:5px 15px; border-radius:5px; font-family:'Orbitron'; font-size:10px; font-weight:bold; box-shadow:0 0 15px var(--accent);">HOT</div>
+        <div class="case-card" onclick="openCaseModal('ultra')">
+            <div style="position:absolute; top:20px; right:20px; background:var(--accent); color:white; padding:5px 15px; border-radius:5px; font-size:10px; font-family:'Orbitron';">HOT</div>
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
-            <h2 style="font-family:'Orbitron'; letter-spacing:2px; margin-top:20px;">TARGETED NIGHTMARES</h2>
-            <div class="price-tag">5,000 B</div>
+            <h3 style="font-family:'Orbitron'; margin-top:20px; letter-spacing:2px;">TARGETED NIGHTMARES</h3>
+            <div style="color:var(--rare-spec); font-size:24px; font-weight:bold; margin-top:10px;">5,000 B</div>
         </div>
-        <div class="case-card soon-case">
-            <div class="soon-overlay"><div class="soon-text">SOON</div></div>
-            <img src="https://i.postimg.cc/qBxFKy4z/Gemini-Generated-Image-pcy8cmpcy8cmpcy8.png">
-            <h2 style="font-family:'Orbitron'; margin-top:20px; color:#333;">CT DREAMS</h2>
-            <div style="color:#222; font-family:'Orbitron'; font-size:24px;">??,??? B</div>
+        <div class="case-card" style="opacity:0.5; cursor:not-allowed;">
+             <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:2; border-radius:35px;">
+                <h1 style="font-family:'Orbitron'; transform:rotate(-15deg); color:var(--main); text-shadow:0 0 20px var(--main);">SOON</h1>
+             </div>
+             <img src="https://i.postimg.cc/qBxFKy4z/Gemini-Generated-Image-pcy8cmpcy8cmpcy8.png">
+             <h3 style="font-family:'Orbitron'; margin-top:20px;">CT DREAMS</h3>
         </div>
-    </div>
-
-    <div class="footer-trust">
-        SECURE PAYMENTS BY <br><br>
-        <img src="https://i.postimg.cc/C1mN2fL7/visa.png" alt="visa">
-        <img src="https://i.postimg.cc/vH0H7V7L/mastercard.png" alt="master">
-        <img src="https://i.postimg.cc/L5nFfX7f/crypto.png" alt="crypto">
     </div>
 </div>
 
 <div id="page-inventory" class="page">
-    <h2 style="font-family:'Orbitron'; color:var(--main); margin-bottom:30px; text-align:center;">YOUR COLLECTION</h2>
-    <div id="inv-grid" class="inv-grid"></div>
+    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="modal-content">
-        <h2 id="modal-title" style="font-family:'Orbitron'; color:var(--main); letter-spacing:5px;">UNBOXING</h2>
+    <div class="roulette-container">
+        <h2 id="modal-title" style="font-family:'Orbitron'; text-align:center; color:var(--main); letter-spacing:8px;">UNBOXING</h2>
         <div class="view-window">
             <div class="pointer"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn-nav" style="width:100%; height:60px; background:var(--main); color:#000; font-weight:900; font-size:16px;" onclick="startSpin()">OPEN FOR BALANCE</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#555; margin-top:20px; cursor:pointer; font-family:'Orbitron';">CANCEL</button>
+        <button id="spin-btn" class="btn-glow" style="width:100%; height:60px; background:var(--main); color:#000; font-size:18px; font-weight:900;" onclick="startSpin()">OPEN CASE</button>
+        <center><button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:20px; cursor:pointer; font-family:'Orbitron';">CLOSE WINDOW</button></center>
     </div>
 </div>
 
-<div id="promo-modal" class="modal">
-    <div class="modal-content" style="max-width:400px;">
-        <h2 style="font-family:'Orbitron'; color:var(--promo-gold);">PROMO CODE</h2>
-        <input type="text" id="promo-field" style="background:#000; border:1px solid #333; color:var(--promo-gold); padding:20px; width:100%; border-radius:15px; margin:20px 0; text-align:center; font-family:'Orbitron'; font-size:18px;" placeholder="CODE">
-        <button class="btn-nav" style="width:100%; background:var(--promo-gold); color:#000;" onclick="redeemPromo()">REDEEM</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#555; margin-top:20px; cursor:pointer;">CLOSE</button>
-    </div>
-</div>
+<audio id="snd-tick" src="https://www.soundjay.com/buttons/sounds/button-50.mp3"></audio>
+<audio id="snd-win" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
 
 <script>
+    // ПРЯМА КОНФІГУРАЦІЯ FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -179,27 +174,28 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    const ALL_SKINS = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6" },
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#ebca42" },
-        { name: "AWP | Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", color: "#eb4b4b" }
+    const SKINS = [
+        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 },
+        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200 },
+        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini-Generated-Image-i0cyvji0cyvji0cy.png", color: "#ebca42", price: 15000 },
+        { name: "AWP | Gold", img: "https://i.postimg.cc/RFVSB9T1/330x192-(5).png", color: "#eb4b4b", price: 9000 }
     ];
 
-    let user = null, balance = 0;
+    let user = null, balance = 0, currentPrice = 0;
 
-    // FAKE LIVE DROPS GENERATOR
-    function addFakeDrop() {
+    // LIVE DROPS & ONLINE COUNTER
+    setInterval(() => {
         const feed = document.getElementById('live-drops');
-        const skin = ALL_SKINS[Math.floor(Math.random()*ALL_SKINS.length)];
-        const item = document.createElement('div');
-        item.className = 'drop-item';
-        item.style.borderBottomColor = skin.color;
-        item.innerHTML = `<img src="${skin.img}" width="30"> <span>${skin.name}</span>`;
-        feed.prepend(item);
-        if(feed.children.length > 15) feed.lastChild.remove();
-    }
-    setInterval(addFakeDrop, 3000);
+        const s = SKINS[Math.floor(Math.random()*SKINS.length)];
+        const div = document.createElement('div');
+        div.className = 'drop-item';
+        div.style.borderBottomColor = s.color;
+        div.innerHTML = `<img src="${s.img}" width="35"><br>${s.name}`;
+        feed.prepend(div);
+        if(feed.children.length > 10) feed.lastChild.remove();
+        
+        document.getElementById('stat-online').innerText = (1200 + Math.floor(Math.random()*100)).toLocaleString();
+    }, 4000);
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -207,80 +203,80 @@
             document.getElementById('l-btn').style.display = 'none';
             document.getElementById('l-prof').style.display = 'flex';
             document.getElementById('l-ava').src = u.photoURL;
-            document.getElementById('l-nick').innerText = u.displayName.split(' ')[0];
             db.ref('users/'+u.uid+'/balance').on('value', s => {
                 balance = s.val() || 0;
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
             });
-            db.ref('users/'+u.uid+'/inventory').on('value', s => renderInventory(s.val()));
+            db.ref('users/'+u.uid+'/inventory').on('value', s => renderInv(s.val()));
         }
     });
 
     function openCaseModal(type) {
         if(!user) return login();
-        currentCaseCost = (type === 'hardcore') ? 1000 : 5000;
+        currentPrice = (type === 'hardcore') ? 1000 : 5000;
         document.getElementById('case-modal').style.display = 'flex';
         const strip = document.getElementById('strip');
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
         for(let i=0; i<80; i++) {
-            let s = ALL_SKINS[Math.floor(Math.random()*ALL_SKINS.length)];
-            strip.innerHTML += `<div style="min-width:160px;text-align:center;"><img src="${s.img}" width="100"></div>`;
+            let s = SKINS[Math.floor(Math.random()*SKINS.length)];
+            strip.innerHTML += `<div style="min-width:160px; text-align:center; padding-top:30px;"><img src="${s.img}" width="100"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < currentCaseCost) return toast("INSUFFICIENT BALANCE");
+        if(balance < currentPrice) return toast("INSUFFICIENT FUNDS");
         document.getElementById('spin-btn').disabled = true;
-        db.ref('users/'+user.uid+'/balance').set(balance - currentCaseCost);
-        const win = ALL_SKINS[Math.floor(Math.random()*ALL_SKINS.length)];
+        db.ref('users/'+user.uid+'/balance').set(balance - currentPrice);
+        
+        const win = SKINS[Math.floor(Math.random()*SKINS.length)];
         const strip = document.getElementById('strip');
-        strip.children[75].innerHTML = `<img src="${win.img}" width="110" style="filter:drop-shadow(0 0 10px ${win.color})">`;
+        strip.children[75].innerHTML = `<img src="${win.img}" width="110" style="filter:drop-shadow(0 0 15px ${win.color})">`;
+        
         const move = (75 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
         strip.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0, 1)';
         strip.style.transform = `translateX(-${move}px)`;
+
+        // SOUNDS
+        let ticks = 0;
+        const interval = setInterval(() => {
+            ticks++;
+            document.getElementById('snd-tick').play();
+            if(ticks > 40) clearInterval(interval);
+        }, 150);
+
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("UNBOXED: " + win.name);
+            document.getElementById('snd-win').play();
+            toast("WINNER: " + win.name);
             document.getElementById('spin-btn').disabled = false;
         }, 7500);
     }
 
-    function renderInventory(inv) {
+    function renderInv(data) {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
-        if(!inv) return;
-        Object.keys(inv).forEach(id => {
-            const i = inv[id];
-            g.innerHTML += `<div class="inv-card" style="border-bottom:3px solid ${i.color}">
-                <img src="${i.img}" width="120"><br>
-                <div style="font-family:Orbitron; font-size:11px; margin:10px 0;">${i.name}</div>
-                <button class="btn-nav" style="width:100%; padding:8px; font-size:10px;" onclick="sellItem('${id}')">SELL FOR B</button>
+        if(!data) return;
+        Object.keys(data).forEach(id => {
+            const i = data[id];
+            g.innerHTML += `<div style="background:var(--glass); padding:20px; border-radius:15px; border-bottom:3px solid ${i.color}; text-align:center;">
+                <img src="${i.img}" width="100"><br><b>${i.name}</b><br>
+                <button class="btn-glow" style="margin-top:10px; width:100%;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
             </div>`;
         });
     }
 
-    function sellItem(id) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + 500); }
-    function openPromo() { if(!user) return login(); document.getElementById('promo-modal').style.display = 'flex'; }
-    function redeemPromo() {
-        const c = document.getElementById('promo-field').value.trim().toUpperCase();
-        if(c === "START2026") {
-            db.ref('users/'+user.uid+'/used_promos/'+c).once('value', s => {
-                if(s.exists()) return toast("ALREADY USED");
-                db.ref('users/'+user.uid+'/balance').set(balance + 100);
-                db.ref('users/'+user.uid+'/used_promos/'+c).set(true);
-                toast("SUCCESS +100 B"); closeModals();
-            });
-        } else { toast("INVALID CODE"); }
+    function sell(id, p) {
+        db.ref('users/'+user.uid+'/inventory/'+id).remove();
+        db.ref('users/'+user.uid+'/balance').set(balance + p);
     }
 
     function showPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
         document.getElementById('page-'+p).classList.add('active');
-        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-'+p).classList.add('active');
     }
+    
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+    function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = m;
