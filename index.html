@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - SUPREME SOUND EDITION</title>
+    <title>BABYSELL - DYNAMIC AUDIO</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
+        /* Стилі з попередньої версії (Welcome, UI, Roulette) залишаю без змін для економії місця */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
         :root { --main: #00ffaa; --bg: #010102; --glass: rgba(255, 255, 255, 0.03); }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
-        /* WELCOME */
         #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.2s; }
         .welcome-logo { font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 15px; color: #fff; text-shadow: 0 0 30px var(--main); margin-bottom: 30px; animation: glow 2s infinite alternate; }
         @keyframes glow { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 50px var(--main); } }
         .enter-btn { background: none; border: 1px solid var(--main); color: var(--main); padding: 15px 50px; font-family: 'Orbitron'; cursor: pointer; letter-spacing: 3px; transition: 0.4s; }
         .enter-btn:hover { background: var(--main); color: #000; box-shadow: 0 0 40px var(--main); }
-
-        /* UI */
         .app-content { opacity: 0; filter: blur(10px); transition: 1.5s; }
         .app-loaded .app-content { opacity: 1; filter: blur(0); }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15); position: sticky; top: 0; z-index: 1000; }
@@ -30,8 +27,6 @@
         .case-card:hover { border-color: var(--main); transform: translateY(-10px); }
         .case-card img { width: 100%; max-width: 180px; animation: float 5s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
-        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #222; border-radius: 15px; }
         .strip { display: flex; position: absolute; left: 0; height: 100%; }
@@ -92,9 +87,12 @@
 </div>
 
 <script>
+    const music = document.getElementById('bg-music');
+    const caseSound = document.getElementById('case-open-sound');
+
     function initApp() {
-        document.getElementById('bg-music').volume = 0.2;
-        document.getElementById('bg-music').play();
+        music.volume = 0.2; // Початкова гучність музики
+        music.play();
         document.getElementById('welcome-screen').style.opacity = '0';
         setTimeout(() => {
             document.getElementById('welcome-screen').style.visibility = 'hidden';
@@ -102,6 +100,7 @@
         }, 1200);
     }
 
+    // --- FIREBASE CONFIG (залиш свій) ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -158,10 +157,13 @@
         const spinBtn = document.getElementById('spin-btn');
         spinBtn.disabled = true;
 
-        // NEW SOUND START
-        const sound = document.getElementById('case-open-sound');
-        sound.currentTime = 0;
-        sound.play();
+        // 1. ПРИГЛУШАЄМО МУЗИКУ (ducking)
+        music.volume = 0.06; 
+
+        // 2. ЗВУК РУЛЕТКИ ТИШЕ (40%)
+        caseSound.currentTime = 0;
+        caseSound.volume = 0.4; 
+        caseSound.play();
 
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
@@ -170,8 +172,6 @@
         strip.children[80].innerHTML = `<img src="${win.img}" width="120" style="filter:drop-shadow(0 0 20px ${win.color})">`;
         
         const move = (80 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
-        
-        // Синхронізуємо час анімації з довжиною звуку (~7-8 секунд)
         strip.style.transition = 'transform 7.5s cubic-bezier(0.1, 0, 0, 1)';
         strip.style.transform = `translateX(-${move}px)`;
 
@@ -180,6 +180,9 @@
             document.getElementById('win-status').innerText = "YOU GOT: " + win.name;
             document.getElementById('win-status').style.color = win.color;
             spinBtn.disabled = false;
+
+            // 3. ПОВЕРТАЄМО ГУЧНІСТЬ МУЗИКИ
+            music.volume = 0.2; 
         }, 8000);
     }
 
@@ -210,7 +213,8 @@
     }
     function closeModals() { 
         document.getElementById('case-modal').style.display = 'none'; 
-        document.getElementById('case-open-sound').pause(); // Stop sound if closed early
+        caseSound.pause();
+        music.volume = 0.2; // Повертаємо гучність, якщо закрили вручну
     }
 </script>
 </body>
