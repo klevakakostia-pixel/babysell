@@ -3,55 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - OFFICIAL CASE OPENING</title>
+    <title>BABYSELL - PREMIUM CASE SYSTEM</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        :root { 
-            --main: #00ffaa; --bg: #050508; --accent: #ff2d55; 
-            --rare-spec: #ebca42; --covert: #eb4b4b;
-        }
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, rgba(0, 255, 170, 0.1) 0%, transparent 50%);
-        }
+        :root { --main: #00ffaa; --bg: #030305; --rare: #ebca42; --covert: #eb4b4b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* LIVE FEED */
-        .live-drops { height: 75px; background: rgba(0,0,0,0.6); display: flex; align-items: center; gap: 12px; padding: 0 20px; overflow: hidden; border-bottom: 1px solid rgba(0,255,170,0.2); }
-        .drop-card { min-width: 120px; background: rgba(255,255,255,0.03); border-radius: 8px; border-bottom: 2px solid var(--main); padding: 5px; text-align: center; font-size: 10px; animation: slideIn 0.5s ease; }
-        @keyframes slideIn { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* LIVE FEED WITH NAMES */
+        .live-drops { height: 80px; background: rgba(0,0,0,0.8); display: flex; align-items: center; gap: 15px; padding: 0 20px; overflow: hidden; border-bottom: 2px solid rgba(0,255,170,0.3); }
+        .drop-card { min-width: 140px; background: #0a0a0c; border-radius: 10px; border-bottom: 3px solid var(--main); padding: 8px; text-align: center; font-size: 11px; animation: slideIn 0.5s ease; position: relative; }
+        .drop-name { position: absolute; top: -5px; left: 5px; background: var(--main); color: #000; font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: bold; }
+        @keyframes slideIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 85px; background: rgba(0,0,0,0.9); border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; }
-        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 30px; letter-spacing: 10px; color: #fff; text-shadow: 0 0 20px var(--main); position: absolute; left: 50%; transform: translateX(-50%); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 50px; height: 90px; background: #000; border-bottom: 1px solid #111; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 32px; letter-spacing: 12px; color: #fff; text-shadow: 0 0 25px var(--main); position: absolute; left: 50%; transform: translateX(-50%); }
 
-        .btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px 24px; border-radius: 12px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; font-size: 11px; }
-        .btn:hover { border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.3); }
-        .btn-main { background: var(--main); color: #000; font-weight: 900; border: none; box-shadow: 0 0 15px var(--main); }
+        /* BUTTONS */
+        .btn { background: #111; border: 1px solid #222; color: #fff; padding: 12px 28px; border-radius: 14px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; font-size: 12px; }
+        .btn:hover { border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.2); }
+        .btn-main { background: var(--main); color: #000; font-weight: 900; border: none; box-shadow: 0 0 20px var(--main); animation: glowBtn 2s infinite; }
+        @keyframes glowBtn { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); box-shadow: 0 0 40px var(--main); } }
 
-        /* CASES GRID */
-        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; max-width: 1200px; margin: 50px auto; padding: 0 20px; }
-        .case { background: #0a0a0d; padding: 60px 30px; border-radius: 40px; border: 1px solid #15151a; text-align: center; cursor: pointer; transition: 0.4s; position: relative; }
-        .case:hover { transform: translateY(-10px); border-color: var(--main); }
-        .case img { width: 100%; max-width: 220px; filter: drop-shadow(0 10px 30px #000); }
-        .case h3 { font-family: 'Orbitron'; margin-top: 20px; letter-spacing: 2px; }
-        .case-price { font-family: 'Orbitron'; font-size: 26px; color: var(--main); margin-top: 10px; }
+        /* CASES */
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 40px; max-width: 1200px; margin: 60px auto; padding: 0 20px; }
+        .case { background: linear-gradient(180deg, #0a0a0d 0%, #050507 100%); padding: 60px 30px; border-radius: 45px; border: 1px solid #1a1a1f; text-align: center; cursor: pointer; transition: 0.5s; }
+        .case:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
+        .case img { width: 100%; max-width: 240px; filter: drop-shadow(0 0 30px #000); }
+        .case h3 { font-family: 'Orbitron'; margin-top: 25px; letter-spacing: 3px; font-size: 18px; }
+        .price { font-family: 'Orbitron'; font-size: 28px; color: var(--main); margin-top: 12px; }
 
-        /* ROULETTE */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(25px); }
-        .roulette-box { width: 90%; max-width: 900px; background: #08080a; padding: 60px 40px; border-radius: 50px; border: 1px solid #222; text-align: center; }
-        .window { position: relative; width: 100%; height: 180px; background: #000; margin: 40px 0; overflow: hidden; border: 2px solid #1a1a1a; border-radius: 20px; }
-        .line { position: absolute; left: 50%; top: 0; width: 4px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 30px var(--main); transform: translateX(-50%); }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; }
-        .strip-item { min-width: 180px; height: 100%; display: flex; align-items: center; justify-content: center; }
+        /* ROULETTE ULTIMATE */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(30px); }
+        .roulette-box { width: 95%; max-width: 950px; background: #08080a; padding: 70px 40px; border-radius: 50px; border: 1px solid #222; position: relative; overflow: hidden; }
+        .window { position: relative; width: 100%; height: 200px; background: #000; margin: 40px 0; overflow: hidden; border: 3px solid #151515; border-radius: 25px; }
+        .line { position: absolute; left: 50%; top: 0; width: 4px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 40px var(--main); transform: translateX(-50%); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 8s cubic-bezier(0.15, 0, 0.05, 1); }
+        .item { min-width: 200px; text-align: center; }
+
+        /* JACKPOT FX */
+        .jackpot-win { animation: goldFlash 1s infinite; border-color: var(--rare) !important; }
+        @keyframes goldFlash { 0%, 100% { box-shadow: inset 0 0 20px transparent; } 50% { box-shadow: inset 0 0 100px rgba(235, 202, 66, 0.3); } }
 
         #notif { position: fixed; bottom: 30px; right: 30px; z-index: 9999; }
-        .toast { background: #000; border: 1px solid var(--main); padding: 20px 40px; margin-top: 10px; font-family: 'Orbitron'; box-shadow: 0 10px 50px rgba(0,0,0,1); }
+        .toast { background: #000; border: 2px solid var(--main); padding: 22px 45px; margin-top: 12px; font-family: 'Orbitron'; border-left: 8px solid var(--main); box-shadow: 0 15px 60px #000; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -64,10 +62,10 @@
         <button class="btn" onclick="showPage('inventory')">INVENTORY</button>
     </div>
     <div class="logo">BABYSELL</div>
-    <div style="display:flex; gap:15px; align-items:center;">
-        <div id="u-bal" style="font-family:'Orbitron'; font-size:22px; color:var(--main);">0 B</div>
+    <div style="display:flex; gap:20px; align-items:center;">
+        <div id="u-bal" style="font-family:'Orbitron'; font-size:24px; color:var(--main); font-weight:900;">0 B</div>
         <button id="l-btn" onclick="login()" class="btn btn-main">LOG IN</button>
-        <img id="l-ava" src="" style="display:none; width:40px; border-radius:50%; border:2px solid var(--main);">
+        <img id="l-ava" src="" style="display:none; width:45px; border-radius:50%; border:2px solid var(--main); cursor:pointer;">
     </div>
 </header>
 
@@ -76,33 +74,35 @@
         <div class="case" onclick="openCaseModal('hardcore')">
             <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
             <h3>MYSTERIOUS NIGHTS</h3>
-            <div class="case-price">1,000 B</div>
+            <div class="price">1,000 B</div>
         </div>
         <div class="case" onclick="openCaseModal('ultra')">
             <img src="https://i.postimg.cc/FRCNdtNc/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.png">
             <h3>TARGETED NIGHTMARES</h3>
-            <div class="case-price">5,000 B</div>
+            <div class="price">5,000 B</div>
         </div>
     </div>
 </div>
 
-<div id="page-inventory" class="page" style="display:none; padding:40px;">
-    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:25px;"></div>
+<div id="page-inventory" class="page" style="display:none; padding:50px;">
+    <h1 style="font-family:'Orbitron'; text-align:center; margin-bottom:50px; color:var(--main);">COLLECTION</h1>
+    <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:30px;"></div>
 </div>
 
 <div id="case-modal" class="modal">
-    <div class="roulette-box">
-        <h2 style="font-family:'Orbitron'; letter-spacing:10px; color:var(--main);">UNBOXING</h2>
+    <div class="roulette-box" id="roulette-box">
+        <h2 id="win-text" style="font-family:'Orbitron'; letter-spacing:12px; font-size:24px;">GOOD LUCK!</h2>
         <div class="window">
             <div class="line"></div>
             <div id="strip" class="strip"></div>
         </div>
-        <button id="spin-btn" class="btn btn-main" style="width:100%; height:70px; font-size:20px;" onclick="startSpin()">OPEN FOR BALANCE</button>
-        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:25px; cursor:pointer; font-family:'Orbitron';">CLOSE</button>
+        <button id="spin-btn" class="btn btn-main" style="width:100%; height:80px; font-size:22px;" onclick="startSpin()">OPEN CASE</button>
+        <button onclick="closeModals()" style="background:none; border:none; color:#444; margin-top:30px; cursor:pointer; font-family:'Orbitron'; letter-spacing:2px;">CANCEL</button>
     </div>
 </div>
 
 <audio id="snd-tick" src="https://www.soundjay.com/buttons/sounds/button-50.mp3"></audio>
+<audio id="snd-win" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
 
 <script>
     const firebaseConfig = { 
@@ -115,7 +115,6 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    // ПРАВИЛЬНИЙ РОЗПОДІЛ СКІНІВ
     const CASE_HARDCORE = [
         { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", color: "#4b69ff", price: 150 },
         { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini-Generated-Image-rii36prii36prii3.png", color: "#d32ee6", price: 1200 },
@@ -149,38 +148,48 @@
         currentSkins = (type === 'hardcore') ? CASE_HARDCORE : CASE_ULTRA;
         currentPrice = (type === 'hardcore') ? 1000 : 5000;
         document.getElementById('case-modal').style.display = 'flex';
+        document.getElementById('win-text').innerText = "OPENING...";
         const strip = document.getElementById('strip');
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
-        for(let i=0; i<60; i++) {
+        for(let i=0; i<70; i++) {
             let s = currentSkins[Math.floor(Math.random()*currentSkins.length)];
-            strip.innerHTML += `<div class="strip-item"><img src="${s.img}" width="130"></div>`;
+            strip.innerHTML += `<div class="item"><img src="${s.img}" width="140"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < currentPrice) return toast("NO MONEY");
+        if(balance < currentPrice) return toast("INSUFFICIENT FUNDS");
         document.getElementById('spin-btn').disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - currentPrice);
 
         const win = currentSkins[Math.floor(Math.random()*currentSkins.length)];
         const strip = document.getElementById('strip');
-        strip.children[55].innerHTML = `<img src="${win.img}" width="145" style="filter:drop-shadow(0 0 20px ${win.color})">`;
+        // Заміна скіна на 65-й позиції (фінальна точка)
+        strip.children[65].innerHTML = `<img src="${win.img}" width="155" style="filter:drop-shadow(0 0 25px ${win.color})">`;
         
-        const move = (55 * 180) - (document.querySelector('.window').offsetWidth / 2) + 90;
-        strip.style.transition = 'transform 7s cubic-bezier(0.1, 0, 0, 1)';
+        const move = (65 * 200) - (document.querySelector('.window').offsetWidth / 2) + 100;
+        strip.style.transition = 'transform 8s cubic-bezier(0.15, 0, 0.05, 1)';
         strip.style.transform = `translateX(-${move}px)`;
 
-        // Tick sounds
-        for(let i=0; i<45; i++) {
-            setTimeout(() => { if(document.getElementById('case-modal').style.display === 'flex') document.getElementById('snd-tick').cloneNode().play(); }, i*i*3.5);
+        // SOUND TICKS
+        for(let i=0; i<50; i++) {
+            setTimeout(() => { 
+                if(document.getElementById('case-modal').style.display === 'flex') {
+                    const s = document.getElementById('snd-tick').cloneNode();
+                    s.volume = 0.3; s.play();
+                }
+            }, i*i*3.2);
         }
 
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            toast("WIN: " + win.name);
+            document.getElementById('snd-win').play();
+            document.getElementById('win-text').innerText = "CONGRATS! " + win.name.toUpperCase();
+            if(win.price >= 10000) document.getElementById('roulette-box').classList.add('jackpot-win');
+            toast("UNBOXED: " + win.name);
             document.getElementById('spin-btn').disabled = false;
-        }, 7200);
+        }, 8200);
     }
 
     function renderInv(data) {
@@ -188,10 +197,10 @@
         if(!data) return;
         Object.keys(data).forEach(id => {
             const i = data[id];
-            g.innerHTML += `<div style="background:rgba(255,255,255,0.03); padding:25px; border-radius:20px; border-bottom:3px solid ${i.color}; text-align:center;">
-                <img src="${i.img}" width="130"><br>
-                <b style="font-family:Orbitron; font-size:12px;">${i.name}</b><br>
-                <button class="btn" style="width:100%; margin-top:15px;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
+            g.innerHTML += `<div style="background:#0a0a0c; padding:30px; border-radius:25px; border-bottom:4px solid ${i.color}; text-align:center;">
+                <img src="${i.img}" width="150"><br>
+                <b style="font-family:Orbitron; font-size:14px; letter-spacing:1px;">${i.name}</b><br>
+                <button class="btn" style="width:100%; margin-top:20px; font-weight:bold;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
             </div>`;
         });
     }
@@ -202,22 +211,27 @@
         document.getElementById('page-inventory').style.display = (p==='inventory') ? 'block' : 'none';
     }
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    function closeModals() { document.getElementById('case-modal').style.display = 'none'; }
+    function closeModals() { 
+        document.getElementById('case-modal').style.display = 'none'; 
+        document.getElementById('roulette-box').classList.remove('jackpot-win');
+    }
     function toast(m) {
         const n = document.getElementById('notif'), t = document.createElement('div');
         t.className = 'toast'; t.innerText = m;
         n.appendChild(t); setTimeout(() => t.remove(), 4000);
     }
 
-    // LIVE FEED
+    // LIVE FEED GENERATOR
+    const NAMES = ["Dima", "Sanya", "Artem", "Max", "Egor", "Kirill", "Nikita"];
     setInterval(() => {
         const feed = document.getElementById('live-drops');
         const s = [...CASE_HARDCORE, ...CASE_ULTRA][Math.floor(Math.random()*6)];
+        const n = NAMES[Math.floor(Math.random()*NAMES.length)];
         const div = document.createElement('div'); div.className = 'drop-card';
         div.style.borderColor = s.color;
-        div.innerHTML = `<img src="${s.img}" width="40"><br>${s.name}`;
-        feed.prepend(div); if(feed.children.length > 12) feed.lastChild.remove();
-    }, 3000);
+        div.innerHTML = `<div class="drop-name">${n}</div><img src="${s.img}" width="45"><br>${s.name}`;
+        feed.prepend(div); if(feed.children.length > 15) feed.lastChild.remove();
+    }, 3500);
 </script>
 </body>
 </html>
