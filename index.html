@@ -3,78 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL - IMMERSIVE EXPERIENCE</title>
+    <title>BABYSELL - SUPREME SOUND EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        :root { 
-            --main: #00ffaa; --bg: #010102; --glass: rgba(255, 255, 255, 0.03);
-        }
-        
+        :root { --main: #00ffaa; --bg: #010102; --glass: rgba(255, 255, 255, 0.03); }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
-        }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-        /* --- WELCOME SCREEN --- */
-        #welcome-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.5s;
-        }
-        .welcome-logo {
-            font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 15px;
-            color: #fff; text-shadow: 0 0 30px var(--main); margin-bottom: 30px;
-            animation: logoGlow 3s infinite alternate;
-        }
-        @keyframes logoGlow { from { opacity: 0.4; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        
-        .enter-btn {
-            background: none; border: 1px solid var(--main); color: var(--main);
-            padding: 15px 40px; font-family: 'Orbitron'; cursor: pointer;
-            letter-spacing: 3px; transition: 0.4s; position: relative;
-        }
-        .enter-btn:hover { background: var(--main); color: #000; box-shadow: 0 0 30px var(--main); }
+        /* WELCOME */
+        #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.2s; }
+        .welcome-logo { font-family: 'Orbitron'; font-size: 50px; font-weight: 900; letter-spacing: 15px; color: #fff; text-shadow: 0 0 30px var(--main); margin-bottom: 30px; animation: glow 2s infinite alternate; }
+        @keyframes glow { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 50px var(--main); } }
+        .enter-btn { background: none; border: 1px solid var(--main); color: var(--main); padding: 15px 50px; font-family: 'Orbitron'; cursor: pointer; letter-spacing: 3px; transition: 0.4s; }
+        .enter-btn:hover { background: var(--main); color: #000; box-shadow: 0 0 40px var(--main); }
 
-        /* --- UI ANIMATIONS --- */
-        .app-content { opacity: 0; transform: translateY(20px); filter: blur(10px); transition: all 1.5s ease; }
-        .app-loaded .app-content { opacity: 1; transform: translateY(0); filter: blur(0); }
-
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15);
-            position: sticky; top: 0; z-index: 1000;
-        }
-
-        .btn-nav { 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
-            color: #ccc; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron'; 
-            font-size: 11px; cursor: pointer; transition: 0.4s;
-        }
+        /* UI */
+        .app-content { opacity: 0; filter: blur(10px); transition: 1.5s; }
+        .app-loaded .app-content { opacity: 1; filter: blur(0); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15); position: sticky; top: 0; z-index: 1000; }
+        .btn-nav { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); color: #ccc; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron'; font-size: 11px; cursor: pointer; transition: 0.4s; }
         .btn-nav:hover { border-color: var(--main); color: #fff; box-shadow: 0 0 15px rgba(0,255,170,0.2); }
-
-        .case-card {
-            background: rgba(15, 15, 20, 0.7); padding: 40px; border-radius: 30px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .case-card { background: rgba(15, 15, 20, 0.7); padding: 40px; border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.5s; }
         .case-card:hover { border-color: var(--main); transform: translateY(-10px); }
         .case-card img { width: 100%; max-width: 180px; animation: float 5s ease-in-out infinite; }
-        
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        /* --- ROULETTE --- */
+        /* ROULETTE */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .view-window { position: relative; width: 100%; height: 160px; background: #000; margin: 25px 0; overflow: hidden; border: 1px solid #222; border-radius: 15px; }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 8s cubic-bezier(0.1, 0, 0, 1); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; }
         .item { min-width: 160px; display: flex; align-items: center; justify-content: center; }
-
-        #bg-music { display: none; }
+        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 15px var(--main); }
     </style>
 </head>
 <body>
@@ -84,9 +46,8 @@
     <button class="enter-btn" onclick="initApp()">INITIALIZE SYSTEM</button>
 </div>
 
-<audio id="bg-music" loop>
-    <source src="https://files.catbox.moe/5ru7vf.mp3" type="audio/mpeg">
-</audio>
+<audio id="bg-music" loop><source src="https://files.catbox.moe/5ru7vf.mp3" type="audio/mpeg"></audio>
+<audio id="case-open-sound"><source src="https://files.catbox.moe/7f3jzq.mp3" type="audio/mpeg"></audio>
 
 <div class="app-content">
     <header class="header">
@@ -98,9 +59,7 @@
         <div style="display:flex; align-items:center; gap:15px;">
             <div id="u-bal" style="color:var(--main); font-family:'Orbitron'; font-size:18px;">0 B</div>
             <button id="l-btn" onclick="login()" class="btn-nav" style="background:var(--main); color:#000; border:none; font-weight:900;">LOGIN</button>
-            <div id="l-prof" style="display:none; align-items:center; gap:10px;">
-                <img id="l-ava" src="" style="width:35px; border-radius:50%; border:2px solid var(--main);">
-            </div>
+            <div id="l-prof" style="display:none; align-items:center; gap:10px;"><img id="l-ava" src="" style="width:35px; border-radius:50%; border:2px solid var(--main);"></div>
         </div>
     </header>
 
@@ -122,9 +81,9 @@
 
 <div id="case-modal" class="modal">
     <div style="width:90%; max-width:800px; background:#08080a; padding:50px; border-radius:30px; border:1px solid #222; text-align:center;">
-        <h2 id="win-status" style="font-family:'Orbitron'; color:var(--main); letter-spacing:4px;">ROLLING...</h2>
+        <h2 id="win-status" style="font-family:'Orbitron'; color:var(--main); letter-spacing:4px;">LUCK IS NEAR...</h2>
         <div class="view-window">
-            <div style="position:absolute; left:50%; top:0; width:2px; height:100%; background:var(--main); z-index:100; box-shadow:0 0 15px var(--main);"></div>
+            <div class="pointer"></div>
             <div id="strip" class="strip"></div>
         </div>
         <button id="spin-btn" class="btn-nav" style="width:100%; height:50px; background:var(--main); color:#000; font-weight:bold;" onclick="startSpin()">OPEN CASE</button>
@@ -132,25 +91,17 @@
     </div>
 </div>
 
-<audio id="snd-tick" src="https://www.soundjay.com/buttons/sounds/button-50.mp3"></audio>
-
 <script>
-    // INITIALIZATION
     function initApp() {
-        // Play music
-        const music = document.getElementById('bg-music');
-        music.volume = 0.3;
-        music.play();
-        
-        // Hide welcome screen
+        document.getElementById('bg-music').volume = 0.2;
+        document.getElementById('bg-music').play();
         document.getElementById('welcome-screen').style.opacity = '0';
         setTimeout(() => {
             document.getElementById('welcome-screen').style.visibility = 'hidden';
             document.body.classList.add('app-loaded');
-        }, 1500);
+        }, 1200);
     }
 
-    // FIREBASE
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -192,35 +143,44 @@
     function openCaseModal() {
         if(!user) return login();
         document.getElementById('case-modal').style.display = 'flex';
+        document.getElementById('win-status').innerText = "LUCK IS NEAR...";
         const strip = document.getElementById('strip');
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         strip.innerHTML = "";
-        for(let i=0; i<100; i++) {
+        for(let i=0; i<90; i++) {
             let s = HARDCORE_SKINS[Math.floor(Math.random()*HARDCORE_SKINS.length)];
             strip.innerHTML += `<div class="item"><img src="${s.img}" width="100"></div>`;
         }
     }
 
     function startSpin() {
-        if(balance < 1000) return alert("LOW BALANCE");
-        document.getElementById('spin-btn').disabled = true;
+        if(balance < 1000) return alert("NOT ENOUGH BALANCE");
+        const spinBtn = document.getElementById('spin-btn');
+        spinBtn.disabled = true;
+
+        // NEW SOUND START
+        const sound = document.getElementById('case-open-sound');
+        sound.currentTime = 0;
+        sound.play();
+
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
         const win = getWin();
         const strip = document.getElementById('strip');
-        strip.children[80].innerHTML = `<img src="${win.img}" width="110" style="filter:drop-shadow(0 0 10px ${win.color})">`;
+        strip.children[80].innerHTML = `<img src="${win.img}" width="120" style="filter:drop-shadow(0 0 20px ${win.color})">`;
         
         const move = (80 * 160) - (document.querySelector('.view-window').offsetWidth / 2) + 80;
-        strip.style.transition = 'transform 8s cubic-bezier(0.1, 0, 0, 1)';
+        
+        // Синхронізуємо час анімації з довжиною звуку (~7-8 секунд)
+        strip.style.transition = 'transform 7.5s cubic-bezier(0.1, 0, 0, 1)';
         strip.style.transform = `translateX(-${move}px)`;
-
-        for(let i=0; i<45; i++) setTimeout(() => document.getElementById('snd-tick').cloneNode().play(), i*i*3.5);
 
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
-            document.getElementById('win-status').innerText = win.name;
-            document.getElementById('spin-btn').disabled = false;
-        }, 8200);
+            document.getElementById('win-status').innerText = "YOU GOT: " + win.name;
+            document.getElementById('win-status').style.color = win.color;
+            spinBtn.disabled = false;
+        }, 8000);
     }
 
     function getWin() {
@@ -234,11 +194,11 @@
 
     function renderInventory() {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
-        Object.keys(userInv).forEach(id => {
+        Object.keys(userInv).reverse().forEach(id => {
             const i = userInv[id];
             g.innerHTML += `<div style="background:var(--glass); padding:20px; border-radius:15px; border-bottom:3px solid ${i.color}; text-align:center;">
-                <img src="${i.img}" width="120"><br><b>${i.name}</b><br>
-                <button class="btn-nav" style="width:100%; margin-top:10px;" onclick="sell('${id}',${i.price})">SELL ${i.price}</button>
+                <img src="${i.img}" width="120"><br><b style="font-family:Orbitron; font-size:11px;">${i.name}</b><br>
+                <button class="btn-nav" style="width:100%; margin-top:10px;" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
             </div>`;
         });
     }
@@ -248,7 +208,10 @@
         document.getElementById('page-market').style.display = (p==='market') ? 'block' : 'none';
         document.getElementById('page-inventory').style.display = (p==='inventory') ? 'block' : 'none';
     }
-    function closeModals() { document.getElementById('case-modal').style.display = 'none'; }
+    function closeModals() { 
+        document.getElementById('case-modal').style.display = 'none'; 
+        document.getElementById('case-open-sound').pause(); // Stop sound if closed early
+    }
 </script>
 </body>
 </html>
