@@ -90,6 +90,29 @@
             animation: slideUp 1s var(--ease-hyper) backwards;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PRODUCT STYLES */
+        .product-item {
+            background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px;
+            border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s;
+        }
+        .product-item:hover { border-color: var(--main); background: rgba(0,255,170,0.05); }
+
+        #product-modal-content {
+            background: #0a0a0c; border: 1px solid var(--main); padding: 50px;
+            border-radius: 30px; max-width: 500px; width: 90%; text-align: center;
+            box-shadow: 0 0 100px rgba(0,255,170,0.2);
+            animation: modalScale 0.5s var(--ease-hyper);
+        }
+        @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .install-btn {
+            display: inline-block; background: var(--main); color: #000;
+            padding: 20px 60px; border-radius: 4px; font-family: 'Orbitron';
+            font-weight: 900; text-decoration: none; margin-top: 30px;
+            transition: 0.5s; letter-spacing: 3px;
+        }
+        .install-btn:hover { box-shadow: 0 0 50px var(--main); transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -108,8 +131,9 @@
         <div style="display:flex; gap:20px;">
             <button class="btn-nav" onclick="showPage('market')">MARKET</button>
             <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
+            <button class="btn-nav" style="border-color:var(--main); color:#fff;" onclick="showPage('products')">BEYSELL PRODUCTS</button>
         </div>
-        <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900;">BABYSELL</div>
+        <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
         <div style="display:flex; align-items:center; gap:30px;">
             <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900;">0 B</div>
             <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
@@ -130,6 +154,33 @@
     <div id="page-inventory" style="display:none; padding:80px;">
         <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main);">COLLECTION</h1>
         <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
+    </div>
+
+    <div id="page-products" style="display:none; padding:100px 80px;">
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center;">BEYSELL ECOSYSTEM</h1>
+        <div style="display:flex; justify-content:center;">
+            <div class="product-item" onclick="openProductInfo()">
+                <h2 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h2>
+                <p style="margin-top:10px; color:#666;">Gaming Platform v1.0</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="product-modal" class="modal">
+    <div id="product-modal-content">
+        <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px;">BEYSELL-LAUNCHER</h1>
+        <p style="font-family:Orbitron; font-size:10px; color:#555; margin-top:10px;">OFFICIAL GAMING CLIENT</p>
+        <div style="text-align:left; margin-top:30px; font-size:18px; color:#ccc; line-height:1.6;">
+            <p>Welcome to our proprietary gaming station. This is more than just a launcher — it's your personal gateway to high-performance gaming and exclusive virtual items.</p>
+            <ul style="margin-top:20px; list-style:none; color:var(--main); font-family:Orbitron; font-size:12px;">
+                <li>> ULTRA-SMOOTH INTERFACE</li>
+                <li>> INTEGRATED MARKETPLACE</li>
+                <li>> HIGH-SPEED GAME LOADING</li>
+            </ul>
+        </div>
+        <a href="BEYSELL_Setup.exe" class="install-btn">INSTALL</a>
+        <p onclick="closeProductModal()" style="margin-top:30px; color:#333; cursor:pointer; font-family:Orbitron; font-size:10px;">CLOSE ARCHIVE</p>
     </div>
 </div>
 
@@ -227,11 +278,9 @@
         strip.style.transition = 'transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
         strip.style.transform = `translateX(-${move}px)`;
 
-        // Тихі тіки
         for(let i=0; i<70; i++) setTimeout(() => { if(document.getElementById('case-modal').style.display==='flex') tick.cloneNode().play(); }, i*i*2.2);
 
         setTimeout(() => {
-            // ФІКС: додаємо в Firebase саме через user.uid
             db.ref('users/'+user.uid+'/inventory').push(win);
             document.getElementById('win-status').innerText = win.name.toUpperCase();
             document.getElementById('win-status').style.color = win.color;
@@ -259,11 +308,22 @@
     }
 
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
+    
     function showPage(p) {
         document.getElementById('page-market').style.display = (p==='market')?'block':'none';
         document.getElementById('page-inventory').style.display = (p==='inventory')?'block':'none';
+        document.getElementById('page-products').style.display = (p==='products')?'block':'none';
     }
+
+    function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
+    function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+    
     function closeModals() { document.getElementById('case-modal').style.display='none'; caseSound.pause(); music.volume=0.2; }
+
+    window.onclick = function(event) {
+        let pModal = document.getElementById('product-modal');
+        if (event.target == pModal) pModal.style.display = "none";
+    }
 </script>
 </body>
 </html>
