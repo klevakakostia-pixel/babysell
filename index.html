@@ -91,6 +91,22 @@
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* UPGRADE SPECIFIC */
+        .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; }
+        .upgrade-slot { 
+            width: 300px; height: 350px; background: rgba(255,255,255,0.02); 
+            border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.5s;
+        }
+        .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); background: rgba(0,255,170,0.02); }
+        .chance-circle {
+            width: 150px; height: 150px; border: 4px solid #222; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron'; font-size: 30px; color: var(--main);
+            position: relative; transition: 0.5s;
+        }
+
         /* PRODUCT STYLES */
         .product-item {
             background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px;
@@ -131,6 +147,7 @@
         <div style="display:flex; gap:20px;">
             <button class="btn-nav" onclick="showPage('market')">MARKET</button>
             <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
+            <button class="btn-nav" onclick="showPage('upgrade')">UPGRADE</button>
             <button class="btn-nav" style="border-color:var(--main); color:#fff;" onclick="showPage('products')">BEYSELL PRODUCTS</button>
         </div>
         <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
@@ -156,6 +173,26 @@
         <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
     </div>
 
+    <div id="page-upgrade" style="display:none; padding:80px;">
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main);">SKIN UPGRADER</h1>
+        <div class="upgrade-container">
+            <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
+                <p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>
+            </div>
+            
+            <div style="text-align:center;">
+                <div id="chance-display" class="chance-circle">0%</div>
+                <button id="upg-btn" class="btn-nav" style="margin-top:20px; width:200px;" onclick="attemptUpgrade()" disabled>UPGRADE</button>
+            </div>
+
+            <div id="slot-output" class="upgrade-slot">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background:transparent; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron;">
+                    <option value="">SELECT TARGET</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
     <div id="page-products" style="display:none; padding:100px 80px;">
         <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center;">BEYSELL</h1>
         <div style="display:flex; justify-content:center;">
@@ -173,15 +210,8 @@
         <p style="font-family:Orbitron; font-size:10px; color:#555; margin-top:10px;">OFFICIAL GAMING CLIENT</p>
         <div style="text-align:left; margin-top:30px; font-size:18px; color:#ccc; line-height:1.6;">
             <p>Fast Downloads: Optimized servers for peak speed.
-
 Auto-Updates: Never wait for a patch again.
-
 Sleek UI: A clean interface focused on your library.</p>
-            <ul style="margin-top:20px; list-style:none; color:var(--main); font-family:Orbitron; font-size:12px;">
-                <li>> </li>
-                <li>> </li>
-                <li>> </li>
-            </ul>
         </div>
         <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
         <p onclick="closeProductModal()" style="margin-top:30px; color:#333; cursor:pointer; font-family:Orbitron; font-size:10px;">CLOSE ARCHIVE</p>
@@ -232,7 +262,7 @@ Sleek UI: A clean interface focused on your library.</p>
         { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 2, color: "#ebca42" }
     ];
 
-    let user = null, balance = 0, userInv = {};
+    let user = null, balance = 0, userInv = {}, selectedUpgradeId = null;
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -247,6 +277,7 @@ Sleek UI: A clean interface focused on your library.</p>
             db.ref('users/'+u.uid+'/inventory').on('value', s => {
                 userInv = s.val() || {};
                 renderInventory();
+                populateTargetSkins();
             });
         }
     });
@@ -268,22 +299,17 @@ Sleek UI: A clean interface focused on your library.</p>
     function startSpin() {
         if(balance < 1000) return alert("LOW BALANCE");
         const btn = document.getElementById('spin-btn'); btn.disabled = true;
-        
         music.volume = 0.05;
         caseSound.currentTime = 0; caseSound.volume = 0.4; caseSound.play();
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-
         const win = getWin();
         const strip = document.getElementById('strip');
         strip.children[100].innerHTML = `<img src="${win.img}" width="140" style="filter:drop-shadow(0 0 30px ${win.color})">`;
         strip.children[100].firstChild.style.opacity = "1";
-
         const move = (100 * 180) - (document.querySelector('.view-window').offsetWidth / 2) + 90;
         strip.style.transition = 'transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
         strip.style.transform = `translateX(-${move}px)`;
-
         for(let i=0; i<70; i++) setTimeout(() => { if(document.getElementById('case-modal').style.display==='flex') tick.cloneNode().play(); }, i*i*2.2);
-
         setTimeout(() => {
             db.ref('users/'+user.uid+'/inventory').push(win);
             document.getElementById('win-status').innerText = win.name.toUpperCase();
@@ -306,9 +332,80 @@ Sleek UI: A clean interface focused on your library.</p>
             g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color};">
                 <img src="${i.img}" width="130"><br><br>
                 <b style="font-family:Orbitron; font-size:12px; letter-spacing:2px;">${i.name}</b><br><br>
-                <button class="btn-nav" style="width:100%" onclick="sell('${id}',${i.price})">SELL ${i.price} B</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-nav" style="flex:1" onclick="sell('${id}',${i.price})">SELL</button>
+                    <button class="btn-nav" style="flex:1; border-color:var(--main);" onclick="selectForUpgrade('${id}')">UPGRADE</button>
+                </div>
             </div>`;
         });
+    }
+
+    function selectForUpgrade(id) {
+        selectedUpgradeId = id;
+        const skin = userInv[id];
+        const slot = document.getElementById('slot-input');
+        slot.classList.add('active');
+        slot.innerHTML = `<img src="${skin.img}" width="150"><p style="font-family:Orbitron; margin-top:10px;">${skin.name}</p><p style="color:var(--main)">${skin.price} B</p>`;
+        showPage('upgrade');
+        updateUpgradeChance();
+    }
+
+    function populateTargetSkins() {
+        const sel = document.getElementById('target-select');
+        sel.innerHTML = '<option value="">SELECT TARGET</option>';
+        SKINS.forEach((s, index) => {
+            sel.innerHTML += `<option value="${index}">${s.name} (${s.price} B)</option>`;
+        });
+    }
+
+    function updateUpgradeChance() {
+        if(!selectedUpgradeId) return;
+        const targetIndex = document.getElementById('target-select').value;
+        if(targetIndex === "") {
+            document.getElementById('chance-display').innerText = "0%";
+            document.getElementById('upg-btn').disabled = true;
+            return;
+        }
+        const inputPrice = userInv[selectedUpgradeId].price;
+        const outputPrice = SKINS[targetIndex].price;
+        
+        let chance = (inputPrice / outputPrice) * 100;
+        if(chance > 95) chance = 95; 
+        if(inputPrice >= outputPrice) chance = 99;
+
+        document.getElementById('chance-display').innerText = Math.floor(chance) + "%";
+        document.getElementById('upg-btn').disabled = false;
+    }
+
+    function attemptUpgrade() {
+        const targetIndex = document.getElementById('target-select').value;
+        const chance = parseInt(document.getElementById('chance-display').innerText);
+        const btn = document.getElementById('upg-btn');
+        btn.disabled = true;
+
+        let roll = Math.random() * 100;
+        
+        // Visual effect
+        document.getElementById('chance-display').style.borderColor = var(--main);
+        
+        setTimeout(() => {
+            if(roll <= chance) {
+                // Success
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+                db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIndex]);
+                alert("SUCCESS! UPGRADED TO " + SKINS[targetIndex].name);
+                showPage('inventory');
+            } else {
+                // Fail
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+                alert("FAILED! SKIN DESTROYED");
+                showPage('inventory');
+            }
+            // Reset slots
+            document.getElementById('slot-input').innerHTML = '<p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>';
+            document.getElementById('slot-input').classList.remove('active');
+            selectedUpgradeId = null;
+        }, 1000);
     }
 
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
@@ -316,12 +413,12 @@ Sleek UI: A clean interface focused on your library.</p>
     function showPage(p) {
         document.getElementById('page-market').style.display = (p==='market')?'block':'none';
         document.getElementById('page-inventory').style.display = (p==='inventory')?'block':'none';
+        document.getElementById('page-upgrade').style.display = (p==='upgrade')?'block':'none';
         document.getElementById('page-products').style.display = (p==='products')?'block':'none';
     }
 
     function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
     function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
-    
     function closeModals() { document.getElementById('case-modal').style.display='none'; caseSound.pause(); music.volume=0.2; }
 
     window.onclick = function(event) {
