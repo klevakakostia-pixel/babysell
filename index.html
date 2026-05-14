@@ -50,85 +50,44 @@
         }
         .btn-nav:hover { background: var(--main); color: #000; box-shadow: 0 0 30px var(--main); border-color: var(--main); }
 
-        /* CASE CARDS - THE SHIK */
+        /* CASE CARDS */
         .case-card {
             background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.8));
             padding: 60px; border-radius: 40px; text-align: center;
             border: 1px solid rgba(255,255,255,0.03); transition: 1.2s var(--ease-hyper);
             box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
-        .case-card:hover { 
-            transform: translateY(-20px) scale(1.02); 
-            border-color: var(--main); box-shadow: 0 40px 80px rgba(0,255,170,0.1);
-        }
+        .case-card:hover { transform: translateY(-20px) scale(1.02); border-color: var(--main); box-shadow: 0 40px 80px rgba(0,255,170,0.1); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
 
-        /* ROULETTE - BUTTER SMOOTH */
+        /* ROULETTE */
         .modal { 
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
         .view-window { 
             position: relative; width: 100%; height: 200px; background: #000; 
-            margin: 40px 0; overflow: hidden; border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+            margin: 40px 0; overflow: hidden; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
         }
-        .strip { 
-            display: flex; position: absolute; left: 0; height: 100%; 
-            transition: transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0); 
-            will-change: transform;
-        }
-        .pointer { 
-            position: absolute; left: 50%; top: 0; width: 2px; height: 100%; 
-            background: var(--main); z-index: 100; box-shadow: 0 0 30px var(--main);
-        }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
+        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 30px var(--main); }
 
-        .inv-item {
-            background: rgba(255,255,255,0.02); padding: 30px; border-radius: 25px; 
-            text-align: center; border: 1px solid rgba(255,255,255,0.05);
-            transition: 1s var(--ease-hyper);
-            animation: slideUp 1s var(--ease-hyper) backwards;
-        }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* UPGRADE SPECIFIC */
-        .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; }
-        .upgrade-slot { 
-            width: 300px; height: 350px; background: rgba(255,255,255,0.02); 
-            border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.5s;
-        }
-        .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); background: rgba(0,255,170,0.02); }
-        .chance-circle {
-            width: 150px; height: 150px; border: 4px solid #222; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron'; font-size: 30px; color: var(--main);
-            position: relative; transition: 0.5s;
-        }
+        /* UPGRADE ELEMENTS */
+        .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
+        .upgrade-slot { width: 300px; height: 350px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); }
+        .chance-circle { width: 150px; height: 150px; border: 4px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 30px; color: var(--main); }
 
         /* PRODUCT STYLES */
-        .product-item {
-            background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px;
-            border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s;
-        }
+        .product-item { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s; }
         .product-item:hover { border-color: var(--main); background: rgba(0,255,170,0.05); }
-
-        #product-modal-content {
-            background: #0a0a0c; border: 1px solid var(--main); padding: 50px;
-            border-radius: 30px; max-width: 500px; width: 90%; text-align: center;
-            box-shadow: 0 0 100px rgba(0,255,170,0.2);
-            animation: modalScale 0.5s var(--ease-hyper);
-        }
-        @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .install-btn {
-            display: inline-block; background: var(--main); color: #000;
-            padding: 20px 60px; border-radius: 4px; font-family: 'Orbitron';
-            font-weight: 900; text-decoration: none; margin-top: 30px;
-            transition: 0.5s; letter-spacing: 3px;
-        }
+        #product-modal-content { background: #0a0a0c; border: 1px solid var(--main); padding: 50px; border-radius: 30px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 0 100px rgba(0,255,170,0.2); animation: modalScale 0.5s var(--ease-hyper); }
+        .install-btn { display: inline-block; background: var(--main); color: #000; padding: 20px 60px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; margin-top: 30px; transition: 0.5s; letter-spacing: 3px; }
         .install-btn:hover { box-shadow: 0 0 50px var(--main); transform: scale(1.05); }
+
+        .inv-item { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 1s var(--ease-hyper); animation: slideUp 1s var(--ease-hyper) backwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -174,20 +133,18 @@
     </div>
 
     <div id="page-upgrade" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main);">SKIN UPGRADER</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main);">UPGRADER</h1>
         <div class="upgrade-container">
             <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
                 <p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>
             </div>
-            
             <div style="text-align:center;">
                 <div id="chance-display" class="chance-circle">0%</div>
                 <button id="upg-btn" class="btn-nav" style="margin-top:20px; width:200px;" onclick="attemptUpgrade()" disabled>UPGRADE</button>
             </div>
-
             <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background:transparent; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron;">
-                    <option value="">SELECT TARGET</option>
+                <select id="target-select" onchange="updateUpgradeChance()" style="background:#000; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron;">
+                    <option value="">TARGET SKIN</option>
                 </select>
             </div>
         </div>
@@ -207,33 +164,23 @@
 <div id="product-modal" class="modal">
     <div id="product-modal-content">
         <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px;">BEYSELL-LAUNCHER</h1>
-        <p style="font-family:Orbitron; font-size:10px; color:#555; margin-top:10px;">OFFICIAL GAMING CLIENT</p>
-        <div style="text-align:left; margin-top:30px; font-size:18px; color:#ccc; line-height:1.6;">
-            <p>Fast Downloads: Optimized servers for peak speed.
-Auto-Updates: Never wait for a patch again.
-Sleek UI: A clean interface focused on your library.</p>
-        </div>
+        <p>OFFICIAL GAMING CLIENT</p>
         <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
-        <p onclick="closeProductModal()" style="margin-top:30px; color:#333; cursor:pointer; font-family:Orbitron; font-size:10px;">CLOSE ARCHIVE</p>
+        <p onclick="closeProductModal()" style="margin-top:30px; color:#333; cursor:pointer; font-family:Orbitron; font-size:10px;">CLOSE</p>
     </div>
 </div>
 
 <div id="case-modal" class="modal">
     <div style="width:95%; max-width:900px; text-align:center;">
         <h1 id="win-status" style="font-family:Orbitron; letter-spacing:10px; margin-bottom:40px; color:#333;">FATE DECIDING...</h1>
-        <div class="view-window">
-            <div class="pointer"></div>
-            <div id="strip" class="strip"></div>
-        </div>
-        <button id="spin-btn" class="btn-nav" style="width:300px; height:70px; font-size:16px; font-weight:900;" onclick="startSpin()">OPEN FOR 1,000 B</button>
-        <p onclick="closeModals()" style="margin-top:30px; color:#222; cursor:pointer; font-family:Orbitron; font-size:10px;">EXIT SYSTEM</p>
+        <div class="view-window"><div class="pointer"></div><div id="strip" class="strip"></div></div>
+        <button id="spin-btn" class="btn-nav" style="width:300px; height:70px;" onclick="startSpin()">OPEN FOR 1,000 B</button>
+        <p onclick="closeModals()" style="margin-top:30px; color:#222; cursor:pointer; font-family:Orbitron; font-size:10px;">EXIT</p>
     </div>
 </div>
 
 <script>
-    const music = document.getElementById('bg-music');
-    const caseSound = document.getElementById('case-open-sound');
-    const tick = document.getElementById('snd-tick');
+    const music = document.getElementById('bg-music'), caseSound = document.getElementById('case-open-sound'), tick = document.getElementById('snd-tick');
     tick.volume = 0.03;
 
     function initApp() {
@@ -256,10 +203,10 @@ Sleek UI: A clean interface focused on your library.</p>
     const auth = firebase.auth(), db = firebase.database();
 
     const SKINS = [
-        { name: "Glock-18 Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff" },
-        { name: "Desert Eagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, chance: 20, color: "#8847ff" },
-        { name: "AK-47 Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, chance: 8, color: "#d32ee6" },
-        { name: "Butterfly Knife", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 2, color: "#ebca42" }
+        { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff" },
+        { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, chance: 20, color: "#8847ff" },
+        { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, chance: 8, color: "#d32ee6" },
+        { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 2, color: "#ebca42" }
     ];
 
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null;
@@ -270,161 +217,85 @@ Sleek UI: A clean interface focused on your library.</p>
             document.getElementById('l-btn').style.display = 'none';
             document.getElementById('l-prof').style.display = 'block';
             document.getElementById('l-ava').src = u.photoURL;
-            db.ref('users/'+u.uid+'/balance').on('value', s => {
-                balance = s.val() || 0;
-                document.getElementById('u-bal').innerText = balance.toLocaleString() + " B";
-            });
-            db.ref('users/'+u.uid+'/inventory').on('value', s => {
-                userInv = s.val() || {};
-                renderInventory();
-                populateTargetSkins();
-            });
+            db.ref('users/'+u.uid+'/balance').on('value', s => { balance = s.val() || 0; document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; });
+            db.ref('users/'+u.uid+'/inventory').on('value', s => { userInv = s.val() || {}; renderInventory(); populateTargetSkins(); });
         }
     });
 
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
 
-    function openCaseModal() {
-        if(!user) return login();
-        document.getElementById('case-modal').style.display = 'flex';
-        const strip = document.getElementById('strip');
-        strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
-        strip.innerHTML = "";
-        for(let i=0; i<120; i++) {
-            let s = SKINS[Math.floor(Math.random()*SKINS.length)];
-            strip.innerHTML += `<div style="min-width:180px; display:flex; align-items:center; justify-content:center;"><img src="${s.img}" width="100" style="opacity:0.2"></div>`;
-        }
-    }
-
-    function startSpin() {
-        if(balance < 1000) return alert("LOW BALANCE");
-        const btn = document.getElementById('spin-btn'); btn.disabled = true;
-        music.volume = 0.05;
-        caseSound.currentTime = 0; caseSound.volume = 0.4; caseSound.play();
-        db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-        const win = getWin();
-        const strip = document.getElementById('strip');
-        strip.children[100].innerHTML = `<img src="${win.img}" width="140" style="filter:drop-shadow(0 0 30px ${win.color})">`;
-        strip.children[100].firstChild.style.opacity = "1";
-        const move = (100 * 180) - (document.querySelector('.view-window').offsetWidth / 2) + 90;
-        strip.style.transition = 'transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
-        strip.style.transform = `translateX(-${move}px)`;
-        for(let i=0; i<70; i++) setTimeout(() => { if(document.getElementById('case-modal').style.display==='flex') tick.cloneNode().play(); }, i*i*2.2);
-        setTimeout(() => {
-            db.ref('users/'+user.uid+'/inventory').push(win);
-            document.getElementById('win-status').innerText = win.name.toUpperCase();
-            document.getElementById('win-status').style.color = win.color;
-            btn.disabled = false;
-            music.volume = 0.2;
-        }, 9800);
-    }
-
-    function getWin() {
-        let r = Math.random()*100, c = 0;
-        for(let s of SKINS) { c+=s.chance; if(r<=c) return s; }
-        return SKINS[0];
+    function showPage(p) {
+        ['page-market', 'page-inventory', 'page-products', 'page-upgrade'].forEach(id => document.getElementById(id).style.display = 'none');
+        document.getElementById('page-' + p).style.display = 'block';
     }
 
     function renderInventory() {
         const g = document.getElementById('inv-grid'); g.innerHTML = "";
         Object.keys(userInv).reverse().forEach(id => {
             const i = userInv[id];
-            g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color};">
-                <img src="${i.img}" width="130"><br><br>
-                <b style="font-family:Orbitron; font-size:12px; letter-spacing:2px;">${i.name}</b><br><br>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-nav" style="flex:1" onclick="sell('${id}',${i.price})">SELL</button>
-                    <button class="btn-nav" style="flex:1; border-color:var(--main);" onclick="selectForUpgrade('${id}')">UPGRADE</button>
-                </div>
+            g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color}">
+                <img src="${i.img}" width="130"><br><br><b>${i.name}</b><br><br>
+                <button class="btn-nav" style="width:100%; border-color:var(--main);" onclick="selectForUpgrade('${id}')">UPGRADE</button>
+                <button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button>
             </div>`;
         });
     }
 
     function selectForUpgrade(id) {
-        selectedUpgradeId = id;
-        const skin = userInv[id];
+        selectedUpgradeId = id; const skin = userInv[id];
         const slot = document.getElementById('slot-input');
-        slot.classList.add('active');
-        slot.innerHTML = `<img src="${skin.img}" width="150"><p style="font-family:Orbitron; margin-top:10px;">${skin.name}</p><p style="color:var(--main)">${skin.price} B</p>`;
-        showPage('upgrade');
-        updateUpgradeChance();
+        slot.innerHTML = `<img src="${skin.img}" width="150"><p>${skin.name}</p>`;
+        slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance();
     }
 
     function populateTargetSkins() {
-        const sel = document.getElementById('target-select');
-        sel.innerHTML = '<option value="">SELECT TARGET</option>';
-        SKINS.forEach((s, index) => {
-            sel.innerHTML += `<option value="${index}">${s.name} (${s.price} B)</option>`;
-        });
+        const sel = document.getElementById('target-select'); sel.innerHTML = '<option value="">TARGET SKIN</option>';
+        SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`);
     }
 
     function updateUpgradeChance() {
         if(!selectedUpgradeId) return;
-        const targetIndex = document.getElementById('target-select').value;
-        if(targetIndex === "") {
-            document.getElementById('chance-display').innerText = "0%";
-            document.getElementById('upg-btn').disabled = true;
-            return;
-        }
-        const inputPrice = userInv[selectedUpgradeId].price;
-        const outputPrice = SKINS[targetIndex].price;
-        
-        let chance = (inputPrice / outputPrice) * 100;
-        if(chance > 95) chance = 95; 
-        if(inputPrice >= outputPrice) chance = 99;
-
-        document.getElementById('chance-display').innerText = Math.floor(chance) + "%";
-        document.getElementById('upg-btn').disabled = false;
+        const targetIdx = document.getElementById('target-select').value;
+        if(targetIdx === "") { document.getElementById('chance-display').innerText = "0%"; document.getElementById('upg-btn').disabled = true; return; }
+        const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100));
+        document.getElementById('chance-display').innerText = chance + "%"; document.getElementById('upg-btn').disabled = false;
     }
 
     function attemptUpgrade() {
-        const targetIndex = document.getElementById('target-select').value;
+        const targetIdx = document.getElementById('target-select').value;
         const chance = parseInt(document.getElementById('chance-display').innerText);
-        const btn = document.getElementById('upg-btn');
-        btn.disabled = true;
+        if(Math.random()*100 <= chance) {
+            db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+            db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]);
+            alert("SUCCESS! +1 " + SKINS[targetIdx].name);
+        } else {
+            db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+            alert("FAILED! SKIN DESTROYED");
+        }
+        showPage('inventory'); selectedUpgradeId = null; document.getElementById('slot-input').innerHTML = "SELECT SKIN";
+    }
 
-        let roll = Math.random() * 100;
-        
-        // Visual effect
-        document.getElementById('chance-display').style.borderColor = var(--main);
-        
+    function startSpin() {
+        if(balance < 1000) return alert("LOW BALANCE");
+        const btn = document.getElementById('spin-btn'); btn.disabled = true;
+        db.ref('users/'+user.uid+'/balance').set(balance - 1000);
+        const win = SKINS[Math.floor(Math.random()*SKINS.length)];
+        const strip = document.getElementById('strip');
+        strip.innerHTML = ""; for(let i=0; i<120; i++) strip.innerHTML += `<div style="min-width:180px; display:flex; align-items:center; justify-content:center;"><img src="${SKINS[Math.floor(Math.random()*SKINS.length)].img}" width="100" style="opacity:0.2"></div>`;
+        strip.children[100].innerHTML = `<img src="${win.img}" width="140" style="filter:drop-shadow(0 0 30px ${win.color})">`;
+        strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         setTimeout(() => {
-            if(roll <= chance) {
-                // Success
-                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
-                db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIndex]);
-                alert("SUCCESS! UPGRADED TO " + SKINS[targetIndex].name);
-                showPage('inventory');
-            } else {
-                // Fail
-                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
-                alert("FAILED! SKIN DESTROYED");
-                showPage('inventory');
-            }
-            // Reset slots
-            document.getElementById('slot-input').innerHTML = '<p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>';
-            document.getElementById('slot-input').classList.remove('active');
-            selectedUpgradeId = null;
-        }, 1000);
+            strip.style.transition = 'transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
+            strip.style.transform = `translateX(-${(100*180)-450+90}px)`;
+        }, 50);
+        setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; }, 9800);
     }
 
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
-    
-    function showPage(p) {
-        document.getElementById('page-market').style.display = (p==='market')?'block':'none';
-        document.getElementById('page-inventory').style.display = (p==='inventory')?'block':'none';
-        document.getElementById('page-upgrade').style.display = (p==='upgrade')?'block':'none';
-        document.getElementById('page-products').style.display = (p==='products')?'block':'none';
-    }
-
+    function openCaseModal() { if(!user) return login(); document.getElementById('case-modal').style.display='flex'; }
+    function closeModals() { document.getElementById('case-modal').style.display='none'; }
     function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
     function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
-    function closeModals() { document.getElementById('case-modal').style.display='none'; caseSound.pause(); music.volume=0.2; }
-
-    window.onclick = function(event) {
-        let pModal = document.getElementById('product-modal');
-        if (event.target == pModal) pModal.style.display = "none";
-    }
 </script>
 </body>
 </html>
