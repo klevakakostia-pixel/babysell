@@ -11,34 +11,58 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root { 
-            --main: #00d4ff; /* Електричний синій */
-            --bg: #000000; /* Глибокий чорний фон */
+            --main: #ff9d00; /* Теплий неоновий захід сонця */
+            --bg: #050212; /* Глибокий вечірній фіолетово-чорний */
             --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1);
-            --wave-color: rgba(0, 212, 255, 0.03);
+            --wave-color: rgba(255, 157, 0, 0.02);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
 
-        /* ======== ГЛОБАЛЬНІ АНІМОВАНІ ХВИЛІ НА ФОНІ ======== */
-        .bg-waves-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            overflow: hidden; z-index: -1; pointer-events: none;
+        /* ======== НОВИЙ АНІМОВАНИЙ ФОН: СТАВОК, СОНЦЕ, КУРОЧКА ======== */
+        .pond-bg-container {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: linear-gradient(to bottom, #040110 0%, #110624 40%, #220b29 75%, #05141c 100%);
+            overflow: hidden;
         }
-        .global-wave {
-            position: absolute; bottom: -60vh; left: -50vw; width: 200vw; height: 200vw;
-            background: var(--wave-color); border-radius: 43%;
-            animation: waveSpin 40s linear infinite; box-shadow: inset 0 0 100px rgba(0, 212, 255, 0.05);
+        
+        /* Гарне неонове сонце */
+        .pond-sun {
+            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, #ffb700 10%, #ff4500 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(2ff, 69, 0, 0.5), 0 0 140px rgba(255, 183, 0, 0.2);
+            animation: sunPulse 8s ease-in-out infinite alternate;
         }
-        .global-wave:nth-child(2) {
-            bottom: -65vh; left: -45vw; background: rgba(0, 212, 255, 0.02); border-radius: 40%;
-            animation: waveSpin 55s linear infinite reverse;
+        @keyframes sunPulse { 
+            from { transform: translate(-50%, -50%) scale(0.96); opacity: 0.85; } 
+            to { transform: translate(-50%, -50%) scale(1.04); opacity: 1; } 
         }
-        .global-wave:nth-child(3) {
-            bottom: -70vh; left: -55vw; background: rgba(0, 212, 255, 0.015); border-radius: 46%;
+        
+        /* Вода ставка та її блики */
+        .pond-water-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 32vh;
+            background: linear-gradient(to bottom, rgba(255, 157, 0, 0.05) 0%, rgba(3, 15, 24, 0.95) 100%);
+            border-top: 1px solid rgba(255, 157, 0, 0.2);
+            backdrop-filter: blur(1px);
+        }
+        .pond-wave {
+            position: absolute; bottom: -50vw; left: -50vw; width: 200vw; height: 200vw;
+            background: var(--wave-color); border-radius: 44%;
             animation: waveSpin 35s linear infinite;
         }
+        .pond-wave:nth-child(2) {
+            bottom: -53vh; left: -45vw; background: rgba(255, 69, 0, 0.015); border-radius: 41%;
+            animation: waveSpin 50s linear infinite reverse;
+        }
         @keyframes waveSpin { 100% { transform: rotate(360deg); } }
+
+        /* Векторна графіка пляжу та курочки */
+        .beach-vector-scene {
+            position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2;
+        }
 
         /* WELCOME SCREEN */
         #welcome-screen {
@@ -62,13 +86,13 @@
         /* HEADER & NAV */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.8); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,212,255,0.15);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.75); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
         .btn-nav { 
             position: relative; overflow: hidden; background: rgba(255,255,255,0.02); 
-            border: 1px solid rgba(255,255,255,0.1); color: #aaa; padding: 12px 25px; 
+            border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; 
             border-radius: 30px; 
             font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper);
         }
@@ -76,23 +100,23 @@
             content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 100%;
             background: var(--main); border-radius: 50%; transition: top 0.5s var(--ease-hyper); z-index: -1;
         }
-        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(0,212,255,0.4); }
+        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
         .btn-nav:hover:not(:disabled)::before { top: 0; border-radius: 0; }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* CASE CARDS */
         .case-card {
-            background: rgba(5,5,5,0.8); padding: 60px; border-radius: 40px; text-align: center;
-            border: 1px solid rgba(0,212,255,0.1); transition: 1s var(--ease-hyper);
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.4); 
+            background: rgba(4,3,10,0.85); padding: 60px; border-radius: 40px; text-align: center;
+            border: 1px solid rgba(255,157,0,0.1); transition: 1s var(--ease-hyper);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.5); 
             cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
         .case-card::before {
             content: ''; position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,157,0,0.05) 0%, transparent 70%);
             opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
         }
-        .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(0,212,255,0.15); }
+        .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(255,157,0,0.15); }
         .case-card:hover::before { opacity: 1; transform: scale(1.2); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); transition: 0.5s; }
         .case-card:hover img { transform: scale(1.05); }
@@ -100,14 +124,14 @@
         /* CASE ROULETTE STYLES */
         #case-modal { 
             display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, rgba(5,5,10,0.95) 0%, rgba(0,0,0,1) 100%);
+            background: radial-gradient(circle at center, rgba(8,4,15,0.96) 0%, rgba(0,0,0,1) 100%);
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(25px);
         }
         .view-window { 
             position: relative; width: 100%; height: 280px; 
-            background: rgba(0,0,0,0.6); margin: 40px 0; overflow: hidden; border-radius: 30px; 
-            border: 1px solid rgba(0,212,255,0.15);
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(0, 212, 255, 0.08);
+            background: rgba(0,0,0,0.7); margin: 40px 0; overflow: hidden; border-radius: 30px; 
+            border: 1px solid rgba(255,157,0,0.15);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 157, 0, 0.08);
         }
         .view-window::before, .view-window::after {
             content: ''; position: absolute; top: 0; bottom: 0; width: 200px; z-index: 50; pointer-events: none;
@@ -135,7 +159,7 @@
 
         .case-strip-item {
             min-width: 220px; height: 220px; margin: 0 10px;
-            background: linear-gradient(180deg, rgba(15,15,20,0.7), rgba(0,0,5,0.9));
+            background: linear-gradient(180deg, rgba(18,12,28,0.7), rgba(4,2,8,0.9));
             border-radius: 20px; border: 1px solid rgba(255,255,255,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: all 0.5s var(--ease-hyper); position: relative;
@@ -143,25 +167,25 @@
         .case-strip-item img { max-width: 160px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.8)); transition: 0.3s; }
         .case-item-name { font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
 
-        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(0,212,255,0.5); transition: all 0.5s; }
+        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(255,157,0,0.5); transition: all 0.5s; }
         .exit-btn { margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s; }
         .exit-btn:hover { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
         /* UPGRADE ELEMENTS */
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
         .upgrade-slot { 
-            width: 300px; height: 350px; background: rgba(5,5,10,0.5); 
-            border: 2px dashed rgba(0,212,255,0.3); border-radius: 40px; 
+            width: 300px; height: 350px; background: rgba(5,3,12,0.6); 
+            border: 2px dashed rgba(255,157,0,0.3); border-radius: 40px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             transition: 0.5s var(--ease-hyper); cursor: pointer; backdrop-filter: blur(10px);
         }
-        .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(0,212,255,0.15); background: rgba(0,212,255,0.05); }
+        .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(255,157,0,0.15); background: rgba(255,157,0,0.05); }
         
-        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.8); border: 2px solid rgba(0,212,255,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.85); border: 2px solid rgba(255,157,0,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.6); }
         .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
         .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
-        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(0, 212, 255, 0.4); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
-        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(0, 212, 255, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
+        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(255, 157, 0, 0.35); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
+        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(255, 69, 0, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; }
         .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
@@ -169,16 +193,16 @@
 
         /* INVENTORY & PRODUCTS */
         .product-item { 
-            background: rgba(5,5,10,0.6); padding: 50px; border-radius: 40px; 
-            border: 1px solid rgba(0,212,255,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
+            background: rgba(5,3,12,0.6); padding: 50px; border-radius: 40px; 
+            border: 1px solid rgba(255,157,0,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
             backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
         .product-item::before {
             content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(255,157,0,0.05) 0%, transparent 60%);
             opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
         }
-        .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(0,212,255,0.1); transform: translateY(-10px); }
+        .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(255,157,0,0.1); transform: translateY(-10px); }
         .product-item:hover::before { opacity: 1; }
 
         /* PRODUCT MODAL */
@@ -193,14 +217,14 @@
             backdrop-filter: blur(15px); 
         }
         #product-modal-content { 
-            background: #0a0a0c; border: 1px solid var(--main); padding: 60px; 
+            background: #0d0914; border: 1px solid var(--main); padding: 60px; 
             border-radius: 40px; max-width: 500px; width: 90%; text-align: center; 
-            box-shadow: 0 0 80px rgba(0,212,255,0.15); animation: modalScale 0.5s var(--ease-hyper); 
+            box-shadow: 0 0 80px rgba(255,157,0,0.15); animation: modalScale 0.5s var(--ease-hyper); 
             position: relative; overflow: hidden;
         }
         #product-modal-content::before {
             content: ''; position: absolute; bottom: -100px; left: -50px; width: 200%; height: 200px;
-            background: rgba(0,212,255,0.03); border-radius: 50%;
+            background: rgba(255,157,0,0.03); border-radius: 50%;
             animation: spinWave 15s linear infinite; pointer-events: none;
         }
         .install-btn { 
@@ -211,21 +235,58 @@
         .install-btn:hover { box-shadow: 0 0 40px var(--main); transform: scale(1.05); }
 
         .inv-item { 
-            background: rgba(5,5,10,0.6); padding: 30px; border-radius: 35px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.05); transition: 0.8s var(--ease-hyper); 
+            background: rgba(5,3,12,0.6); padding: 30px; border-radius: 35px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.04); transition: 0.8s var(--ease-hyper); 
             animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px);
         }
-        .inv-item:hover { transform: translateY(-10px); background: rgba(15,15,20,0.8); }
+        .inv-item:hover { transform: translateY(-10px); background: rgba(18,12,25,0.8); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
-<div class="bg-waves-container">
-    <div class="global-wave"></div>
-    <div class="global-wave"></div>
-    <div class="global-wave"></div>
+<!-- ОБНОВЛЕНИЙ ФОН З СУПЕР СТИЛЬНИМ СТАВКОМ ТА КУРОЧКОЮ -->
+<div class="pond-bg-container">
+    <div class="pond-sun"></div>
+    <div class="pond-water-layer">
+        <div class="pond-wave"></div>
+        <div class="pond-wave"></div>
+    </div>
+    
+    <!-- Векторна графіка пляжу, милої курочки та її вудки -->
+    <svg class="beach-vector-scene" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <!-- Берег / Піщаний пляж ставка в тіні заходу -->
+        <path d="M 1050 900 Q 1180 730 1440 680 L 1440 900 Z" fill="#090514" />
+        <path d="M 1050 900 Q 1180 730 1440 680" stroke="var(--main)" stroke-width="2" fill="none" style="opacity: 0.3; filter: blur(3px);" />
+        
+        <!-- ДУЖЕ МИЛА КУРОЧКА, ЯКА РИБАЛИТЬ -->
+        <g transform="translate(1240, 580) scale(0.9)">
+            <!-- Тіло курочки -->
+            <ellipse cx="60" cy="65" rx="36" ry="30" fill="#ffffff" filter="drop-shadow(0 0 12px rgba(255,255,255,0.25))"/>
+            <!-- Голова -->
+            <circle cx="82" cy="42" r="21" fill="#ffffff" />
+            <!-- Милий червоний гребінець -->
+            <path d="M 72 24 Q 76 10 82 20 Q 89 10 93 23" fill="#ff3855" />
+            <!-- Дзьобик -->
+            <polygon points="101,40 114,45 101,50" fill="#ffa200" />
+            <!-- Очко крапочка -->
+            <circle cx="87" cy="38" r="2.5" fill="#111111" />
+            <!-- Крильце -->
+            <path d="M 45 64 Q 60 54 72 69 Q 56 79 45 64" fill="#f4f4f4" />
+            <!-- Хвостик -->
+            <path d="M 24 60 Q 8 48 18 70" fill="#ffffff" />
+            
+            <!-- ВУДКА -->
+            <!-- Вудилище -->
+            <line x1="75" y1="55" x2="175" y2="-15" stroke="#d48800" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Леска, що йде глибоко в ставок -->
+            <line x1="175" y1="-15" x2="175" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+            <!-- Поплавок, який гойдається на воді -->
+            <circle cx="175" cy="210" r="5" fill="#ff3855" filter="drop-shadow(0 0 5px #ff3855)" />
+            <circle cx="175" cy="214" r="2.5" fill="#ffffff" />
+        </g>
+    </svg>
 </div>
 
 <div id="welcome-screen">
@@ -247,7 +308,7 @@
         </div>
         <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
         <div style="display:flex; align-items:center; gap:30px;">
-            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900; text-shadow: 0 0 10px rgba(0,212,255,0.5);">0 B</div>
+            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900; text-shadow: 0 0 10px rgba(255,157,0,0.5);">0 B</div>
             <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
             <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main); box-shadow: 0 0 15px var(--main);"></div>
         </div>
@@ -258,21 +319,21 @@
             <div class="case-card" style="max-width:400px;" onclick="openCaseModal()">
                 <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
                 <h2 style="font-family:Orbitron; margin-top:30px; letter-spacing:5px;">SUPREME CASE</h2>
-                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px; text-shadow: 0 0 10px rgba(0,212,255,0.3);">1,000 B</div>
+                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px; text-shadow: 0 0 10px rgba(255,157,0,0.3);">1,000 B</div>
             </div>
         </center>
     </div>
 
     <div id="page-inventory" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">COLLECTION</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(255,157,0,0.4);">COLLECTION</h1>
         <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
     </div>
 
     <div id="page-upgrade" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">UPGRADER</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(255,157,0,0.4);">UPGRADER</h1>
         <div class="upgrade-container">
             <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
-                <p style="color:#666; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
+                <p style="color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
             </div>
             
             <div style="text-align:center; position:relative;">
@@ -290,7 +351,7 @@
             </div>
 
             <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(0,212,255,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.85); color:#fff; border:1px solid rgba(255,157,0,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
                     <option value="">TARGET SKIN</option>
                 </select>
                 <div id="target-img-preview" style="margin-top: 30px;"></div>
@@ -299,11 +360,11 @@
     </div>
 
     <div id="page-products" style="display:none; padding:100px 80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">BEYSELL</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center; color:var(--main); text-shadow: 0 0 20px rgba(255,157,0,0.4);">BEYSELL</h1>
         <div style="display:flex; justify-content:center;">
             <div class="product-item" onclick="openProductInfo()">
                 <h2 style="font-family:Orbitron; color:var(--main); font-size:24px; letter-spacing:3px;">BEYSELL-LAUNCHER</h2>
-                <p style="margin-top:15px; color:#888; letter-spacing:1px;">Gaming Platform v1.0</p>
+                <p style="margin-top:15px; color:#777; letter-spacing:1px;">Gaming Platform v1.0</p>
             </div>
         </div>
     </div>
@@ -312,7 +373,7 @@
 <div id="product-modal" class="modal">
     <div id="product-modal-content">
         <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px; position:relative; z-index:2;">BEYSELL-LAUNCHER</h1>
-        <p style="color:#aaa; margin-top:10px; letter-spacing:2px; position:relative; z-index:2;">OFFICIAL GAMING CLIENT</p>
+        <p style="color:#888; margin-top:10px; letter-spacing:2px; position:relative; z-index:2;">OFFICIAL GAMING CLIENT</p>
         <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
         <p class="exit-btn" style="position:relative; z-index:2; margin-top:40px;" onclick="closeProductModal()">CLOSE</p>
     </div>
@@ -458,7 +519,7 @@
                 alert("FAILED! SKIN DESTROYED");
             }
             selectedUpgradeId = null; 
-            document.getElementById('slot-input').innerHTML = "<p style='color:#666; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>";
+            document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>";
             document.getElementById('slot-input').classList.remove('active');
             document.getElementById('target-select').disabled = false;
             updateUpgradeChance(); showPage('inventory'); 
@@ -483,7 +544,7 @@
         const statusText = document.getElementById('win-status');
         statusText.innerText = 'FATE DECIDING...';
         statusText.style.color = '#fff';
-        statusText.style.textShadow = '0 0 20px rgba(0,212,255,0.5)';
+        statusText.style.textShadow = '0 0 20px rgba(255,157,0,0.5)';
 
         const win = getSkinByChance();
         const strip = document.getElementById('strip');
