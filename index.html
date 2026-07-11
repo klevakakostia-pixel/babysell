@@ -216,14 +216,17 @@
         const startWin = 180 - (angleSize / 2);
         const endWin = 180 + (angleSize / 2);
         
-        // 3. Обираємо кут зупинки залежно від результату
+        // 3. Обираємо кут зупинки (додано відступи, щоб стрілка ніколи не зупинялась на межі і чітко показувала результат)
         let resultAngle;
+        const pad = angleSize > 10 ? 4 : 0; 
+
         if (isWin) {
-            resultAngle = startWin + (Math.random() * angleSize);
+            const winRange = Math.max(1, angleSize - (pad * 2));
+            resultAngle = (startWin + pad) + (Math.random() * winRange);
         } else {
-            const safeRange = 360 - angleSize;
-            resultAngle = endWin + (Math.random() * safeRange);
-            if (resultAngle > 360) resultAngle -= 360;
+            const loseRange = Math.max(1, 360 - angleSize - (pad * 2));
+            resultAngle = (endWin + pad) + (Math.random() * loseRange);
+            if (resultAngle >= 360) resultAngle -= 360;
         }
 
         const spins = 5 * 360; 
