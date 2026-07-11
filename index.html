@@ -19,14 +19,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
 
-        /* ЩИТ (ПРОЗОРИЙ, АЛЕ БЛОКУЄ) */
-        #action-blocker {
-            display: none; position: fixed; inset: 0; z-index: 99999;
-            background: transparent; 
-            cursor: not-allowed;
-        }
+        #action-blocker { display: none; position: fixed; inset: 0; z-index: 99999; background: transparent; cursor: not-allowed; }
 
-        /* ОСНОВНІ ХВИЛІ ФОНУ */
         .sunset-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%); overflow: hidden; }
         .sunset-sun { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; background: radial-gradient(circle, #ffb700 15%, #ff4500 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2); animation: sunPulse 8s ease-in-out infinite alternate; }
         @keyframes sunPulse { from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } }
@@ -40,7 +34,6 @@
 
         .upgrade-waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; z-index: 0; pointer-events: none; opacity: 0.6; }
 
-        /* СТИЛІ */
         #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
         .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; }
         @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -76,9 +69,8 @@
         .upgrade-slot { width: 300px; height: 350px; background: rgba(5,3,12,0.6); border: 2px dashed rgba(255,157,0,0.3); border-radius: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s var(--ease-hyper); cursor: pointer; backdrop-filter: blur(10px); }
         .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(255,157,0,0.15); background: rgba(255,157,0,0.05); }
         
-        /* АПГРЕЙДЕР - ВИПРАВЛЕНО START POSITION */
         .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.85); border: 2px solid rgba(255,157,0,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.6); }
-        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; transform: rotate(180deg); }
+        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(transparent 0deg, var(--main) 0deg, var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; transform: rotate(180deg); }
         .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
         .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; transform: rotate(180deg); }
         .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
@@ -252,7 +244,38 @@
     function renderInventory() { const g = document.getElementById('inv-grid'); g.innerHTML = ""; Object.keys(userInv).reverse().forEach(id => { const i = userInv[id]; g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color}"><img src="${i.img}" width="130"><br><br><b style="font-family:Orbitron">${i.name}</b><br><br><button class="btn-nav" style="width:100%; border-color:var(--main); margin-bottom:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button><button class="btn-nav" style="width:100%;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button></div>`; }); }
     function selectForUpgrade(id) { selectedUpgradeId = id; const skin = userInv[id]; const slot = document.getElementById('slot-input'); slot.innerHTML = `<img src="${skin.img}" width="150" style="filter: drop-shadow(0 10px 20px ${skin.color})"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`; slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance(); }
     function populateTargetSkins() { const sel = document.getElementById('target-select'); const currentVal = sel.value; sel.innerHTML = '<option value="">TARGET SKIN</option>'; SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`); if(currentVal) sel.value = currentVal; }
-    function updateUpgradeChance() { if(!selectedUpgradeId) return; const targetIdx = document.getElementById('target-select').value; const btn = document.getElementById('upg-btn'); const track = document.getElementById('upg-track'); const water = document.getElementById('water-fill'); const chanceDisplay = document.getElementById('chance-display'); const preview = document.getElementById('target-img-preview'); if(targetIdx === "") { chanceDisplay.innerText = "0%"; btn.disabled = true; track.style.background = `conic-gradient(var(--main) 0deg, transparent 0deg)`; water.style.top = `100%`; preview.innerHTML = ""; return; } const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150" style="filter: drop-shadow(0 10px 20px ${SKINS[targetIdx].color})">`; const angle = (chance / 100) * 360; track.style.background = `conic-gradient(var(--main) ${angle}deg, transparent ${angle}deg)`; water.style.top = `${100 - chance}%`; }
+    
+    function updateUpgradeChance() { 
+        if(!selectedUpgradeId) return; 
+        const targetIdx = document.getElementById('target-select').value; 
+        const btn = document.getElementById('upg-btn'); 
+        const track = document.getElementById('upg-track'); 
+        const water = document.getElementById('water-fill'); 
+        const chanceDisplay = document.getElementById('chance-display'); 
+        const preview = document.getElementById('target-img-preview'); 
+        
+        if(targetIdx === "") { 
+            chanceDisplay.innerText = "0%"; 
+            btn.disabled = true; 
+            track.style.background = `conic-gradient(transparent 0deg, var(--main) 0deg, var(--main) 0deg, transparent 0deg)`; 
+            water.style.top = `100%`; 
+            preview.innerHTML = ""; 
+            return; 
+        } 
+        
+        const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); 
+        chanceDisplay.innerText = chance + "%"; 
+        btn.disabled = false; 
+        preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150" style="filter: drop-shadow(0 10px 20px ${SKINS[targetIdx].color})">`; 
+        
+        // Логіка симетричного заповнення
+        const angle = (chance / 100) * 360; 
+        const half = angle / 2;
+        // Заповнюємо від -half до +half градусів
+        track.style.background = `conic-gradient(transparent ${-half}deg, var(--main) ${-half}deg, var(--main) ${half}deg, transparent ${half}deg)`;
+        water.style.top = `${100 - chance}%`; 
+    }
+
     function attemptUpgrade() { const targetIdx = document.getElementById('target-select').value; const chance = parseInt(document.getElementById('chance-display').innerText); const btn = document.getElementById('upg-btn'); const arrowCont = document.getElementById('upg-arrow'); document.getElementById('action-blocker').style.display = 'block'; btn.disabled = true; document.getElementById('target-select').disabled = true; const resultAngle = Math.random() * 360; const winAngleLimit = (chance / 100) * 360; const isWin = resultAngle <= winAngleLimit; const spins = 5 * 360; currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360)); arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`; setTimeout(() => { if(isWin) { db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]); alert("SUCCESS! +1 " + SKINS[targetIdx].name); } else { db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); alert("FAILED! SKIN DESTROYED"); } selectedUpgradeId = null; document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>"; document.getElementById('slot-input').classList.remove('active'); document.getElementById('target-select').disabled = false; document.getElementById('action-blocker').style.display = 'none'; updateUpgradeChance(); showPage('inventory'); }, 4100); }
     function getSkinByChance() { let rand = Math.random() * 100; let sum = 0; for (let i = 0; i < SKINS.length; i++) { sum += SKINS[i].chance; if (rand <= sum) return SKINS[i]; } return SKINS[0]; }
     function startSpin() { if(balance < 1000) return alert("LOW BALANCE"); const btn = document.getElementById('spin-btn'); btn.disabled = true; document.getElementById('action-blocker').style.display = 'block'; db.ref('users/'+user.uid+'/balance').set(balance - 1000); const statusText = document.getElementById('win-status'); statusText.innerText = 'FATE DECIDING...'; statusText.style.color = '#fff'; const win = getSkinByChance(); const strip = document.getElementById('strip'); strip.innerHTML = ""; const cardWidth = 240; const targetIndex = 100; for(let i=0; i<120; i++) { let randomSkin = getSkinByChance(); if (i === targetIndex) randomSkin = win; strip.innerHTML += `<div class="case-strip-item" id="item-${i}" style="border-bottom: 4px solid ${randomSkin.color};"><img src="${randomSkin.img}"><div class="case-item-name" style="color: ${randomSkin.color}">${randomSkin.name}</div></div>`; } strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; const randomOffset = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2); const viewWindowWidth = document.querySelector('.view-window').offsetWidth; const centerOffset = viewWindowWidth / 2; const stopPos = (targetIndex * cardWidth) - centerOffset + (cardWidth / 2) + randomOffset; setTimeout(() => { strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; strip.style.transform = `translateX(-${stopPos}px)`; }, 50); setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; document.getElementById('action-blocker').style.display = 'none'; for(let i=0; i<120; i++) { if(i !== targetIndex) { document.getElementById(`item-${i}`).style.opacity = '0.1'; document.getElementById(`item-${i}`).style.filter = 'grayscale(100%)'; } } const winCard = document.getElementById(`item-${targetIndex}`); winCard.style.transform = 'scale(1.15)'; winCard.style.boxShadow = `0 0 50px ${win.color}`; winCard.style.zIndex = '100'; statusText.innerText = `YOU GOT: ${win.name.toUpperCase()}!`; statusText.style.color = win.color; }, 9000); }
