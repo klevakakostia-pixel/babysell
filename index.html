@@ -19,14 +19,14 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
 
-        /* ======== НОВИЙ АНІМОВАНИЙ ФОН: ПЛЯЖ ТА СІМЕЙСТВО КУРОЧОК ======== */
+        /* ======== НОВИЙ АНІМОВАНИЙ ФОН: ЗАХІД СОНЦЯ ТА НЕОНОВІ ХВИЛІ ======== */
         .sunset-bg-container {
             position: fixed; inset: 0; z-index: -1; pointer-events: none;
             background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%);
             overflow: hidden;
         }
         
-        /* Гарне неонове сонце */
+        /* Сонце */
         .sunset-sun {
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
             width: 240px; height: 240px;
@@ -40,32 +40,31 @@
             to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } 
         }
 
-        /* Анімація кроку для курочок (погойдування) */
-        @keyframes chickenWalk {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-4px) rotate(2deg); }
-            100% { transform: translateY(0) rotate(0deg); }
+        /* ДУУУЖЕ ГАРНІ ХВИЛІ */
+        .waves {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 20vh;
+            min-height: 120px; max-height: 200px; margin-bottom: -7px;
         }
-        
-        @keyframes chickWalk {
-            0% { transform: translateY(0) scale(0.52) rotate(0deg); }
-            50% { transform: translateY(-6px) scale(0.52) rotate(-3deg); }
-            100% { transform: translateY(0) scale(0.52) rotate(0deg); }
+        .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
+        .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+        .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+        .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+        .parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
+        @keyframes move-forever {
+            0% { transform: translate3d(-90px,0,0); }
+            100% { transform: translate3d(85px,0,0); }
         }
 
-        .mama-hen { animation: chickenWalk 1.2s ease-in-out infinite; transform-origin: center bottom; }
-        .baby-chick-1 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.1s; transform-origin: center bottom; }
-        .baby-chick-2 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.3s; transform-origin: center bottom; }
-        .baby-chick-3 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.5s; transform-origin: center bottom; }
-        .baby-chick-4 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.2s; transform-origin: center bottom; }
-
-        .beach-vector-scene {
-            position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2;
+        /* БЛОКУВАННЯ ЕКРАНУ (ФІКС БАГУ) */
+        #action-blocker {
+            display: none; position: fixed; inset: 0; z-index: 99999;
+            background: rgba(0, 0, 0, 0.3); /* Ледь затемнює екран, показуючи що йде процес */
+            cursor: not-allowed;
         }
 
         /* WELCOME SCREEN */
         #welcome-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
+            position: fixed; inset: 0; background: #000; z-index: 9000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 2.5s var(--ease-hyper), visibility 2.5s;
         }
@@ -205,79 +204,30 @@
 </head>
 <body>
 
-<!-- НОВИЙ ФОН: ЗАХІД СОНЦЯ ТА СІМЕЙНИЙ ПАТРУЛЬ КУРОЧОК -->
+<!-- ЩИТ ВІД БАГІВ -->
+<div id="action-blocker"></div>
+
+<!-- ФОН: ЗАХІД СОНЦЯ ТА ХВИЛІ -->
 <div class="sunset-bg-container">
     <div class="sunset-sun"></div>
     
-    <svg class="beach-vector-scene" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-        <!-- Пологий піщаний берег/пляж -->
-        <path d="M 0 900 Q 400 820 900 850 Q 1200 860 1440 810 L 1440 900 L 0 900 Z" fill="#0c071c" />
-        <path d="M 0 900 Q 400 820 900 850 Q 1200 860 1440 810" stroke="var(--main)" stroke-width="1.5" fill="none" style="opacity: 0.25; filter: blur(2px);" />
-        
-        <!-- МАМА-КУРОЧКА (ІДЕ ПОПЕРЕДУ) -->
-        <g class="mama-hen" transform="translate(620, 715) scale(0.95)">
-            <!-- Тіло -->
-            <ellipse cx="60" cy="65" rx="36" ry="30" fill="#ffffff" filter="drop-shadow(0 0 10px rgba(255,255,255,0.2))"/>
-            <!-- Голова -->
-            <circle cx="82" cy="42" r="21" fill="#ffffff" />
-            <!-- Червоний гребінець -->
-            <path d="M 72 24 Q 76 10 82 20 Q 89 10 93 23" fill="#ff3855" />
-            <!-- Дзьобик -->
-            <polygon points="101,40 114,45 101,50" fill="#ffa200" />
-            <!-- Миле око -->
-            <circle cx="87" cy="38" r="2.5" fill="#111111" />
-            <!-- Крило -->
-            <path d="M 45 64 Q 60 54 72 69 Q 56 79 45 64" fill="#f4f4f4" />
-            <!-- Хвостик -->
-            <path d="M 24 60 Q 8 48 18 70" fill="#ffffff" />
-            <!-- Маленькі ніжки -->
-            <line x1="50" y1="95" x2="50" y2="105" stroke="#ffa200" stroke-width="3" />
-            <line x1="65" y1="95" x2="65" y2="105" stroke="#ffa200" stroke-width="3" />
-        </g>
-
-        <!-- МАЛЕНЬКІ КУРЧАТА (ЙДУТЬ ЗА МАМОЮ В РЯДОК) -->
-        <!-- Курча 1 -->
-        <g class="baby-chick-1" transform="translate(730, 755)">
-            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
-            <circle cx="72" cy="50" r="12" fill="#ffe600" />
-            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
-            <circle cx="74" cy="47" r="1.5" fill="#111111" />
-            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
-            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
-            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
-        </g>
-
-        <!-- Курча 2 -->
-        <g class="baby-chick-2" transform="translate(790, 760)">
-            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
-            <circle cx="72" cy="50" r="12" fill="#ffe600" />
-            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
-            <circle cx="74" cy="47" r="1.5" fill="#111111" />
-            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
-            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
-            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
-        </g>
-
-        <!-- Курча 3 -->
-        <g class="baby-chick-3" transform="translate(850, 762)">
-            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
-            <circle cx="72" cy="50" r="12" fill="#ffe600" />
-            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
-            <circle cx="74" cy="47" r="1.5" fill="#111111" />
-            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
-            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
-            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
-        </g>
-
-        <!-- Курча 4 -->
-        <g class="baby-chick-4" transform="translate(910, 760)">
-            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
-            <circle cx="72" cy="50" r="12" fill="#ffe600" />
-            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
-            <circle cx="74" cy="47" r="1.5" fill="#111111" />
-            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
-            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
-            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+        <defs>
+            <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+            <linearGradient id="waveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(255, 69, 0, 0.6)" />
+                <stop offset="100%" stop-color="rgba(255, 157, 0, 0.2)" />
+            </linearGradient>
+            <linearGradient id="waveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(211, 46, 230, 0.4)" />
+                <stop offset="100%" stop-color="rgba(136, 71, 255, 0.4)" />
+            </linearGradient>
+        </defs>
+        <g class="parallax">
+            <use xlink:href="#gentle-wave" x="48" y="0" fill="url(#waveGrad1)" />
+            <use xlink:href="#gentle-wave" x="48" y="3" fill="url(#waveGrad2)" />
+            <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(20, 10, 40, 0.8)" />
+            <use xlink:href="#gentle-wave" x="48" y="7" fill="#050212" />
         </g>
     </svg>
 </div>
@@ -407,7 +357,6 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
-    // ======== НОВІ НАЛАШТОВАНІ ШАНСИ (СУМА = 100%) ========
     const SKINS = [
         { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 35, color: "#4b69ff" },
         { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, chance: 35, color: "#8847ff" },
@@ -494,6 +443,9 @@
         const btn = document.getElementById('upg-btn');
         const arrowCont = document.getElementById('upg-arrow');
 
+        // Вмикаємо щит від багів
+        document.getElementById('action-blocker').style.display = 'block';
+
         btn.disabled = true; document.getElementById('target-select').disabled = true;
         const resultAngle = Math.random() * 360;
         const winAngleLimit = (chance / 100) * 360;
@@ -516,6 +468,10 @@
             document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>";
             document.getElementById('slot-input').classList.remove('active');
             document.getElementById('target-select').disabled = false;
+            
+            // Вимикаємо щит
+            document.getElementById('action-blocker').style.display = 'none';
+
             updateUpgradeChance(); showPage('inventory'); 
         }, 4100); 
     }
@@ -533,6 +489,10 @@
     function startSpin() {
         if(balance < 1000) return alert("LOW BALANCE");
         const btn = document.getElementById('spin-btn'); btn.disabled = true;
+        
+        // Вмикаємо щит від багів під час відкриття кейса
+        document.getElementById('action-blocker').style.display = 'block';
+
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
         const statusText = document.getElementById('win-status');
@@ -574,6 +534,7 @@
         setTimeout(() => { 
             db.ref('users/'+user.uid+'/inventory').push(win); 
             btn.disabled = false; 
+            document.getElementById('action-blocker').style.display = 'none'; // Вимикаємо щит
             
             for(let i=0; i<120; i++) {
                 if(i !== targetIndex) {
