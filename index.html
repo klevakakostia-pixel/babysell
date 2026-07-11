@@ -11,12 +11,34 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root { 
-            --main: #00ffaa; --bg: #020204; 
+            --main: #00ffaa; 
+            --bg: #050508; /* Глибокий темний колір фону */
             --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1);
+            --wave-color: rgba(0, 255, 170, 0.03);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
+
+        /* ======== ГЛОБАЛЬНІ АНІМОВАНІ ХВИЛІ НА ФОНІ ======== */
+        .bg-waves-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            overflow: hidden; z-index: -1; pointer-events: none;
+        }
+        .global-wave {
+            position: absolute; bottom: -60vh; left: -50vw; width: 200vw; height: 200vw;
+            background: var(--wave-color); border-radius: 43%;
+            animation: waveSpin 40s linear infinite; box-shadow: inset 0 0 100px rgba(0, 255, 170, 0.05);
+        }
+        .global-wave:nth-child(2) {
+            bottom: -65vh; left: -45vw; background: rgba(0, 255, 170, 0.02); border-radius: 40%;
+            animation: waveSpin 55s linear infinite reverse;
+        }
+        .global-wave:nth-child(3) {
+            bottom: -70vh; left: -55vw; background: rgba(0, 255, 170, 0.015); border-radius: 46%;
+            animation: waveSpin 35s linear infinite;
+        }
+        @keyframes waveSpin { 100% { transform: rotate(360deg); } }
 
         /* WELCOME SCREEN */
         #welcome-screen {
@@ -33,57 +55,69 @@
         /* CONTENT APPEARANCE */
         .app-content { 
             opacity: 0; filter: blur(20px); transform: scale(1.05);
-            transition: all 2.5s var(--ease-hyper); 
+            transition: all 2.5s var(--ease-hyper); z-index: 10; position: relative;
         }
         .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
 
         /* HEADER & NAV */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 60px; height: 100px; background: rgba(0,0,0,0.5); 
-            backdrop-filter: blur(30px); border-bottom: 1px solid rgba(0,255,170,0.1);
+            padding: 0 60px; height: 100px; background: rgba(5, 5, 8, 0.6); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         .btn-nav { 
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); 
-            color: #888; padding: 12px 25px; border-radius: 4px; font-family: 'Orbitron'; 
-            font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.8s var(--ease-hyper);
+            position: relative; overflow: hidden; background: rgba(255,255,255,0.02); 
+            border: 1px solid rgba(255,255,255,0.1); color: #aaa; padding: 12px 25px; 
+            border-radius: 30px; /* Плавні краї кнопок */
+            font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper);
         }
-        .btn-nav:hover:not(:disabled) { background: var(--main); color: #000; box-shadow: 0 0 30px var(--main); border-color: var(--main); }
+        .btn-nav::before {
+            content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 100%;
+            background: var(--main); border-radius: 50%; transition: top 0.5s var(--ease-hyper); z-index: -1;
+        }
+        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.4); }
+        .btn-nav:hover:not(:disabled)::before { top: 0; border-radius: 0; }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* CASE CARDS */
         .case-card {
-            background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.8));
-            padding: 60px; border-radius: 40px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.03); transition: 1.2s var(--ease-hyper);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5); cursor: pointer;
+            background: rgba(10,10,15,0.6); padding: 60px; border-radius: 40px; text-align: center;
+            border: 1px solid rgba(0,255,170,0.1); transition: 1s var(--ease-hyper);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.4); 
+            cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
-        .case-card:hover { transform: translateY(-20px) scale(1.02); border-color: var(--main); box-shadow: 0 40px 80px rgba(0,255,170,0.1); }
-        .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
+        /* Внутрішня хвиля для картки */
+        .case-card::before {
+            content: ''; position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0,255,170,0.05) 0%, transparent 70%);
+            opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
+        }
+        .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(0,255,170,0.15); }
+        .case-card:hover::before { opacity: 1; transform: scale(1.2); }
+        .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); transition: 0.5s; }
+        .case-card:hover img { transform: scale(1.05); }
 
-        /* ======== NEW CASE ROULETTE STYLES ======== */
+        /* CASE ROULETTE STYLES */
         #case-modal { 
             display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, rgba(10,15,20,0.98) 0%, rgba(0,0,0,1) 100%);
-            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(20px);
+            background: radial-gradient(circle at center, rgba(5,10,15,0.95) 0%, rgba(0,0,0,1) 100%);
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(25px);
         }
         .view-window { 
             position: relative; width: 100%; height: 280px; 
-            background: linear-gradient(180deg, #050505 0%, #111 50%, #050505 100%); 
-            margin: 40px 0; overflow: hidden; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0, 255, 170, 0.05);
+            background: rgba(0,0,0,0.4); margin: 40px 0; overflow: hidden; border-radius: 30px; 
+            border: 1px solid rgba(0,255,170,0.15);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(0, 255, 170, 0.08);
         }
-        /* Fade edges for roulette */
         .view-window::before, .view-window::after {
             content: ''; position: absolute; top: 0; bottom: 0; width: 200px; z-index: 50; pointer-events: none;
         }
-        .view-window::before { left: 0; background: linear-gradient(90deg, #050505 0%, transparent 100%); }
-        .view-window::after { right: 0; background: linear-gradient(-90deg, #050505 0%, transparent 100%); }
+        .view-window::before { left: 0; background: linear-gradient(90deg, #050508 0%, transparent 100%); }
+        .view-window::after { right: 0; background: linear-gradient(-90deg, #050508 0%, transparent 100%); }
 
         .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
         
-        /* New Neon Pointer */
         .pointer { 
             position: absolute; left: 50%; top: -10px; bottom: -10px; width: 4px; 
             background: linear-gradient(180deg, transparent, var(--main), transparent); 
@@ -100,37 +134,33 @@
             filter: drop-shadow(0 0 10px var(--main));
         }
 
-        /* Case Strip Item Styling */
         .case-strip-item {
             min-width: 220px; height: 220px; margin: 0 10px;
-            background: linear-gradient(180deg, rgba(20,20,25,0.9), rgba(10,10,15,0.9));
-            border-radius: 15px; border: 1px solid rgba(255,255,255,0.03);
+            background: linear-gradient(180deg, rgba(20,20,25,0.7), rgba(5,5,10,0.9));
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: all 0.5s var(--ease-hyper); position: relative;
         }
         .case-strip-item img { max-width: 160px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.8)); transition: 0.3s; }
-        .case-item-name { 
-            font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; 
-            text-transform: uppercase; letter-spacing: 2px;
-        }
+        .case-item-name { font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
 
-        #win-status {
-            font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px;
-            color: #fff; text-shadow: 0 0 20px rgba(0,255,170,0.5); transition: all 0.5s;
-        }
-        .exit-btn {
-            margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s;
-        }
-        .exit-btn:hover { color: #fff; text-shadow: 0 0 10px #fff; }
+        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(0,255,170,0.5); transition: all 0.5s; }
+        .exit-btn { margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s; }
+        .exit-btn:hover { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
         /* UPGRADE ELEMENTS */
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
-        .upgrade-slot { width: 300px; height: 350px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; cursor: pointer; }
-        .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); }
+        .upgrade-slot { 
+            width: 300px; height: 350px; background: rgba(10,10,15,0.5); 
+            border: 2px dashed rgba(0,255,170,0.3); border-radius: 40px; /* Більш округлі слоти */
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            transition: 0.5s var(--ease-hyper); cursor: pointer; backdrop-filter: blur(10px);
+        }
+        .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(0,255,170,0.15); background: rgba(0,255,170,0.05); }
         
-        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.02); border: 2px solid #222; }
+        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid rgba(0,255,170,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
         .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
-        .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; }
+        .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
         .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.4); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
         .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -139,18 +169,67 @@
         .chance-text { position: relative; z-index: 4; font-family: 'Orbitron'; font-size: 45px; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,0.8); font-weight: 900; }
 
         /* INVENTORY & PRODUCTS */
-        .product-item { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s; }
-        .product-item:hover { border-color: var(--main); background: rgba(0,255,170,0.05); }
-        #product-modal-content { background: #0a0a0c; border: 1px solid var(--main); padding: 50px; border-radius: 30px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 0 100px rgba(0,255,170,0.2); animation: modalScale 0.5s var(--ease-hyper); }
-        .install-btn { display: inline-block; background: var(--main); color: #000; padding: 20px 60px; border-radius: 4px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; margin-top: 30px; transition: 0.5s; letter-spacing: 3px; }
-        .install-btn:hover { box-shadow: 0 0 50px var(--main); transform: scale(1.05); }
+        .product-item { 
+            background: rgba(10,10,15,0.6); padding: 50px; border-radius: 40px; 
+            border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
+            backdrop-filter: blur(10px); position: relative; overflow: hidden;
+        }
+        .product-item::before {
+            content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0,255,170,0.05) 0%, transparent 60%);
+            opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
+        }
+        .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(0,255,170,0.1); transform: translateY(-10px); }
+        .product-item:hover::before { opacity: 1; }
 
-        .inv-item { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 1s var(--ease-hyper); animation: slideUp 1s var(--ease-hyper) backwards; }
+        /* ФІКС МОДАЛЬНОГО ВІКНА ПРОДУКТУ (ТЕ ЩО ЗАВАЖАЛО ЗНИЗУ) */
+        #product-modal { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(2, 2, 4, 0.85); 
+            z-index: 3000; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(15px); 
+        }
+        #product-modal-content { 
+            background: #0a0a0c; border: 1px solid var(--main); padding: 60px; 
+            border-radius: 40px; max-width: 500px; width: 90%; text-align: center; 
+            box-shadow: 0 0 80px rgba(0,255,170,0.15); animation: modalScale 0.5s var(--ease-hyper); 
+            position: relative; overflow: hidden;
+        }
+        /* Хвиля всередині модалки лаунчера */
+        #product-modal-content::before {
+            content: ''; position: absolute; bottom: -100px; left: -50px; width: 200%; height: 200px;
+            background: rgba(0,255,170,0.03); border-radius: 50%;
+            animation: spinWave 15s linear infinite; pointer-events: none;
+        }
+        .install-btn { 
+            display: inline-block; background: var(--main); color: #000; padding: 20px 60px; 
+            border-radius: 30px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; 
+            margin-top: 40px; transition: 0.5s; letter-spacing: 3px; position: relative; z-index: 2;
+        }
+        .install-btn:hover { box-shadow: 0 0 40px var(--main); transform: scale(1.05); }
+
+        .inv-item { 
+            background: rgba(10,10,15,0.6); padding: 30px; border-radius: 35px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.8s var(--ease-hyper); 
+            animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px);
+        }
+        .inv-item:hover { transform: translateY(-10px); background: rgba(20,20,25,0.8); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
+
+<!-- Додано контейнер глобальних хвиль -->
+<div class="bg-waves-container">
+    <div class="global-wave"></div>
+    <div class="global-wave"></div>
+    <div class="global-wave"></div>
+</div>
 
 <div id="welcome-screen">
     <div class="welcome-logo">BABYSELL</div>
@@ -171,9 +250,9 @@
         </div>
         <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
         <div style="display:flex; align-items:center; gap:30px;">
-            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900;">0 B</div>
+            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900; text-shadow: 0 0 10px rgba(0,255,170,0.5);">0 B</div>
             <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
-            <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main);"></div>
+            <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main); box-shadow: 0 0 15px var(--main);"></div>
         </div>
     </header>
 
@@ -182,21 +261,21 @@
             <div class="case-card" style="max-width:400px;" onclick="openCaseModal()">
                 <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
                 <h2 style="font-family:Orbitron; margin-top:30px; letter-spacing:5px;">SUPREME CASE</h2>
-                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px;">1,000 B</div>
+                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px; text-shadow: 0 0 10px rgba(0,255,170,0.3);">1,000 B</div>
             </div>
         </center>
     </div>
 
     <div id="page-inventory" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main);">COLLECTION</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">COLLECTION</h1>
         <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
     </div>
 
     <div id="page-upgrade" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main);">UPGRADER</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">UPGRADER</h1>
         <div class="upgrade-container">
             <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
-                <p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>
+                <p style="color:#666; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
             </div>
             
             <div style="text-align:center; position:relative;">
@@ -210,24 +289,24 @@
                         <div id="chance-display" class="chance-text">0%</div>
                     </div>
                 </div>
-                <button id="upg-btn" class="btn-nav" style="margin-top:40px; width:200px; font-size: 14px; padding: 15px;" onclick="attemptUpgrade()" disabled>UPGRADE</button>
+                <button id="upg-btn" class="btn-nav" style="margin-top:50px; width:220px; font-size: 14px; padding: 15px;" onclick="attemptUpgrade()" disabled>INITIATE UPGRADE</button>
             </div>
 
             <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background:#000; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron; outline: none; cursor: pointer;">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(0,255,170,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
                     <option value="">TARGET SKIN</option>
                 </select>
-                <div id="target-img-preview" style="margin-top: 20px;"></div>
+                <div id="target-img-preview" style="margin-top: 30px;"></div>
             </div>
         </div>
     </div>
 
     <div id="page-products" style="display:none; padding:100px 80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center;">BEYSELL</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">BEYSELL</h1>
         <div style="display:flex; justify-content:center;">
             <div class="product-item" onclick="openProductInfo()">
-                <h2 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h2>
-                <p style="margin-top:10px; color:#666;">Gaming Platform v1.0</p>
+                <h2 style="font-family:Orbitron; color:var(--main); font-size:24px; letter-spacing:3px;">BEYSELL-LAUNCHER</h2>
+                <p style="margin-top:15px; color:#888; letter-spacing:1px;">Gaming Platform v1.0</p>
             </div>
         </div>
     </div>
@@ -235,19 +314,13 @@
 
 <div id="product-modal" class="modal">
     <div id="product-modal-content">
+        <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px; position:relative; z-index:2;">BEYSELL-LAUNCHER</h1>
+        <p style="color:#aaa; margin-top:10px; letter-spacing:2px; position:relative; z-index:2;">OFFICIAL GAMING CLIENT</p>
+        <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
+        <p class="exit-btn" style="position:relative; z-index:2; margin-top:40px;" onclick="closeProductModal()">CLOSE</p>
+    </div>
+</div>
 
-    #product-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 3000;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(15px);
-}
-
-<!-- ОНОВЛЕНЕ ВІКНО КЕЙСА -->
 <div id="case-modal" class="modal">
     <div style="width:95%; max-width:1200px; text-align:center;">
         <h1 id="win-status">FATE DECIDING...</h1>
@@ -317,8 +390,8 @@
             const i = userInv[id];
             g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color}">
                 <img src="${i.img}" width="130"><br><br><b style="font-family:Orbitron">${i.name}</b><br><br>
-                <button class="btn-nav" style="width:100%; border-color:var(--main);" onclick="selectForUpgrade('${id}')">UPGRADE</button>
-                <button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button>
+                <button class="btn-nav" style="width:100%; border-color:var(--main); margin-bottom:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button>
+                <button class="btn-nav" style="width:100%;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button>
             </div>`;
         });
     }
@@ -326,7 +399,7 @@
     function selectForUpgrade(id) {
         selectedUpgradeId = id; const skin = userInv[id];
         const slot = document.getElementById('slot-input');
-        slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`;
+        slot.innerHTML = `<img src="${skin.img}" width="150" style="filter: drop-shadow(0 10px 20px ${skin.color})"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`;
         slot.classList.add('active'); 
         showPage('upgrade'); updateUpgradeChance();
     }
@@ -388,14 +461,13 @@
                 alert("FAILED! SKIN DESTROYED");
             }
             selectedUpgradeId = null; 
-            document.getElementById('slot-input').innerHTML = "<p style='color:#444; font-family:Orbitron; font-size:12px;'>SELECT SKIN</p>";
+            document.getElementById('slot-input').innerHTML = "<p style='color:#666; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>";
             document.getElementById('slot-input').classList.remove('active');
             document.getElementById('target-select').disabled = false;
             updateUpgradeChance(); showPage('inventory'); 
         }, 4100); 
     }
 
-    // НОВА ФУНКЦІЯ ОТРИМАННЯ СКІНА ЗА ВІДСОТКАМИ (ЩОБ БАБОЧКА НЕ ПАДАЛА ПОСТІЙНО)
     function getSkinByChance() {
         let rand = Math.random() * 100;
         let sum = 0;
@@ -411,18 +483,15 @@
         const btn = document.getElementById('spin-btn'); btn.disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
 
-        // Відновлюємо текст статусу
         const statusText = document.getElementById('win-status');
         statusText.innerText = 'FATE DECIDING...';
         statusText.style.color = '#fff';
         statusText.style.textShadow = '0 0 20px rgba(0,255,170,0.5)';
 
-        // Генеруємо переможця за правильними шансами!
         const win = getSkinByChance();
         const strip = document.getElementById('strip');
         strip.innerHTML = ""; 
 
-        // Ширина однієї картки (220px + margin 0 10px = 240px)
         const cardWidth = 240;
         const targetIndex = 100;
 
@@ -439,12 +508,10 @@
         
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
         
-        // Математика рулетки з рандомним зміщенням стрілочки
         const randomOffset = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2); 
         const viewWindowWidth = document.querySelector('.view-window').offsetWidth;
         const centerOffset = viewWindowWidth / 2;
         
-        // Рахуємо куди саме повинна поїхати стрічка
         const stopPos = (targetIndex * cardWidth) - centerOffset + (cardWidth / 2) + randomOffset;
 
         setTimeout(() => {
@@ -456,7 +523,6 @@
             db.ref('users/'+user.uid+'/inventory').push(win); 
             btn.disabled = false; 
             
-            // Ефект перемоги: затухання інших карток
             for(let i=0; i<120; i++) {
                 if(i !== targetIndex) {
                     document.getElementById(`item-${i}`).style.opacity = '0.1';
@@ -464,13 +530,11 @@
                 }
             }
             
-            // Підсвітка переможця
             const winCard = document.getElementById(`item-${targetIndex}`);
             winCard.style.transform = 'scale(1.15)';
             winCard.style.boxShadow = `0 0 50px ${win.color}`;
             winCard.style.zIndex = '100';
 
-            // Оновлюємо текст зверху
             statusText.innerText = `YOU GOT: ${win.name.toUpperCase()}!`;
             statusText.style.color = win.color;
             statusText.style.textShadow = `0 0 30px ${win.color}`;
