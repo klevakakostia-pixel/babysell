@@ -11,10 +11,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root { 
-            --main: #00ffaa; 
-            --bg: #050508; /* Глибокий темний колір фону */
+            --main: #00d4ff; /* Електричний синій */
+            --bg: #000000; /* Глибокий чорний фон */
             --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1);
-            --wave-color: rgba(0, 255, 170, 0.03);
+            --wave-color: rgba(0, 212, 255, 0.03);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -28,14 +28,14 @@
         .global-wave {
             position: absolute; bottom: -60vh; left: -50vw; width: 200vw; height: 200vw;
             background: var(--wave-color); border-radius: 43%;
-            animation: waveSpin 40s linear infinite; box-shadow: inset 0 0 100px rgba(0, 255, 170, 0.05);
+            animation: waveSpin 40s linear infinite; box-shadow: inset 0 0 100px rgba(0, 212, 255, 0.05);
         }
         .global-wave:nth-child(2) {
-            bottom: -65vh; left: -45vw; background: rgba(0, 255, 170, 0.02); border-radius: 40%;
+            bottom: -65vh; left: -45vw; background: rgba(0, 212, 255, 0.02); border-radius: 40%;
             animation: waveSpin 55s linear infinite reverse;
         }
         .global-wave:nth-child(3) {
-            bottom: -70vh; left: -55vw; background: rgba(0, 255, 170, 0.015); border-radius: 46%;
+            bottom: -70vh; left: -55vw; background: rgba(0, 212, 255, 0.015); border-radius: 46%;
             animation: waveSpin 35s linear infinite;
         }
         @keyframes waveSpin { 100% { transform: rotate(360deg); } }
@@ -62,38 +62,37 @@
         /* HEADER & NAV */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 0 60px; height: 100px; background: rgba(5, 5, 8, 0.6); 
-            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,255,170,0.15);
+            padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.8); 
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,212,255,0.15);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         .btn-nav { 
             position: relative; overflow: hidden; background: rgba(255,255,255,0.02); 
             border: 1px solid rgba(255,255,255,0.1); color: #aaa; padding: 12px 25px; 
-            border-radius: 30px; /* Плавні краї кнопок */
+            border-radius: 30px; 
             font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper);
         }
         .btn-nav::before {
             content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 100%;
             background: var(--main); border-radius: 50%; transition: top 0.5s var(--ease-hyper); z-index: -1;
         }
-        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(0,255,170,0.4); }
+        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(0,212,255,0.4); }
         .btn-nav:hover:not(:disabled)::before { top: 0; border-radius: 0; }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* CASE CARDS */
         .case-card {
-            background: rgba(10,10,15,0.6); padding: 60px; border-radius: 40px; text-align: center;
-            border: 1px solid rgba(0,255,170,0.1); transition: 1s var(--ease-hyper);
+            background: rgba(5,5,5,0.8); padding: 60px; border-radius: 40px; text-align: center;
+            border: 1px solid rgba(0,212,255,0.1); transition: 1s var(--ease-hyper);
             box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.4); 
             cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
-        /* Внутрішня хвиля для картки */
         .case-card::before {
             content: ''; position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,255,170,0.05) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 70%);
             opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
         }
-        .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(0,255,170,0.15); }
+        .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(0,212,255,0.15); }
         .case-card:hover::before { opacity: 1; transform: scale(1.2); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); transition: 0.5s; }
         .case-card:hover img { transform: scale(1.05); }
@@ -101,20 +100,20 @@
         /* CASE ROULETTE STYLES */
         #case-modal { 
             display: none; position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, rgba(5,10,15,0.95) 0%, rgba(0,0,0,1) 100%);
+            background: radial-gradient(circle at center, rgba(5,5,10,0.95) 0%, rgba(0,0,0,1) 100%);
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(25px);
         }
         .view-window { 
             position: relative; width: 100%; height: 280px; 
-            background: rgba(0,0,0,0.4); margin: 40px 0; overflow: hidden; border-radius: 30px; 
-            border: 1px solid rgba(0,255,170,0.15);
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(0, 255, 170, 0.08);
+            background: rgba(0,0,0,0.6); margin: 40px 0; overflow: hidden; border-radius: 30px; 
+            border: 1px solid rgba(0,212,255,0.15);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(0, 212, 255, 0.08);
         }
         .view-window::before, .view-window::after {
             content: ''; position: absolute; top: 0; bottom: 0; width: 200px; z-index: 50; pointer-events: none;
         }
-        .view-window::before { left: 0; background: linear-gradient(90deg, #050508 0%, transparent 100%); }
-        .view-window::after { right: 0; background: linear-gradient(-90deg, #050508 0%, transparent 100%); }
+        .view-window::before { left: 0; background: linear-gradient(90deg, #000 0%, transparent 100%); }
+        .view-window::after { right: 0; background: linear-gradient(-90deg, #000 0%, transparent 100%); }
 
         .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
         
@@ -136,7 +135,7 @@
 
         .case-strip-item {
             min-width: 220px; height: 220px; margin: 0 10px;
-            background: linear-gradient(180deg, rgba(20,20,25,0.7), rgba(5,5,10,0.9));
+            background: linear-gradient(180deg, rgba(15,15,20,0.7), rgba(0,0,5,0.9));
             border-radius: 20px; border: 1px solid rgba(255,255,255,0.03);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: all 0.5s var(--ease-hyper); position: relative;
@@ -144,25 +143,25 @@
         .case-strip-item img { max-width: 160px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.8)); transition: 0.3s; }
         .case-item-name { font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
 
-        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(0,255,170,0.5); transition: all 0.5s; }
+        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(0,212,255,0.5); transition: all 0.5s; }
         .exit-btn { margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s; }
         .exit-btn:hover { color: var(--main); text-shadow: 0 0 15px var(--main); }
 
         /* UPGRADE ELEMENTS */
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
         .upgrade-slot { 
-            width: 300px; height: 350px; background: rgba(10,10,15,0.5); 
-            border: 2px dashed rgba(0,255,170,0.3); border-radius: 40px; /* Більш округлі слоти */
+            width: 300px; height: 350px; background: rgba(5,5,10,0.5); 
+            border: 2px dashed rgba(0,212,255,0.3); border-radius: 40px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             transition: 0.5s var(--ease-hyper); cursor: pointer; backdrop-filter: blur(10px);
         }
-        .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(0,255,170,0.15); background: rgba(0,255,170,0.05); }
+        .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(0,212,255,0.15); background: rgba(0,212,255,0.05); }
         
-        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.5); border: 2px solid rgba(0,255,170,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.8); border: 2px solid rgba(0,212,255,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.5); }
         .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
         .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
-        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.4); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
-        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
+        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(0, 212, 255, 0.4); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
+        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(0, 212, 255, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; }
         .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
@@ -170,24 +169,24 @@
 
         /* INVENTORY & PRODUCTS */
         .product-item { 
-            background: rgba(10,10,15,0.6); padding: 50px; border-radius: 40px; 
-            border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
+            background: rgba(5,5,10,0.6); padding: 50px; border-radius: 40px; 
+            border: 1px solid rgba(0,212,255,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
             backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
         .product-item::before {
             content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,255,170,0.05) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(0,212,255,0.05) 0%, transparent 60%);
             opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
         }
-        .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(0,255,170,0.1); transform: translateY(-10px); }
+        .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(0,212,255,0.1); transform: translateY(-10px); }
         .product-item:hover::before { opacity: 1; }
 
-        /* ФІКС МОДАЛЬНОГО ВІКНА ПРОДУКТУ (ТЕ ЩО ЗАВАЖАЛО ЗНИЗУ) */
+        /* PRODUCT MODAL */
         #product-modal { 
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: rgba(2, 2, 4, 0.85); 
+            background: rgba(0, 0, 0, 0.85); 
             z-index: 3000; 
             align-items: center; 
             justify-content: center; 
@@ -196,13 +195,12 @@
         #product-modal-content { 
             background: #0a0a0c; border: 1px solid var(--main); padding: 60px; 
             border-radius: 40px; max-width: 500px; width: 90%; text-align: center; 
-            box-shadow: 0 0 80px rgba(0,255,170,0.15); animation: modalScale 0.5s var(--ease-hyper); 
+            box-shadow: 0 0 80px rgba(0,212,255,0.15); animation: modalScale 0.5s var(--ease-hyper); 
             position: relative; overflow: hidden;
         }
-        /* Хвиля всередині модалки лаунчера */
         #product-modal-content::before {
             content: ''; position: absolute; bottom: -100px; left: -50px; width: 200%; height: 200px;
-            background: rgba(0,255,170,0.03); border-radius: 50%;
+            background: rgba(0,212,255,0.03); border-radius: 50%;
             animation: spinWave 15s linear infinite; pointer-events: none;
         }
         .install-btn { 
@@ -213,18 +211,17 @@
         .install-btn:hover { box-shadow: 0 0 40px var(--main); transform: scale(1.05); }
 
         .inv-item { 
-            background: rgba(10,10,15,0.6); padding: 30px; border-radius: 35px; text-align: center; 
+            background: rgba(5,5,10,0.6); padding: 30px; border-radius: 35px; text-align: center; 
             border: 1px solid rgba(255,255,255,0.05); transition: 0.8s var(--ease-hyper); 
             animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px);
         }
-        .inv-item:hover { transform: translateY(-10px); background: rgba(20,20,25,0.8); }
+        .inv-item:hover { transform: translateY(-10px); background: rgba(15,15,20,0.8); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
-<!-- Додано контейнер глобальних хвиль -->
 <div class="bg-waves-container">
     <div class="global-wave"></div>
     <div class="global-wave"></div>
@@ -250,7 +247,7 @@
         </div>
         <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
         <div style="display:flex; align-items:center; gap:30px;">
-            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900; text-shadow: 0 0 10px rgba(0,255,170,0.5);">0 B</div>
+            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900; text-shadow: 0 0 10px rgba(0,212,255,0.5);">0 B</div>
             <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
             <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main); box-shadow: 0 0 15px var(--main);"></div>
         </div>
@@ -261,18 +258,18 @@
             <div class="case-card" style="max-width:400px;" onclick="openCaseModal()">
                 <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
                 <h2 style="font-family:Orbitron; margin-top:30px; letter-spacing:5px;">SUPREME CASE</h2>
-                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px; text-shadow: 0 0 10px rgba(0,255,170,0.3);">1,000 B</div>
+                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px; text-shadow: 0 0 10px rgba(0,212,255,0.3);">1,000 B</div>
             </div>
         </center>
     </div>
 
     <div id="page-inventory" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">COLLECTION</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">COLLECTION</h1>
         <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
     </div>
 
     <div id="page-upgrade" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">UPGRADER</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; letter-spacing:5px; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">UPGRADER</h1>
         <div class="upgrade-container">
             <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
                 <p style="color:#666; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
@@ -293,7 +290,7 @@
             </div>
 
             <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(0,255,170,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.8); color:#fff; border:1px solid rgba(0,212,255,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
                     <option value="">TARGET SKIN</option>
                 </select>
                 <div id="target-img-preview" style="margin-top: 30px;"></div>
@@ -302,7 +299,7 @@
     </div>
 
     <div id="page-products" style="display:none; padding:100px 80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center; color:var(--main); text-shadow: 0 0 20px rgba(0,255,170,0.4);">BEYSELL</h1>
+        <h1 style="font-family:Orbitron; margin-bottom:50px; letter-spacing:10px; text-align:center; color:var(--main); text-shadow: 0 0 20px rgba(0,212,255,0.4);">BEYSELL</h1>
         <div style="display:flex; justify-content:center;">
             <div class="product-item" onclick="openProductInfo()">
                 <h2 style="font-family:Orbitron; color:var(--main); font-size:24px; letter-spacing:3px;">BEYSELL-LAUNCHER</h2>
@@ -486,7 +483,7 @@
         const statusText = document.getElementById('win-status');
         statusText.innerText = 'FATE DECIDING...';
         statusText.style.color = '#fff';
-        statusText.style.textShadow = '0 0 20px rgba(0,255,170,0.5)';
+        statusText.style.textShadow = '0 0 20px rgba(0,212,255,0.5)';
 
         const win = getSkinByChance();
         const strip = document.getElementById('strip');
