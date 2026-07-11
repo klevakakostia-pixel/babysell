@@ -29,9 +29,15 @@
         .app-content { opacity: 0; filter: blur(20px); transform: scale(1.05); transition: all 2.5s var(--ease-hyper); z-index: 10; position: relative; }
         .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
-        .btn-nav { position: relative; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
-        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); background: var(--main); }
+        
+        /* Зміни для анімації хвилі на кнопках */
+        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
+        .btn-nav::before { content: ""; position: absolute; top: 100%; left: 50%; width: 400px; height: 400px; margin-left: -200px; background: var(--main); border-radius: 40%; z-index: -1; transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1); animation: btnWaveAnim 5s linear infinite; }
+        .btn-nav:hover:not(:disabled)::before { top: -100px; }
+        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        @keyframes btnWaveAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .case-card { background: rgba(4,3,10,0.85); padding: 60px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,157,0,0.1); transition: 1s var(--ease-hyper); cursor: pointer; }
         .case-card:hover { transform: translateY(-15px); border-color: var(--main); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
@@ -197,7 +203,6 @@
         chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150">`; 
         
         const angleSize = (chance / 100) * 360; const half = angleSize / 2;
-        // Фікс рендера градієнта (тепер 100% браузерів будуть розуміти чіткі межі від нуля)
         track.style.background = `conic-gradient(from 0deg, transparent 0deg, transparent ${180-half}deg, var(--main) ${180-half}deg, var(--main) ${180+half}deg, transparent ${180+half}deg, transparent 360deg)`;
         water.style.top = `${100 - chance}%`; 
     }
@@ -210,24 +215,18 @@
         document.getElementById('action-blocker').style.display = 'block'; 
         btn.disabled = true; 
         
-        // 1. Визначаємо результат ПЕРЕД обертанням
         const isWin = Math.random() * 100 < chance; 
-        
-        // 2. Рахуємо кути виграшної зони
         const angleSize = (chance / 100) * 360;
         const startWin = 180 - (angleSize / 2);
         const endWin = 180 + (angleSize / 2);
         
-        // 3. Обираємо кут зупинки залежно від результату з відступами (padding)
         let resultAngle;
         const winPadding = Math.min(5, angleSize / 3); 
         const losePadding = Math.min(5, (360 - angleSize) / 3);
 
         if (isWin) {
-            // Гарантуємо, що стрілка впаде глибоко всередину зони, а не на її піксельний край
             resultAngle = (startWin + winPadding) + (Math.random() * (angleSize - (winPadding * 2)));
         } else {
-            // Гарантуємо, що стрілка відскочить від кольорової зони достатньо далеко і не буде візуально накладатись
             const safeRange = (360 - angleSize) - (losePadding * 2);
             resultAngle = (endWin + losePadding) + (Math.random() * safeRange);
             if (resultAngle >= 360) resultAngle -= 360;
@@ -256,7 +255,46 @@
     }
 
     function getSkinByChance() { let rand = Math.random() * 100; let sum = 0; for (let i = 0; i < SKINS.length; i++) { sum += (100/SKINS.length); if (rand <= sum) return SKINS[i]; } return SKINS[0]; }
-    function startSpin() { if(balance < 1000) return alert("LOW BALANCE"); const btn = document.getElementById('spin-btn'); btn.disabled = true; document.getElementById('action-blocker').style.display = 'block'; db.ref('users/'+user.uid+'/balance').set(balance - 1000); const strip = document.getElementById('strip'); strip.innerHTML = ""; const win = getSkinByChance(); for(let i=0; i<100; i++) { let s = (i === 50) ? win : getSkinByChance(); strip.innerHTML += `<div class="case-strip-item"><img src="${s.img}" width="100"><div style="color:${s.color}">${s.name}</div></div>`; } strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; setTimeout(() => { strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; strip.style.transform = `translateX(-${50 * 240}px)`; }, 50); setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; document.getElementById('action-blocker').style.display = 'none'; alert("YOU GOT: " + win.name); }, 9000); }
+    
+    function startSpin() { 
+        if(balance < 1000) return alert("LOW BALANCE"); 
+        const btn = document.getElementById('spin-btn'); 
+        btn.disabled = true; 
+        document.getElementById('action-blocker').style.display = 'block'; 
+        db.ref('users/'+user.uid+'/balance').set(balance - 1000); 
+        const strip = document.getElementById('strip'); 
+        strip.innerHTML = ""; 
+        
+        const win = getSkinByChance(); 
+        for(let i=0; i<100; i++) { 
+            let s = (i === 50) ? win : getSkinByChance(); 
+            strip.innerHTML += `<div class="case-strip-item"><img src="${s.img}" width="100"><div style="color:${s.color}">${s.name}</div></div>`; 
+        } 
+        
+        strip.style.transition = 'none'; 
+        strip.style.transform = 'translateX(0)'; 
+        
+        // Вираховуємо точне позиціонування переможного скіна по центру
+        const windowWidth = document.querySelector('.view-window').clientWidth;
+        // Кожен елемент має 220px ширини + по 10px margin = 240px. 
+        // 50 * 240 + 120 (половина картки) дає точний центр виграшного скіна від початку стрічки
+        const finalShift = (50 * 240) + 120 - (windowWidth / 2);
+        // Невеликий рандомний відступ від -90 до +90 px, щоб стрілка не зупинялась рівно по центру, але залишалась на карточці
+        const randomOffset = Math.floor(Math.random() * 180) - 90;
+        
+        setTimeout(() => { 
+            strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; 
+            strip.style.transform = `translateX(-${finalShift + randomOffset}px)`; 
+        }, 50); 
+        
+        setTimeout(() => { 
+            db.ref('users/'+user.uid+'/inventory').push(win); 
+            btn.disabled = false; 
+            document.getElementById('action-blocker').style.display = 'none'; 
+            alert("YOU GOT: " + win.name); 
+        }, 9000); 
+    }
+    
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
     function openCaseModal() { if(!user) return login(); document.getElementById('case-modal').style.display='flex'; }
     function closeModals() { document.getElementById('case-modal').style.display='none'; }
