@@ -18,7 +18,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
 
-        /* WELCOME SCREEN - LUXURY FADE */
+        /* WELCOME SCREEN */
         #welcome-screen {
             position: fixed; inset: 0; background: #000; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -56,119 +56,89 @@
             background: linear-gradient(145deg, rgba(20,20,25,0.8), rgba(10,10,15,0.8));
             padding: 60px; border-radius: 40px; text-align: center;
             border: 1px solid rgba(255,255,255,0.03); transition: 1.2s var(--ease-hyper);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5); cursor: pointer;
         }
         .case-card:hover { transform: translateY(-20px) scale(1.02); border-color: var(--main); box-shadow: 0 40px 80px rgba(0,255,170,0.1); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
 
-        /* ROULETTE (CASE) */
-        .modal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
+        /* ======== NEW CASE ROULETTE STYLES ======== */
+        #case-modal { 
+            display: none; position: fixed; inset: 0; 
+            background: radial-gradient(circle at center, rgba(10,15,20,0.98) 0%, rgba(0,0,0,1) 100%);
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
         .view-window { 
-            position: relative; width: 100%; height: 200px; background: #000; 
-            margin: 40px 0; overflow: hidden; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            position: relative; width: 100%; height: 280px; 
+            background: linear-gradient(180deg, #050505 0%, #111 50%, #050505 100%); 
+            margin: 40px 0; overflow: hidden; border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 40px rgba(0, 255, 170, 0.05);
         }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; transition: transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
-        .pointer { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: var(--main); z-index: 100; box-shadow: 0 0 30px var(--main); }
+        /* Fade edges for roulette */
+        .view-window::before, .view-window::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 200px; z-index: 50; pointer-events: none;
+        }
+        .view-window::before { left: 0; background: linear-gradient(90deg, #050505 0%, transparent 100%); }
+        .view-window::after { right: 0; background: linear-gradient(-90deg, #050505 0%, transparent 100%); }
+
+        .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
+        
+        /* New Neon Pointer */
+        .pointer { 
+            position: absolute; left: 50%; top: -10px; bottom: -10px; width: 4px; 
+            background: linear-gradient(180deg, transparent, var(--main), transparent); 
+            z-index: 100; box-shadow: 0 0 30px var(--main); transform: translateX(-50%); border-radius: 5px;
+        }
+        .pointer::before {
+            content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 20px solid var(--main);
+            filter: drop-shadow(0 0 10px var(--main));
+        }
+        .pointer::after {
+            content: ''; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 20px solid var(--main);
+            filter: drop-shadow(0 0 10px var(--main));
+        }
+
+        /* Case Strip Item Styling */
+        .case-strip-item {
+            min-width: 220px; height: 220px; margin: 0 10px;
+            background: linear-gradient(180deg, rgba(20,20,25,0.9), rgba(10,10,15,0.9));
+            border-radius: 15px; border: 1px solid rgba(255,255,255,0.03);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.5s var(--ease-hyper); position: relative;
+        }
+        .case-strip-item img { max-width: 160px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.8)); transition: 0.3s; }
+        .case-item-name { 
+            font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; 
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        #win-status {
+            font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px;
+            color: #fff; text-shadow: 0 0 20px rgba(0,255,170,0.5); transition: all 0.5s;
+        }
+        .exit-btn {
+            margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s;
+        }
+        .exit-btn:hover { color: #fff; text-shadow: 0 0 10px #fff; }
 
         /* UPGRADE ELEMENTS */
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
         .upgrade-slot { width: 300px; height: 350px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; cursor: pointer; }
         .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); }
         
-        /* NEW UPGRADER ROULETTE & WATER WAVE */
-        .upgrader-roulette {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.02);
-            border: 2px solid #222;
-        }
-        .upgrader-track {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(var(--main) 0deg, transparent 0deg);
-            transition: background 0.8s ease;
-        }
-        .upgrader-inner {
-            position: absolute;
-            inset: 15px; /* Товщина кільця */
-            background: var(--bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden; /* Обрізає воду по формі кола */
-            z-index: 2;
-            border: 2px solid #111;
-        }
-        /* Хвилі */
-        .water-wave {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 255, 170, 0.4);
-            border-radius: 38%;
-            top: 100%; /* Початково сховано (внизу) */
-            left: 50%;
-            margin-left: -200px;
-            animation: spinWave 6s linear infinite;
-            transition: top 1s var(--ease-hyper);
-            z-index: 1;
-        }
-        .water-wave::before {
-            content: '';
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 255, 170, 0.2);
-            border-radius: 42%;
-            top: -15px;
-            left: 0;
-            animation: spinWave 8s linear infinite reverse;
-        }
-        @keyframes spinWave {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Стрілочка */
-        .upgrader-arrow-container {
-            position: absolute;
-            inset: -15px; /* Виступає за межі кола */
-            z-index: 5;
-            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
-            will-change: transform;
-        }
-        .upgrader-arrow {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 25px solid #fff;
-            filter: drop-shadow(0 0 10px #fff);
-        }
-        .chance-text {
-            position: relative;
-            z-index: 4;
-            font-family: 'Orbitron';
-            font-size: 45px;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(0,0,0,0.8);
-            font-weight: 900;
-        }
+        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.02); border: 2px solid #222; }
+        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
+        .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; }
+        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.4); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
+        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(0, 255, 170, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
+        @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; }
+        .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
+        .chance-text { position: relative; z-index: 4; font-family: 'Orbitron'; font-size: 45px; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,0.8); font-weight: 900; }
 
-        /* PRODUCT STYLES */
+        /* INVENTORY & PRODUCTS */
         .product-item { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s; }
         .product-item:hover { border-color: var(--main); background: rgba(0,255,170,0.05); }
         #product-modal-content { background: #0a0a0c; border: 1px solid var(--main); padding: 50px; border-radius: 30px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 0 100px rgba(0,255,170,0.2); animation: modalScale 0.5s var(--ease-hyper); }
@@ -229,7 +199,6 @@
                 <p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>
             </div>
             
-            <!-- ОНОВЛЕНА РУЛЕТКА ДЛЯ АПГРЕЙДУ -->
             <div style="text-align:center; position:relative;">
                 <div class="upgrader-roulette" id="upg-roulette">
                     <div class="upgrader-track" id="upg-track"></div>
@@ -269,16 +238,20 @@
         <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px;">BEYSELL-LAUNCHER</h1>
         <p>OFFICIAL GAMING CLIENT</p>
         <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
-        <p onclick="closeProductModal()" style="margin-top:30px; color:#333; cursor:pointer; font-family:Orbitron; font-size:10px;">CLOSE</p>
+        <p class="exit-btn" onclick="closeProductModal()">CLOSE</p>
     </div>
 </div>
 
+<!-- ОНОВЛЕНЕ ВІКНО КЕЙСА -->
 <div id="case-modal" class="modal">
-    <div style="width:95%; max-width:900px; text-align:center;">
-        <h1 id="win-status" style="font-family:Orbitron; letter-spacing:10px; margin-bottom:40px; color:#333;">FATE DECIDING...</h1>
-        <div class="view-window"><div class="pointer"></div><div id="strip" class="strip"></div></div>
-        <button id="spin-btn" class="btn-nav" style="width:300px; height:70px;" onclick="startSpin()">OPEN FOR 1,000 B</button>
-        <p onclick="closeModals()" style="margin-top:30px; color:#222; cursor:pointer; font-family:Orbitron; font-size:10px;">EXIT</p>
+    <div style="width:95%; max-width:1200px; text-align:center;">
+        <h1 id="win-status">FATE DECIDING...</h1>
+        <div class="view-window">
+            <div class="pointer"></div>
+            <div id="strip" class="strip"></div>
+        </div>
+        <button id="spin-btn" class="btn-nav" style="width:300px; height:70px; font-size: 14px; letter-spacing: 5px; margin-top: 20px;" onclick="startSpin()">OPEN FOR 1,000 B</button>
+        <div class="exit-btn" onclick="closeModals()">[ EXIT MODULE ]</div>
     </div>
 </div>
 
@@ -313,7 +286,7 @@
     ];
 
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null;
-    let currentSpinAngle = 0; // Зберігає кут стрілки для наступного крутіння
+    let currentSpinAngle = 0; 
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -338,7 +311,7 @@
         Object.keys(userInv).reverse().forEach(id => {
             const i = userInv[id];
             g.innerHTML += `<div class="inv-item" style="border-bottom:4px solid ${i.color}">
-                <img src="${i.img}" width="130"><br><br><b>${i.name}</b><br><br>
+                <img src="${i.img}" width="130"><br><br><b style="font-family:Orbitron">${i.name}</b><br><br>
                 <button class="btn-nav" style="width:100%; border-color:var(--main);" onclick="selectForUpgrade('${id}')">UPGRADE</button>
                 <button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button>
             </div>`;
@@ -350,13 +323,11 @@
         const slot = document.getElementById('slot-input');
         slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`;
         slot.classList.add('active'); 
-        showPage('upgrade'); 
-        updateUpgradeChance();
+        showPage('upgrade'); updateUpgradeChance();
     }
 
     function populateTargetSkins() {
         const sel = document.getElementById('target-select'); 
-        // Зберігаємо поточний вибір, щоб не скидалося при оновленні інвентаря
         const currentVal = sel.value; 
         sel.innerHTML = '<option value="">TARGET SKIN</option>';
         SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`);
@@ -373,27 +344,17 @@
         const preview = document.getElementById('target-img-preview');
 
         if(targetIdx === "") { 
-            chanceDisplay.innerText = "0%"; 
-            btn.disabled = true; 
+            chanceDisplay.innerText = "0%"; btn.disabled = true; 
             track.style.background = `conic-gradient(var(--main) 0deg, transparent 0deg)`;
-            water.style.top = `100%`;
-            preview.innerHTML = "";
-            return; 
+            water.style.top = `100%`; preview.innerHTML = ""; return; 
         }
 
         const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100));
-        chanceDisplay.innerText = chance + "%"; 
-        btn.disabled = false;
-
-        // Показуємо картинку таргет-скіна
+        chanceDisplay.innerText = chance + "%"; btn.disabled = false;
         preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150" style="filter: drop-shadow(0 10px 20px ${SKINS[targetIdx].color})">`;
 
-        // Малюємо кільце виграшу (conic-gradient від 0 до кута шансу)
         const angle = (chance / 100) * 360;
         track.style.background = `conic-gradient(var(--main) ${angle}deg, transparent ${angle}deg)`;
-
-        // Піднімаємо воду в залежності від відсотків 
-        // (100% шанс = top: 0% тобто повне коло, 0% = top: 100% схована внизу)
         water.style.top = `${100 - chance}%`;
     }
 
@@ -403,21 +364,13 @@
         const btn = document.getElementById('upg-btn');
         const arrowCont = document.getElementById('upg-arrow');
 
-        btn.disabled = true;
-        document.getElementById('target-select').disabled = true;
-
-        // Логіка: генеруємо рандомний кут від 0 до 360
+        btn.disabled = true; document.getElementById('target-select').disabled = true;
         const resultAngle = Math.random() * 360;
         const winAngleLimit = (chance / 100) * 360;
-        
-        // Стрілочка виграє, якщо кут влучає в заповнену зону (від 0 до winAngleLimit)
         const isWin = resultAngle <= winAngleLimit;
 
-        // Анімація: додаємо 5 повних обертів + результат, до поточного кута
         const spins = 5 * 360;
         currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360));
-        
-        // Якщо треба зробити так щоб стрілочка крутилася плавно завжди вперед:
         arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`;
 
         setTimeout(() => {
@@ -429,32 +382,94 @@
                 db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
                 alert("FAILED! SKIN DESTROYED");
             }
-            
-            // Скидання після результату
             selectedUpgradeId = null; 
             document.getElementById('slot-input').innerHTML = "<p style='color:#444; font-family:Orbitron; font-size:12px;'>SELECT SKIN</p>";
             document.getElementById('slot-input').classList.remove('active');
             document.getElementById('target-select').disabled = false;
-            updateUpgradeChance(); 
-            showPage('inventory'); 
-            
-        }, 4100); // Чекаємо 4 секунди поки закінчиться CSS анімація
+            updateUpgradeChance(); showPage('inventory'); 
+        }, 4100); 
+    }
+
+    // НОВА ФУНКЦІЯ ОТРИМАННЯ СКІНА ЗА ВІДСОТКАМИ (ЩОБ БАБОЧКА НЕ ПАДАЛА ПОСТІЙНО)
+    function getSkinByChance() {
+        let rand = Math.random() * 100;
+        let sum = 0;
+        for (let i = 0; i < SKINS.length; i++) {
+            sum += SKINS[i].chance;
+            if (rand <= sum) return SKINS[i];
+        }
+        return SKINS[0];
     }
 
     function startSpin() {
         if(balance < 1000) return alert("LOW BALANCE");
         const btn = document.getElementById('spin-btn'); btn.disabled = true;
         db.ref('users/'+user.uid+'/balance').set(balance - 1000);
-        const win = SKINS[Math.floor(Math.random()*SKINS.length)];
+
+        // Відновлюємо текст статусу
+        const statusText = document.getElementById('win-status');
+        statusText.innerText = 'FATE DECIDING...';
+        statusText.style.color = '#fff';
+        statusText.style.textShadow = '0 0 20px rgba(0,255,170,0.5)';
+
+        // Генеруємо переможця за правильними шансами!
+        const win = getSkinByChance();
         const strip = document.getElementById('strip');
-        strip.innerHTML = ""; for(let i=0; i<120; i++) strip.innerHTML += `<div style="min-width:180px; display:flex; align-items:center; justify-content:center;"><img src="${SKINS[Math.floor(Math.random()*SKINS.length)].img}" width="100" style="opacity:0.2"></div>`;
-        strip.children[100].innerHTML = `<img src="${win.img}" width="140" style="filter:drop-shadow(0 0 30px ${win.color})">`;
+        strip.innerHTML = ""; 
+
+        // Ширина однієї картки (220px + margin 0 10px = 240px)
+        const cardWidth = 240;
+        const targetIndex = 100;
+
+        for(let i=0; i<120; i++) {
+            let randomSkin = getSkinByChance(); 
+            if (i === targetIndex) randomSkin = win; 
+            
+            strip.innerHTML += `
+            <div class="case-strip-item" id="item-${i}" style="border-bottom: 4px solid ${randomSkin.color};">
+                <img src="${randomSkin.img}">
+                <div class="case-item-name" style="color: ${randomSkin.color}">${randomSkin.name}</div>
+            </div>`;
+        }
+        
         strip.style.transition = 'none'; strip.style.transform = 'translateX(0)';
+        
+        // Математика рулетки з рандомним зміщенням стрілочки
+        const randomOffset = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2); 
+        const viewWindowWidth = document.querySelector('.view-window').offsetWidth;
+        const centerOffset = viewWindowWidth / 2;
+        
+        // Рахуємо куди саме повинна поїхати стрічка
+        const stopPos = (targetIndex * cardWidth) - centerOffset + (cardWidth / 2) + randomOffset;
+
         setTimeout(() => {
-            strip.style.transition = 'transform 9.5s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
-            strip.style.transform = `translateX(-${(100*180)-450+90}px)`;
+            strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)';
+            strip.style.transform = `translateX(-${stopPos}px)`;
         }, 50);
-        setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; }, 9800);
+
+        setTimeout(() => { 
+            db.ref('users/'+user.uid+'/inventory').push(win); 
+            btn.disabled = false; 
+            
+            // Ефект перемоги: затухання інших карток
+            for(let i=0; i<120; i++) {
+                if(i !== targetIndex) {
+                    document.getElementById(`item-${i}`).style.opacity = '0.1';
+                    document.getElementById(`item-${i}`).style.filter = 'grayscale(100%)';
+                }
+            }
+            
+            // Підсвітка переможця
+            const winCard = document.getElementById(`item-${targetIndex}`);
+            winCard.style.transform = 'scale(1.15)';
+            winCard.style.boxShadow = `0 0 50px ${win.color}`;
+            winCard.style.zIndex = '100';
+
+            // Оновлюємо текст зверху
+            statusText.innerText = `YOU GOT: ${win.name.toUpperCase()}!`;
+            statusText.style.color = win.color;
+            statusText.style.textShadow = `0 0 30px ${win.color}`;
+        }, 9000);
     }
 
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
