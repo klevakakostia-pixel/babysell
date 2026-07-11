@@ -22,7 +22,7 @@
         /* ЩИТ (ПРОЗОРИЙ, АЛЕ БЛОКУЄ) */
         #action-blocker {
             display: none; position: fixed; inset: 0; z-index: 99999;
-            background: transparent; /* Тепер без затемнення */
+            background: transparent; 
             cursor: not-allowed;
         }
 
@@ -31,7 +31,6 @@
         .sunset-sun { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; background: radial-gradient(circle, #ffb700 15%, #ff4500 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2); animation: sunPulse 8s ease-in-out infinite alternate; }
         @keyframes sunPulse { from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } }
         
-        /* КОМПОНЕНТ ХВИЛЬ */
         .waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 15vh; min-height: 100px; }
         .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
         .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
@@ -39,10 +38,9 @@
         .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
         @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
 
-        /* ВЕЙВИ ДЛЯ UPGRADE СТОРІНКИ */
         .upgrade-waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; z-index: 0; pointer-events: none; opacity: 0.6; }
 
-        /* ... [СТАЛІ СТИЛІ БЕЗ ЗМІН] ... */
+        /* СТИЛІ */
         #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
         .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; }
         @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
@@ -54,42 +52,47 @@
         .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
         .btn-nav:hover:not(:disabled)::before { top: 0; border-radius: 0; }
         .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        
         .case-card { background: rgba(4,3,10,0.85); padding: 60px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,157,0,0.1); transition: 1s var(--ease-hyper); box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.5); cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(10px); }
         .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(255,157,0,0.15); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); transition: 0.5s; }
         .case-card:hover img { transform: scale(1.05); }
+        
         #case-modal { display: none; position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(8,4,15,0.96) 0%, rgba(0,0,0,1) 100%); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(25px); }
         .view-window { position: relative; width: 100%; height: 280px; background: rgba(0,0,0,0.7); margin: 40px 0; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,157,0,0.15); box-shadow: inset 0 0 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 157, 0, 0.08); }
         .view-window::before, .view-window::after { content: ''; position: absolute; top: 0; bottom: 0; width: 200px; z-index: 50; pointer-events: none; }
         .view-window::before { left: 0; background: linear-gradient(90deg, #000 0%, transparent 100%); }
         .view-window::after { right: 0; background: linear-gradient(-90deg, #000 0%, transparent 100%); }
         .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); will-change: transform; }
+        
         .pointer { position: absolute; left: 50%; top: -10px; bottom: -10px; width: 4px; background: linear-gradient(180deg, transparent, var(--main), transparent); z-index: 100; box-shadow: 0 0 30px var(--main); transform: translateX(-50%); border-radius: 5px; }
         .pointer::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 20px solid var(--main); filter: drop-shadow(0 0 10px var(--main)); }
         .pointer::after { content: ''; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 20px solid var(--main); filter: drop-shadow(0 0 10px var(--main)); }
+        
         .case-strip-item { min-width: 220px; height: 220px; margin: 0 10px; background: linear-gradient(180deg, rgba(18,12,28,0.7), rgba(4,2,8,0.9)); border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.5s var(--ease-hyper); position: relative; }
         .case-strip-item img { max-width: 160px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.8)); transition: 0.3s; }
-        .case-item-name { font-family: 'Orbitron'; font-size: 13px; font-weight: bold; margin-top: 20px; text-transform: uppercase; letter-spacing: 2px; }
-        #win-status { font-family: 'Orbitron'; letter-spacing: 15px; margin-bottom: 30px; font-size: 35px; color: #fff; text-shadow: 0 0 20px rgba(255,157,0,0.5); transition: all 0.5s; }
-        .exit-btn { margin-top: 30px; color: #555; cursor: pointer; font-family: 'Orbitron'; font-size: 12px; letter-spacing: 5px; transition: 0.3s; }
-        .exit-btn:hover { color: var(--main); text-shadow: 0 0 15px var(--main); }
+        
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; position: relative; z-index: 1; }
         .upgrade-slot { width: 300px; height: 350px; background: rgba(5,3,12,0.6); border: 2px dashed rgba(255,157,0,0.3); border-radius: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s var(--ease-hyper); cursor: pointer; backdrop-filter: blur(10px); }
         .upgrade-slot.active { border-style: solid; border-color: var(--main); box-shadow: 0 0 40px rgba(255,157,0,0.15); background: rgba(255,157,0,0.05); }
+        
+        /* АПГРЕЙДЕР - ВИПРАВЛЕНО START POSITION */
         .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.85); border: 2px solid rgba(255,157,0,0.2); box-shadow: 0 0 40px rgba(0,0,0,0.6); }
-        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
+        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; transform: rotate(180deg); }
         .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
+        .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; transform: rotate(180deg); }
+        .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
         .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(255, 157, 0, 0.35); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; }
-        .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
         .chance-text { position: relative; z-index: 4; font-family: 'Orbitron'; font-size: 45px; color: #fff; text-shadow: 0 0 15px rgba(0,0,0,0.8); font-weight: 900; }
+        
         .product-item { background: rgba(5,3,12,0.6); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,157,0,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); backdrop-filter: blur(10px); position: relative; overflow: hidden; }
         .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(255,157,0,0.1); transform: translateY(-10px); }
+        
         #product-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         #product-modal-content { background: #0d0914; border: 1px solid var(--main); padding: 60px; border-radius: 40px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 0 80px rgba(255,157,0,0.15); animation: modalScale 0.5s var(--ease-hyper); position: relative; overflow: hidden; }
         .install-btn { display: inline-block; background: var(--main); color: #000; padding: 20px 60px; border-radius: 30px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; margin-top: 40px; transition: 0.5s; letter-spacing: 3px; position: relative; z-index: 2; }
-        .install-btn:hover { box-shadow: 0 0 40px var(--main); transform: scale(1.05); }
+        
         .inv-item { background: rgba(5,3,12,0.6); padding: 30px; border-radius: 35px; text-align: center; border: 1px solid rgba(255,255,255,0.04); transition: 0.8s var(--ease-hyper); animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px); }
         .inv-item:hover { transform: translateY(-10px); background: rgba(18,12,25,0.8); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
@@ -192,7 +195,6 @@
             </div>
         </div>
 
-        <!-- ХВИЛІ ВНИЗУ АПГРЕЙДУ -->
         <svg class="upgrade-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none">
             <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,157,0,0.2)" />
             <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(211, 46, 230, 0.2)" />
@@ -215,7 +217,7 @@
         <h1 style="font-family:Orbitron; color:var(--main); letter-spacing:5px; position:relative; z-index:2;">BEYSELL-LAUNCHER</h1>
         <p style="color:#888; margin-top:10px; letter-spacing:2px; position:relative; z-index:2;">OFFICIAL GAMING CLIENT</p>
         <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" class="install-btn">INSTALL</a>
-        <p class="exit-btn" style="position:relative; z-index:2; margin-top:40px;" onclick="closeProductModal()">CLOSE</p>
+        <p class="exit-btn" style="position:relative; z-index:2; margin-top:40px; color:#555; cursor:pointer;" onclick="closeProductModal()">CLOSE</p>
     </div>
 </div>
 
@@ -227,7 +229,7 @@
             <div id="strip" class="strip"></div>
         </div>
         <button id="spin-btn" class="btn-nav" style="width:300px; height:70px; font-size: 14px; letter-spacing: 5px; margin-top: 20px;" onclick="startSpin()">OPEN FOR 1,000 B</button>
-        <div class="exit-btn" onclick="closeModals()">[ EXIT MODULE ]</div>
+        <div class="exit-btn" onclick="closeModals()" style="color:#555; cursor:pointer; margin-top:20px;">[ EXIT MODULE ]</div>
     </div>
 </div>
 
@@ -243,7 +245,7 @@
         { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, chance: 20, color: "#d32ee6" },
         { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 10, color: "#ebca42" }
     ];
-    let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 0; 
+    let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 180; 
     auth.onAuthStateChanged(u => { if(u) { user = u; document.getElementById('l-btn').style.display = 'none'; document.getElementById('l-prof').style.display = 'block'; document.getElementById('l-ava').src = u.photoURL; db.ref('users/'+u.uid+'/balance').on('value', s => { balance = s.val() || 0; document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; }); db.ref('users/'+u.uid+'/inventory').on('value', s => { userInv = s.val() || {}; renderInventory(); populateTargetSkins(); }); } });
     function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     function showPage(p) { ['page-market', 'page-inventory', 'page-products', 'page-upgrade'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('page-' + p).style.display = 'block'; }
@@ -253,7 +255,7 @@
     function updateUpgradeChance() { if(!selectedUpgradeId) return; const targetIdx = document.getElementById('target-select').value; const btn = document.getElementById('upg-btn'); const track = document.getElementById('upg-track'); const water = document.getElementById('water-fill'); const chanceDisplay = document.getElementById('chance-display'); const preview = document.getElementById('target-img-preview'); if(targetIdx === "") { chanceDisplay.innerText = "0%"; btn.disabled = true; track.style.background = `conic-gradient(var(--main) 0deg, transparent 0deg)`; water.style.top = `100%`; preview.innerHTML = ""; return; } const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150" style="filter: drop-shadow(0 10px 20px ${SKINS[targetIdx].color})">`; const angle = (chance / 100) * 360; track.style.background = `conic-gradient(var(--main) ${angle}deg, transparent ${angle}deg)`; water.style.top = `${100 - chance}%`; }
     function attemptUpgrade() { const targetIdx = document.getElementById('target-select').value; const chance = parseInt(document.getElementById('chance-display').innerText); const btn = document.getElementById('upg-btn'); const arrowCont = document.getElementById('upg-arrow'); document.getElementById('action-blocker').style.display = 'block'; btn.disabled = true; document.getElementById('target-select').disabled = true; const resultAngle = Math.random() * 360; const winAngleLimit = (chance / 100) * 360; const isWin = resultAngle <= winAngleLimit; const spins = 5 * 360; currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360)); arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`; setTimeout(() => { if(isWin) { db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]); alert("SUCCESS! +1 " + SKINS[targetIdx].name); } else { db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); alert("FAILED! SKIN DESTROYED"); } selectedUpgradeId = null; document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>"; document.getElementById('slot-input').classList.remove('active'); document.getElementById('target-select').disabled = false; document.getElementById('action-blocker').style.display = 'none'; updateUpgradeChance(); showPage('inventory'); }, 4100); }
     function getSkinByChance() { let rand = Math.random() * 100; let sum = 0; for (let i = 0; i < SKINS.length; i++) { sum += SKINS[i].chance; if (rand <= sum) return SKINS[i]; } return SKINS[0]; }
-    function startSpin() { if(balance < 1000) return alert("LOW BALANCE"); const btn = document.getElementById('spin-btn'); btn.disabled = true; document.getElementById('action-blocker').style.display = 'block'; db.ref('users/'+user.uid+'/balance').set(balance - 1000); const statusText = document.getElementById('win-status'); statusText.innerText = 'FATE DECIDING...'; statusText.style.color = '#fff'; statusText.style.textShadow = '0 0 20px rgba(255,157,0,0.5)'; const win = getSkinByChance(); const strip = document.getElementById('strip'); strip.innerHTML = ""; const cardWidth = 240; const targetIndex = 100; for(let i=0; i<120; i++) { let randomSkin = getSkinByChance(); if (i === targetIndex) randomSkin = win; strip.innerHTML += `<div class="case-strip-item" id="item-${i}" style="border-bottom: 4px solid ${randomSkin.color};"><img src="${randomSkin.img}"><div class="case-item-name" style="color: ${randomSkin.color}">${randomSkin.name}</div></div>`; } strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; const randomOffset = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2); const viewWindowWidth = document.querySelector('.view-window').offsetWidth; const centerOffset = viewWindowWidth / 2; const stopPos = (targetIndex * cardWidth) - centerOffset + (cardWidth / 2) + randomOffset; setTimeout(() => { strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; strip.style.transform = `translateX(-${stopPos}px)`; }, 50); setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; document.getElementById('action-blocker').style.display = 'none'; for(let i=0; i<120; i++) { if(i !== targetIndex) { document.getElementById(`item-${i}`).style.opacity = '0.1'; document.getElementById(`item-${i}`).style.filter = 'grayscale(100%)'; } } const winCard = document.getElementById(`item-${targetIndex}`); winCard.style.transform = 'scale(1.15)'; winCard.style.boxShadow = `0 0 50px ${win.color}`; winCard.style.zIndex = '100'; statusText.innerText = `YOU GOT: ${win.name.toUpperCase()}!`; statusText.style.color = win.color; statusText.style.textShadow = `0 0 30px ${win.color}`; }, 9000); }
+    function startSpin() { if(balance < 1000) return alert("LOW BALANCE"); const btn = document.getElementById('spin-btn'); btn.disabled = true; document.getElementById('action-blocker').style.display = 'block'; db.ref('users/'+user.uid+'/balance').set(balance - 1000); const statusText = document.getElementById('win-status'); statusText.innerText = 'FATE DECIDING...'; statusText.style.color = '#fff'; const win = getSkinByChance(); const strip = document.getElementById('strip'); strip.innerHTML = ""; const cardWidth = 240; const targetIndex = 100; for(let i=0; i<120; i++) { let randomSkin = getSkinByChance(); if (i === targetIndex) randomSkin = win; strip.innerHTML += `<div class="case-strip-item" id="item-${i}" style="border-bottom: 4px solid ${randomSkin.color};"><img src="${randomSkin.img}"><div class="case-item-name" style="color: ${randomSkin.color}">${randomSkin.name}</div></div>`; } strip.style.transition = 'none'; strip.style.transform = 'translateX(0)'; const randomOffset = Math.floor(Math.random() * (cardWidth - 40)) - ((cardWidth - 40) / 2); const viewWindowWidth = document.querySelector('.view-window').offsetWidth; const centerOffset = viewWindowWidth / 2; const stopPos = (targetIndex * cardWidth) - centerOffset + (cardWidth / 2) + randomOffset; setTimeout(() => { strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; strip.style.transform = `translateX(-${stopPos}px)`; }, 50); setTimeout(() => { db.ref('users/'+user.uid+'/inventory').push(win); btn.disabled = false; document.getElementById('action-blocker').style.display = 'none'; for(let i=0; i<120; i++) { if(i !== targetIndex) { document.getElementById(`item-${i}`).style.opacity = '0.1'; document.getElementById(`item-${i}`).style.filter = 'grayscale(100%)'; } } const winCard = document.getElementById(`item-${targetIndex}`); winCard.style.transform = 'scale(1.15)'; winCard.style.boxShadow = `0 0 50px ${win.color}`; winCard.style.zIndex = '100'; statusText.innerText = `YOU GOT: ${win.name.toUpperCase()}!`; statusText.style.color = win.color; }, 9000); }
     function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
     function openCaseModal() { if(!user) return login(); document.getElementById('case-modal').style.display='flex'; }
     function closeModals() { document.getElementById('case-modal').style.display='none'; }
