@@ -14,52 +14,51 @@
             --main: #ff9d00; /* Теплий неоновий захід сонця */
             --bg: #050212; /* Глибокий вечірній фіолетово-чорний */
             --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1);
-            --wave-color: rgba(255, 157, 0, 0.02);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
 
-        /* ======== НОВИЙ АНІМОВАНИЙ ФОН: СТАВОК, СОНЦЕ, КУРОЧКА ======== */
-        .pond-bg-container {
+        /* ======== НОВИЙ АНІМОВАНИЙ ФОН: ПЛЯЖ ТА СІМЕЙСТВО КУРОЧОК ======== */
+        .sunset-bg-container {
             position: fixed; inset: 0; z-index: -1; pointer-events: none;
-            background: linear-gradient(to bottom, #040110 0%, #110624 40%, #220b29 75%, #05141c 100%);
+            background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%);
             overflow: hidden;
         }
         
         /* Гарне неонове сонце */
-        .pond-sun {
-            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
-            width: 220px; height: 220px;
-            background: radial-gradient(circle, #ffb700 10%, #ff4500 100%);
+        .sunset-sun {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            width: 240px; height: 240px;
+            background: radial-gradient(circle, #ffb700 15%, #ff4500 100%);
             border-radius: 50%;
-            box-shadow: 0 0 60px rgba(2ff, 69, 0, 0.5), 0 0 140px rgba(255, 183, 0, 0.2);
+            box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2);
             animation: sunPulse 8s ease-in-out infinite alternate;
         }
         @keyframes sunPulse { 
-            from { transform: translate(-50%, -50%) scale(0.96); opacity: 0.85; } 
-            to { transform: translate(-50%, -50%) scale(1.04); opacity: 1; } 
+            from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } 
+            to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } 
+        }
+
+        /* Анімація кроку для курочок (погойдування) */
+        @keyframes chickenWalk {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
         }
         
-        /* Вода ставка та її блики */
-        .pond-water-layer {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 32vh;
-            background: linear-gradient(to bottom, rgba(255, 157, 0, 0.05) 0%, rgba(3, 15, 24, 0.95) 100%);
-            border-top: 1px solid rgba(255, 157, 0, 0.2);
-            backdrop-filter: blur(1px);
+        @keyframes chickWalk {
+            0% { transform: translateY(0) scale(0.52) rotate(0deg); }
+            50% { transform: translateY(-6px) scale(0.52) rotate(-3deg); }
+            100% { transform: translateY(0) scale(0.52) rotate(0deg); }
         }
-        .pond-wave {
-            position: absolute; bottom: -50vw; left: -50vw; width: 200vw; height: 200vw;
-            background: var(--wave-color); border-radius: 44%;
-            animation: waveSpin 35s linear infinite;
-        }
-        .pond-wave:nth-child(2) {
-            bottom: -53vh; left: -45vw; background: rgba(255, 69, 0, 0.015); border-radius: 41%;
-            animation: waveSpin 50s linear infinite reverse;
-        }
-        @keyframes waveSpin { 100% { transform: rotate(360deg); } }
 
-        /* Векторна графіка пляжу та курочки */
+        .mama-hen { animation: chickenWalk 1.2s ease-in-out infinite; transform-origin: center bottom; }
+        .baby-chick-1 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.1s; transform-origin: center bottom; }
+        .baby-chick-2 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.3s; transform-origin: center bottom; }
+        .baby-chick-3 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.5s; transform-origin: center bottom; }
+        .baby-chick-4 { animation: chickWalk 0.9s ease-in-out infinite; animation-delay: 0.2s; transform-origin: center bottom; }
+
         .beach-vector-scene {
             position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2;
         }
@@ -111,13 +110,7 @@
             box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.5); 
             cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
-        .case-card::before {
-            content: ''; position: absolute; bottom: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,157,0,0.05) 0%, transparent 70%);
-            opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
-        }
         .case-card:hover { transform: translateY(-15px); border-color: var(--main); box-shadow: 0 30px 60px rgba(255,157,0,0.15); }
-        .case-card:hover::before { opacity: 1; transform: scale(1.2); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); transition: 0.5s; }
         .case-card:hover img { transform: scale(1.05); }
 
@@ -185,7 +178,6 @@
         .upgrader-track { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--main) 0deg, transparent 0deg); transition: background 0.8s ease; }
         .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; border: 2px solid #111; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); }
         .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(255, 157, 0, 0.35); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); z-index: 1; }
-        .water-wave::before { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(255, 69, 0, 0.2); border-radius: 42%; top: -15px; left: 0; animation: spinWave 8s linear infinite reverse; }
         @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); will-change: transform; }
         .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; filter: drop-shadow(0 0 10px #fff); }
@@ -197,48 +189,15 @@
             border: 1px solid rgba(255,157,0,0.1); cursor: pointer; transition: 0.5s var(--ease-hyper); 
             backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
-        .product-item::before {
-            content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,157,0,0.05) 0%, transparent 60%);
-            opacity: 0; transition: 1s var(--ease-hyper); pointer-events: none;
-        }
         .product-item:hover { border-color: var(--main); box-shadow: 0 20px 40px rgba(255,157,0,0.1); transform: translateY(-10px); }
-        .product-item:hover::before { opacity: 1; }
 
         /* PRODUCT MODAL */
-        #product-modal { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0, 0, 0, 0.85); 
-            z-index: 3000; 
-            align-items: center; 
-            justify-content: center; 
-            backdrop-filter: blur(15px); 
-        }
-        #product-modal-content { 
-            background: #0d0914; border: 1px solid var(--main); padding: 60px; 
-            border-radius: 40px; max-width: 500px; width: 90%; text-align: center; 
-            box-shadow: 0 0 80px rgba(255,157,0,0.15); animation: modalScale 0.5s var(--ease-hyper); 
-            position: relative; overflow: hidden;
-        }
-        #product-modal-content::before {
-            content: ''; position: absolute; bottom: -100px; left: -50px; width: 200%; height: 200px;
-            background: rgba(255,157,0,0.03); border-radius: 50%;
-            animation: spinWave 15s linear infinite; pointer-events: none;
-        }
-        .install-btn { 
-            display: inline-block; background: var(--main); color: #000; padding: 20px 60px; 
-            border-radius: 30px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; 
-            margin-top: 40px; transition: 0.5s; letter-spacing: 3px; position: relative; z-index: 2;
-        }
+        #product-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        #product-modal-content { background: #0d0914; border: 1px solid var(--main); padding: 60px; border-radius: 40px; max-width: 500px; width: 90%; text-align: center; box-shadow: 0 0 80px rgba(255,157,0,0.15); animation: modalScale 0.5s var(--ease-hyper); position: relative; overflow: hidden; }
+        .install-btn { display: inline-block; background: var(--main); color: #000; padding: 20px 60px; border-radius: 30px; font-family: 'Orbitron'; font-weight: 900; text-decoration: none; margin-top: 40px; transition: 0.5s; letter-spacing: 3px; position: relative; z-index: 2; }
         .install-btn:hover { box-shadow: 0 0 40px var(--main); transform: scale(1.05); }
 
-        .inv-item { 
-            background: rgba(5,3,12,0.6); padding: 30px; border-radius: 35px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.04); transition: 0.8s var(--ease-hyper); 
-            animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px);
-        }
+        .inv-item { background: rgba(5,3,12,0.6); padding: 30px; border-radius: 35px; text-align: center; border: 1px solid rgba(255,255,255,0.04); transition: 0.8s var(--ease-hyper); animation: slideUp 1s var(--ease-hyper) backwards; backdrop-filter: blur(5px); }
         .inv-item:hover { transform: translateY(-10px); background: rgba(18,12,25,0.8); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -246,45 +205,79 @@
 </head>
 <body>
 
-<!-- ОБНОВЛЕНИЙ ФОН З СУПЕР СТИЛЬНИМ СТАВКОМ ТА КУРОЧКОЮ -->
-<div class="pond-bg-container">
-    <div class="pond-sun"></div>
-    <div class="pond-water-layer">
-        <div class="pond-wave"></div>
-        <div class="pond-wave"></div>
-    </div>
+<!-- НОВИЙ ФОН: ЗАХІД СОНЦЯ ТА СІМЕЙНИЙ ПАТРУЛЬ КУРОЧОК -->
+<div class="sunset-bg-container">
+    <div class="sunset-sun"></div>
     
-    <!-- Векторна графіка пляжу, милої курочки та її вудки -->
     <svg class="beach-vector-scene" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
-        <!-- Берег / Піщаний пляж ставка в тіні заходу -->
-        <path d="M 1050 900 Q 1180 730 1440 680 L 1440 900 Z" fill="#090514" />
-        <path d="M 1050 900 Q 1180 730 1440 680" stroke="var(--main)" stroke-width="2" fill="none" style="opacity: 0.3; filter: blur(3px);" />
+        <!-- Пологий піщаний берег/пляж -->
+        <path d="M 0 900 Q 400 820 900 850 Q 1200 860 1440 810 L 1440 900 L 0 900 Z" fill="#0c071c" />
+        <path d="M 0 900 Q 400 820 900 850 Q 1200 860 1440 810" stroke="var(--main)" stroke-width="1.5" fill="none" style="opacity: 0.25; filter: blur(2px);" />
         
-        <!-- ДУЖЕ МИЛА КУРОЧКА, ЯКА РИБАЛИТЬ -->
-        <g transform="translate(1240, 580) scale(0.9)">
-            <!-- Тіло курочки -->
-            <ellipse cx="60" cy="65" rx="36" ry="30" fill="#ffffff" filter="drop-shadow(0 0 12px rgba(255,255,255,0.25))"/>
+        <!-- МАМА-КУРОЧКА (ІДЕ ПОПЕРЕДУ) -->
+        <g class="mama-hen" transform="translate(620, 715) scale(0.95)">
+            <!-- Тіло -->
+            <ellipse cx="60" cy="65" rx="36" ry="30" fill="#ffffff" filter="drop-shadow(0 0 10px rgba(255,255,255,0.2))"/>
             <!-- Голова -->
             <circle cx="82" cy="42" r="21" fill="#ffffff" />
-            <!-- Милий червоний гребінець -->
+            <!-- Червоний гребінець -->
             <path d="M 72 24 Q 76 10 82 20 Q 89 10 93 23" fill="#ff3855" />
             <!-- Дзьобик -->
             <polygon points="101,40 114,45 101,50" fill="#ffa200" />
-            <!-- Очко крапочка -->
+            <!-- Миле око -->
             <circle cx="87" cy="38" r="2.5" fill="#111111" />
-            <!-- Крильце -->
+            <!-- Крило -->
             <path d="M 45 64 Q 60 54 72 69 Q 56 79 45 64" fill="#f4f4f4" />
             <!-- Хвостик -->
             <path d="M 24 60 Q 8 48 18 70" fill="#ffffff" />
-            
-            <!-- ВУДКА -->
-            <!-- Вудилище -->
-            <line x1="75" y1="55" x2="175" y2="-15" stroke="#d48800" stroke-width="3.5" stroke-linecap="round" />
-            <!-- Леска, що йде глибоко в ставок -->
-            <line x1="175" y1="-15" x2="175" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
-            <!-- Поплавок, який гойдається на воді -->
-            <circle cx="175" cy="210" r="5" fill="#ff3855" filter="drop-shadow(0 0 5px #ff3855)" />
-            <circle cx="175" cy="214" r="2.5" fill="#ffffff" />
+            <!-- Маленькі ніжки -->
+            <line x1="50" y1="95" x2="50" y2="105" stroke="#ffa200" stroke-width="3" />
+            <line x1="65" y1="95" x2="65" y2="105" stroke="#ffa200" stroke-width="3" />
+        </g>
+
+        <!-- МАЛЕНЬКІ КУРЧАТА (ЙДУТЬ ЗА МАМОЮ В РЯДОК) -->
+        <!-- Курча 1 -->
+        <g class="baby-chick-1" transform="translate(730, 755)">
+            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
+            <circle cx="72" cy="50" r="12" fill="#ffe600" />
+            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
+            <circle cx="74" cy="47" r="1.5" fill="#111111" />
+            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
+            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
+            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
+        </g>
+
+        <!-- Курча 2 -->
+        <g class="baby-chick-2" transform="translate(790, 760)">
+            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
+            <circle cx="72" cy="50" r="12" fill="#ffe600" />
+            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
+            <circle cx="74" cy="47" r="1.5" fill="#111111" />
+            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
+            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
+            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
+        </g>
+
+        <!-- Курча 3 -->
+        <g class="baby-chick-3" transform="translate(850, 762)">
+            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
+            <circle cx="72" cy="50" r="12" fill="#ffe600" />
+            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
+            <circle cx="74" cy="47" r="1.5" fill="#111111" />
+            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
+            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
+            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
+        </g>
+
+        <!-- Курча 4 -->
+        <g class="baby-chick-4" transform="translate(910, 760)">
+            <circle cx="60" cy="65" r="20" fill="#ffe600" filter="drop-shadow(0 0 8px rgba(255,230,0,0.3))"/>
+            <circle cx="72" cy="50" r="12" fill="#ffe600" />
+            <polygon points="82,48 90,51 82,54" fill="#ff7700" />
+            <circle cx="74" cy="47" r="1.5" fill="#111111" />
+            <path d="M 50 65 Q 58 58 66 68" fill="#fcf060" />
+            <line x1="55" y1="85" x2="55" y2="92" stroke="#ff7700" stroke-width="2" />
+            <line x1="65" y1="85" x2="65" y2="92" stroke="#ff7700" stroke-width="2" />
         </g>
     </svg>
 </div>
@@ -414,11 +407,12 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth(), db = firebase.database();
 
+    // ======== НОВІ НАЛАШТОВАНІ ШАНСИ (СУМА = 100%) ========
     const SKINS = [
-        { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 70, color: "#4b69ff" },
-        { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, chance: 20, color: "#8847ff" },
-        { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, chance: 8, color: "#d32ee6" },
-        { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 2, color: "#ebca42" }
+        { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, chance: 35, color: "#4b69ff" },
+        { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, chance: 35, color: "#8847ff" },
+        { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, chance: 20, color: "#d32ee6" },
+        { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, chance: 10, color: "#ebca42" }
     ];
 
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null;
