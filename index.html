@@ -48,7 +48,8 @@
             color: #888; padding: 12px 25px; border-radius: 4px; font-family: 'Orbitron'; 
             font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.8s var(--ease-hyper);
         }
-        .btn-nav:hover { background: var(--main); color: #000; box-shadow: 0 0 30px var(--main); border-color: var(--main); }
+        .btn-nav:hover:not(:disabled) { background: var(--main); color: #000; box-shadow: 0 0 30px var(--main); border-color: var(--main); }
+        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* CASE CARDS */
         .case-card {
@@ -60,7 +61,7 @@
         .case-card:hover { transform: translateY(-20px) scale(1.02); border-color: var(--main); box-shadow: 0 40px 80px rgba(0,255,170,0.1); }
         .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
 
-        /* ROULETTE */
+        /* ROULETTE (CASE) */
         .modal { 
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(20px);
@@ -74,9 +75,98 @@
 
         /* UPGRADE ELEMENTS */
         .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
-        .upgrade-slot { width: 300px; height: 350px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        .upgrade-slot { width: 300px; height: 350px; background: rgba(255,255,255,0.02); border: 2px dashed rgba(255,255,255,0.1); border-radius: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; cursor: pointer; }
         .upgrade-slot.active { border: 2px solid var(--main); box-shadow: 0 0 30px rgba(0,255,170,0.1); }
-        .chance-circle { width: 150px; height: 150px; border: 4px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 30px; color: var(--main); }
+        
+        /* NEW UPGRADER ROULETTE & WATER WAVE */
+        .upgrader-roulette {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.02);
+            border: 2px solid #222;
+        }
+        .upgrader-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(var(--main) 0deg, transparent 0deg);
+            transition: background 0.8s ease;
+        }
+        .upgrader-inner {
+            position: absolute;
+            inset: 15px; /* Товщина кільця */
+            background: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* Обрізає воду по формі кола */
+            z-index: 2;
+            border: 2px solid #111;
+        }
+        /* Хвилі */
+        .water-wave {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 255, 170, 0.4);
+            border-radius: 38%;
+            top: 100%; /* Початково сховано (внизу) */
+            left: 50%;
+            margin-left: -200px;
+            animation: spinWave 6s linear infinite;
+            transition: top 1s var(--ease-hyper);
+            z-index: 1;
+        }
+        .water-wave::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 255, 170, 0.2);
+            border-radius: 42%;
+            top: -15px;
+            left: 0;
+            animation: spinWave 8s linear infinite reverse;
+        }
+        @keyframes spinWave {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Стрілочка */
+        .upgrader-arrow-container {
+            position: absolute;
+            inset: -15px; /* Виступає за межі кола */
+            z-index: 5;
+            transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1);
+            will-change: transform;
+        }
+        .upgrader-arrow {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 25px solid #fff;
+            filter: drop-shadow(0 0 10px #fff);
+        }
+        .chance-text {
+            position: relative;
+            z-index: 4;
+            font-family: 'Orbitron';
+            font-size: 45px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+            font-weight: 900;
+        }
 
         /* PRODUCT STYLES */
         .product-item { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid rgba(0,255,170,0.1); cursor: pointer; transition: 0.5s; }
@@ -138,14 +228,27 @@
             <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
                 <p style="color:#444; font-family:Orbitron; font-size:12px;">SELECT SKIN</p>
             </div>
-            <div style="text-align:center;">
-                <div id="chance-display" class="chance-circle">0%</div>
-                <button id="upg-btn" class="btn-nav" style="margin-top:20px; width:200px;" onclick="attemptUpgrade()" disabled>UPGRADE</button>
+            
+            <!-- ОНОВЛЕНА РУЛЕТКА ДЛЯ АПГРЕЙДУ -->
+            <div style="text-align:center; position:relative;">
+                <div class="upgrader-roulette" id="upg-roulette">
+                    <div class="upgrader-track" id="upg-track"></div>
+                    <div class="upgrader-arrow-container" id="upg-arrow">
+                        <div class="upgrader-arrow"></div>
+                    </div>
+                    <div class="upgrader-inner">
+                        <div class="water-wave" id="water-fill"></div>
+                        <div id="chance-display" class="chance-text">0%</div>
+                    </div>
+                </div>
+                <button id="upg-btn" class="btn-nav" style="margin-top:40px; width:200px; font-size: 14px; padding: 15px;" onclick="attemptUpgrade()" disabled>UPGRADE</button>
             </div>
+
             <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background:#000; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron;">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background:#000; color:#fff; border:1px solid #333; padding:10px; font-family:Orbitron; outline: none; cursor: pointer;">
                     <option value="">TARGET SKIN</option>
                 </select>
+                <div id="target-img-preview" style="margin-top: 20px;"></div>
             </div>
         </div>
     </div>
@@ -210,6 +313,7 @@
     ];
 
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null;
+    let currentSpinAngle = 0; // Зберігає кут стрілки для наступного крутіння
 
     auth.onAuthStateChanged(u => {
         if(u) {
@@ -244,35 +348,97 @@
     function selectForUpgrade(id) {
         selectedUpgradeId = id; const skin = userInv[id];
         const slot = document.getElementById('slot-input');
-        slot.innerHTML = `<img src="${skin.img}" width="150"><p>${skin.name}</p>`;
-        slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance();
+        slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`;
+        slot.classList.add('active'); 
+        showPage('upgrade'); 
+        updateUpgradeChance();
     }
 
     function populateTargetSkins() {
-        const sel = document.getElementById('target-select'); sel.innerHTML = '<option value="">TARGET SKIN</option>';
+        const sel = document.getElementById('target-select'); 
+        // Зберігаємо поточний вибір, щоб не скидалося при оновленні інвентаря
+        const currentVal = sel.value; 
+        sel.innerHTML = '<option value="">TARGET SKIN</option>';
         SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`);
+        if(currentVal) sel.value = currentVal;
     }
 
     function updateUpgradeChance() {
         if(!selectedUpgradeId) return;
         const targetIdx = document.getElementById('target-select').value;
-        if(targetIdx === "") { document.getElementById('chance-display').innerText = "0%"; document.getElementById('upg-btn').disabled = true; return; }
+        const btn = document.getElementById('upg-btn');
+        const track = document.getElementById('upg-track');
+        const water = document.getElementById('water-fill');
+        const chanceDisplay = document.getElementById('chance-display');
+        const preview = document.getElementById('target-img-preview');
+
+        if(targetIdx === "") { 
+            chanceDisplay.innerText = "0%"; 
+            btn.disabled = true; 
+            track.style.background = `conic-gradient(var(--main) 0deg, transparent 0deg)`;
+            water.style.top = `100%`;
+            preview.innerHTML = "";
+            return; 
+        }
+
         const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100));
-        document.getElementById('chance-display').innerText = chance + "%"; document.getElementById('upg-btn').disabled = false;
+        chanceDisplay.innerText = chance + "%"; 
+        btn.disabled = false;
+
+        // Показуємо картинку таргет-скіна
+        preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150" style="filter: drop-shadow(0 10px 20px ${SKINS[targetIdx].color})">`;
+
+        // Малюємо кільце виграшу (conic-gradient від 0 до кута шансу)
+        const angle = (chance / 100) * 360;
+        track.style.background = `conic-gradient(var(--main) ${angle}deg, transparent ${angle}deg)`;
+
+        // Піднімаємо воду в залежності від відсотків 
+        // (100% шанс = top: 0% тобто повне коло, 0% = top: 100% схована внизу)
+        water.style.top = `${100 - chance}%`;
     }
 
     function attemptUpgrade() {
         const targetIdx = document.getElementById('target-select').value;
         const chance = parseInt(document.getElementById('chance-display').innerText);
-        if(Math.random()*100 <= chance) {
-            db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
-            db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]);
-            alert("SUCCESS! +1 " + SKINS[targetIdx].name);
-        } else {
-            db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
-            alert("FAILED! SKIN DESTROYED");
-        }
-        showPage('inventory'); selectedUpgradeId = null; document.getElementById('slot-input').innerHTML = "SELECT SKIN";
+        const btn = document.getElementById('upg-btn');
+        const arrowCont = document.getElementById('upg-arrow');
+
+        btn.disabled = true;
+        document.getElementById('target-select').disabled = true;
+
+        // Логіка: генеруємо рандомний кут від 0 до 360
+        const resultAngle = Math.random() * 360;
+        const winAngleLimit = (chance / 100) * 360;
+        
+        // Стрілочка виграє, якщо кут влучає в заповнену зону (від 0 до winAngleLimit)
+        const isWin = resultAngle <= winAngleLimit;
+
+        // Анімація: додаємо 5 повних обертів + результат, до поточного кута
+        const spins = 5 * 360;
+        currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360));
+        
+        // Якщо треба зробити так щоб стрілочка крутилася плавно завжди вперед:
+        arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`;
+
+        setTimeout(() => {
+            if(isWin) {
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+                db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]);
+                alert("SUCCESS! +1 " + SKINS[targetIdx].name);
+            } else {
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove();
+                alert("FAILED! SKIN DESTROYED");
+            }
+            
+            // Скидання після результату
+            selectedUpgradeId = null; 
+            document.getElementById('slot-input').innerHTML = "<p style='color:#444; font-family:Orbitron; font-size:12px;'>SELECT SKIN</p>";
+            document.getElementById('slot-input').classList.remove('active');
+            document.getElementById('target-select').disabled = false;
+            updateUpgradeChance(); 
+            showPage('inventory'); 
+            
+        }, 4100); // Чекаємо 4 секунди поки закінчиться CSS анімація
     }
 
     function startSpin() {
