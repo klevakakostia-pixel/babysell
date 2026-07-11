@@ -195,8 +195,10 @@
         if(targetIdx === "") { chanceDisplay.innerText = "0%"; btn.disabled = true; track.style.background = `transparent`; water.style.top = `100%`; preview.innerHTML = ""; return; } 
         const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); 
         chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150">`; 
+        
         const angleSize = (chance / 100) * 360; const half = angleSize / 2;
-        track.style.background = `conic-gradient(transparent ${180-half}deg, var(--main) ${180-half}deg, var(--main) ${180+half}deg, transparent ${180+half}deg)`;
+        // Фікс рендера градієнта (тепер 100% браузерів будуть розуміти чіткі межі від нуля)
+        track.style.background = `conic-gradient(from 0deg, transparent 0deg, transparent ${180-half}deg, var(--main) ${180-half}deg, var(--main) ${180+half}deg, transparent ${180+half}deg, transparent 360deg)`;
         water.style.top = `${100 - chance}%`; 
     }
 
@@ -216,16 +218,18 @@
         const startWin = 180 - (angleSize / 2);
         const endWin = 180 + (angleSize / 2);
         
-        // 3. Обираємо кут зупинки (додано відступи, щоб стрілка ніколи не зупинялась на межі і чітко показувала результат)
+        // 3. Обираємо кут зупинки залежно від результату з відступами (padding)
         let resultAngle;
-        const pad = angleSize > 10 ? 4 : 0; 
+        const winPadding = Math.min(5, angleSize / 3); 
+        const losePadding = Math.min(5, (360 - angleSize) / 3);
 
         if (isWin) {
-            const winRange = Math.max(1, angleSize - (pad * 2));
-            resultAngle = (startWin + pad) + (Math.random() * winRange);
+            // Гарантуємо, що стрілка впаде глибоко всередину зони, а не на її піксельний край
+            resultAngle = (startWin + winPadding) + (Math.random() * (angleSize - (winPadding * 2)));
         } else {
-            const loseRange = Math.max(1, 360 - angleSize - (pad * 2));
-            resultAngle = (endWin + pad) + (Math.random() * loseRange);
+            // Гарантуємо, що стрілка відскочить від кольорової зони достатньо далеко і не буде візуально накладатись
+            const safeRange = (360 - angleSize) - (losePadding * 2);
+            resultAngle = (endWin + losePadding) + (Math.random() * safeRange);
             if (resultAngle >= 360) resultAngle -= 360;
         }
 
