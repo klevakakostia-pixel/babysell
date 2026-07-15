@@ -30,7 +30,6 @@
         .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
         
-        /* Кнопки з хвилею тільки при наведенні */
         .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
         .btn-nav::before { content: ""; position: absolute; top: 100%; left: 50%; width: 400px; height: 400px; margin-left: -200px; background: var(--main); border-radius: 40%; z-index: -1; transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-nav:hover:not(:disabled)::before { top: -100px; animation: btnWaveAnim 5s linear infinite; }
@@ -88,11 +87,12 @@
 <div class="app-content">
     <header class="header">
         <div style="display:flex; gap:20px;">
-            <button id="btn-admin" class="btn-nav" style="display:none; border-color:red; color:red; font-weight:bold;" onclick="showPage('admin')">ADMIN</button>
             <button class="btn-nav" onclick="showPage('market')">MARKET</button>
             <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
             <button class="btn-nav" onclick="showPage('upgrade')">UPGRADE</button>
             <button class="btn-nav" style="border-color:var(--main);" onclick="showPage('products')">BEYSELL PRODUCTS</button>
+            <!-- СЕКРЕТНА КНОПКА АДМІНА (прихована за замовчуванням) -->
+            <button id="btn-admin" class="btn-nav" style="display:none; border-color:red; color:red; font-weight:bold;" onclick="showPage('admin')">ADMIN</button>
         </div>
         <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
         <div style="display:flex; align-items:center; gap:30px;">
@@ -147,16 +147,18 @@
 
     <div id="page-products" style="display:none; padding:100px 80px;">
         <h1 style="font-family:Orbitron; margin-bottom:50px; text-align:center; color:var(--main);">BEYSELL</h1>
-        <div id="page-admin" style="display:none; padding:100px 40px; text-align:center;">
-    <h1 style="font-family:Orbitron; margin-bottom:40px; color:red; letter-spacing: 5px;">BEYSELL CONTROL PANEL</h1>
-    <div id="admin-users-list"></div>
-</div>
         <div style="display:flex; justify-content:center;">
             <div class="product-item" onclick="openProductInfo()" style="cursor:pointer; background: rgba(5,3,12,0.6); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,157,0,0.1);">
                 <h2 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h2>
                 <p style="color:#777;">Gaming Platform v1.0</p>
             </div>
         </div>
+    </div>
+
+    <!-- АДМІН ПАНЕЛЬ -->
+    <div id="page-admin" style="display:none; padding:100px 40px; text-align:center;">
+        <h1 style="font-family:Orbitron; margin-bottom:40px; color:red; letter-spacing: 5px;">BEYSELL CONTROL PANEL</h1>
+        <div id="admin-users-list"></div>
     </div>
 </div>
 
@@ -181,13 +183,16 @@
     function initApp() { music.volume = 0.2; music.play(); document.getElementById('welcome-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('welcome-screen').style.visibility = 'hidden'; document.body.classList.add('app-loaded'); }, 1500); }
     const firebaseConfig = { apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", authDomain: "babysell-8b37b.firebaseapp.com", databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", projectId: "babysell-8b37b", appId: "1:955498378146:web:52f027f8e97398e75b78fb" };
     firebase.initializeApp(firebaseConfig); const auth = firebase.auth(), db = firebase.database();
+    
     const SKINS = [
         { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, color: "#4b69ff" },
         { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, color: "#8847ff" },
         { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, color: "#d32ee6" },
         { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, color: "#ebca42" }
     ];
+    
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 180; 
+    
     auth.onAuthStateChanged(u => { 
         if(u) { 
             user = u; 
@@ -195,26 +200,30 @@
             document.getElementById('l-prof').style.display = 'block'; 
             document.getElementById('l-ava').src = u.photoURL; 
 
-            // --- НОВИЙ КОД: Примусова реєстрація юзера в базі BEYSELL ---
+            // Автоматична реєстрація користувача в базі
             const userRef = db.ref('users/' + u.uid);
             userRef.once('value').then(snapshot => {
                 if (!snapshot.exists()) {
-                    // Якщо це новий гравець — створюємо йому профіль
                     userRef.set({
-                        name: u.displayName, // Щоб ти бачив ім'я в консолі
-                        email: u.email,      // Щоб знав, чий це акаунт
-                        balance: 0           // Можеш змінити на 1000, якщо хочеш давати стартовий бонус
+                        name: u.displayName,
+                        email: u.email,
+                        balance: 0
                     });
                 } else {
-                    // Якщо гравець вже є, просто оновлюємо його дані на випадок змін
                     userRef.update({
                         name: u.displayName,
                         email: u.email
                     });
                 }
             });
-            // -------------------------------------------------------------
 
+            // Перевірка на тебе (Адміна)
+            if(u.email === "klevaka.kostia@gmail.com") {
+                document.getElementById('btn-admin').style.display = 'inline-block';
+                loadAdminData();
+            }
+
+            // Підключення до балансу та інвентарю
             db.ref('users/'+u.uid+'/balance').on('value', s => { 
                 balance = s.val() || 0; 
                 document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; 
@@ -226,9 +235,18 @@
             }); 
         } 
     });
-    function showPage(p) { ['page-market', 'page-inventory', 'page-products', 'page-upgrade'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('page-' + p).style.display = 'block'; }
+
+    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    
+    function showPage(p) { 
+        ['page-market', 'page-inventory', 'page-products', 'page-upgrade', 'page-admin'].forEach(id => document.getElementById(id).style.display = 'none'); 
+        document.getElementById('page-' + p).style.display = 'block'; 
+    }
+    
     function renderInventory() { const g = document.getElementById('inv-grid'); g.innerHTML = ""; Object.keys(userInv).reverse().forEach(id => { const i = userInv[id]; g.innerHTML += `<div class="inv-item" style="padding:30px; background:rgba(5,3,12,0.6); border-radius:35px; border-bottom:4px solid ${i.color}; text-align:center;"><img src="${i.img}" width="130"><br><b style="font-family:Orbitron">${i.name}</b><br><button class="btn-nav" style="width:100%; margin-top:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button><button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button></div>`; }); }
+    
     function selectForUpgrade(id) { selectedUpgradeId = id; const skin = userInv[id]; const slot = document.getElementById('slot-input'); slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`; slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance(); }
+    
     function populateTargetSkins() { const sel = document.getElementById('target-select'); const currentVal = sel.value; sel.innerHTML = '<option value="">TARGET SKIN</option>'; SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`); if(currentVal) sel.value = currentVal; }
     
     function updateUpgradeChance() { 
@@ -337,6 +355,42 @@
     function closeModals() { document.getElementById('case-modal').style.display='none'; }
     function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
     function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+
+    // АДМІНСЬКІ ФУНКЦІЇ
+    function loadAdminData() {
+        db.ref('users').on('value', snap => {
+            const users = snap.val();
+            let html = '<div style="display:flex; flex-direction:column; gap:15px; max-width: 800px; margin: 0 auto;">';
+            for(let uid in users) {
+                let uData = users[uid];
+                html += `
+                <div style="background:rgba(255,0,0,0.05); padding:20px; border:1px solid red; border-radius:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
+                    <div style="text-align: left;">
+                        <b style="font-family:Orbitron; font-size:22px;">${uData.name || 'Unknown'}</b><br>
+                        <span style="color:#aaa; font-size: 14px;">${uData.email || 'No email'}</span><br>
+                        Баланс: <b style="color:var(--main)">${uData.balance || 0} B</b>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-nav" style="border-color:#4CAF50; color:#4CAF50;" onclick="adminGiveMoney('${uid}', 10000)">+10,000 B</button>
+                        <button class="btn-nav" style="border-color:#ebca42; color:#ebca42;" onclick="adminGiveItem('${uid}', 3)">+ BUTTERFLY</button>
+                    </div>
+                </div>`;
+            }
+            html += '</div>';
+            document.getElementById('admin-users-list').innerHTML = html;
+        });
+    }
+
+    function adminGiveMoney(uid, amount) {
+        db.ref('users/'+uid+'/balance').once('value').then(s => {
+            db.ref('users/'+uid+'/balance').set((s.val() || 0) + amount);
+        });
+    }
+
+    function adminGiveItem(uid, skinIndex) {
+        db.ref('users/'+uid+'/inventory').push(SKINS[skinIndex]);
+        alert("Предмет успішно видано гравцю!");
+    }
 </script>
 </body>
 </html>
