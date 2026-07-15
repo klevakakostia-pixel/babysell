@@ -183,8 +183,44 @@
         { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, color: "#ebca42" }
     ];
     let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 180; 
-    auth.onAuthStateChanged(u => { if(u) { user = u; document.getElementById('l-btn').style.display = 'none'; document.getElementById('l-prof').style.display = 'block'; document.getElementById('l-ava').src = u.photoURL; db.ref('users/'+u.uid+'/balance').on('value', s => { balance = s.val() || 0; document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; }); db.ref('users/'+u.uid+'/inventory').on('value', s => { userInv = s.val() || {}; renderInventory(); populateTargetSkins(); }); } });
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    auth.onAuthStateChanged(u => { 
+        if(u) { 
+            user = u; 
+            document.getElementById('l-btn').style.display = 'none'; 
+            document.getElementById('l-prof').style.display = 'block'; 
+            document.getElementById('l-ava').src = u.photoURL; 
+
+            // --- НОВИЙ КОД: Примусова реєстрація юзера в базі BEYSELL ---
+            const userRef = db.ref('users/' + u.uid);
+            userRef.once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    // Якщо це новий гравець — створюємо йому профіль
+                    userRef.set({
+                        name: u.displayName, // Щоб ти бачив ім'я в консолі
+                        email: u.email,      // Щоб знав, чий це акаунт
+                        balance: 0           // Можеш змінити на 1000, якщо хочеш давати стартовий бонус
+                    });
+                } else {
+                    // Якщо гравець вже є, просто оновлюємо його дані на випадок змін
+                    userRef.update({
+                        name: u.displayName,
+                        email: u.email
+                    });
+                }
+            });
+            // -------------------------------------------------------------
+
+            db.ref('users/'+u.uid+'/balance').on('value', s => { 
+                balance = s.val() || 0; 
+                document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; 
+            }); 
+            db.ref('users/'+u.uid+'/inventory').on('value', s => { 
+                userInv = s.val() || {}; 
+                renderInventory(); 
+                populateTargetSkins(); 
+            }); 
+        } 
+    });
     function showPage(p) { ['page-market', 'page-inventory', 'page-products', 'page-upgrade'].forEach(id => document.getElementById(id).style.display = 'none'); document.getElementById('page-' + p).style.display = 'block'; }
     function renderInventory() { const g = document.getElementById('inv-grid'); g.innerHTML = ""; Object.keys(userInv).reverse().forEach(id => { const i = userInv[id]; g.innerHTML += `<div class="inv-item" style="padding:30px; background:rgba(5,3,12,0.6); border-radius:35px; border-bottom:4px solid ${i.color}; text-align:center;"><img src="${i.img}" width="130"><br><b style="font-family:Orbitron">${i.name}</b><br><button class="btn-nav" style="width:100%; margin-top:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button><button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button></div>`; }); }
     function selectForUpgrade(id) { selectedUpgradeId = id; const skin = userInv[id]; const slot = document.getElementById('slot-input'); slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`; slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance(); }
