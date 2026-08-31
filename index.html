@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BABYSELL 1.0 BETA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BABYSELL WORLD 1.0</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -11,9 +11,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root { --main: #ff9d00; --bg: #050212; --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1); }
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
-        #action-blocker { display: none; position: fixed; inset: 0; z-index: 99999; background: transparent; cursor: not-allowed; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; position: relative; height: 100vh; touch-action: none; }
+        
+        /* Background Animations */
         .sunset-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%); }
         .sunset-sun { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; background: radial-gradient(circle, #ffb700 15%, #ff4500 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2); animation: sunPulse 8s ease-in-out infinite alternate; }
         @keyframes sunPulse { from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } }
@@ -23,47 +24,45 @@
         .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
         .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
         @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
-        #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
-        .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; }
-        @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .app-content { opacity: 0; filter: blur(20px); transform: scale(1.05); transition: all 2.5s var(--ease-hyper); z-index: 10; position: relative; }
-        .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
         
-        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
+        /* Welcome Screen */
+        #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
+        .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; text-align: center;}
+        @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        
+        /* Main UI */
+        .app-content { opacity: 0; filter: blur(20px); transform: scale(1.05); transition: all 2.5s var(--ease-hyper); z-index: 10; position: absolute; inset: 0; display: flex; flex-direction: column; }
+        .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 100; }
+        
+        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 10px 20px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
         .btn-nav::before { content: ""; position: absolute; top: 100%; left: 50%; width: 400px; height: 400px; margin-left: -200px; background: var(--main); border-radius: 40%; z-index: -1; transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .btn-nav:hover:not(:disabled)::before { top: -100px; animation: btnWaveAnim 5s linear infinite; }
         .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
-        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
         @keyframes btnWaveAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .case-card { background: rgba(4,3,10,0.85); padding: 60px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,157,0,0.1); transition: 1s var(--ease-hyper); cursor: pointer; }
-        .case-card:hover { transform: translateY(-15px); border-color: var(--main); }
-        .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
-        .view-window { position: relative; width: 100%; height: 280px; background: rgba(0,0,0,0.7); margin: 40px 0; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,157,0,0.15); }
-        .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); }
-        .pointer { position: absolute; left: 50%; top: -10px; bottom: -10px; width: 4px; background: linear-gradient(180deg, transparent, var(--main), transparent); z-index: 100; transform: translateX(-50%); border-radius: 5px; }
-        .pointer::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 20px solid var(--main); }
-        .pointer::after { content: ''; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 20px solid var(--main); }
-        .case-strip-item { min-width: 220px; height: 220px; margin: 0 10px; background: linear-gradient(180deg, rgba(18,12,28,0.7), rgba(4,2,8,0.9)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
-        .upgrade-slot { width: 300px; height: 350px; background: rgba(5,3,12,0.6); border: 2px dashed rgba(255,157,0,0.3); border-radius: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); }
-        .upgrade-slot.active { border-style: solid; border-color: var(--main); }
-        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.85); border: 2px solid rgba(255,157,0,0.2); }
-        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; transition: background 0.8s ease; }
-        .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; }
-        .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; }
-        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(255, 157, 0, 0.35); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); }
-        @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .chance-text { position: relative; z-index: 4; font-family: 'Orbitron'; font-size: 45px; color: #fff; font-weight: 900; }
-        #product-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        #product-modal-content { background: #0d0914; border: 1px solid var(--main); padding: 60px; border-radius: 40px; max-width: 500px; text-align: center; }
+        /* Game Area */
+        #game-container { flex-grow: 1; position: relative; overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; background: transparent; }
+        
+        /* Mobile Controls (D-Pad) */
+        #mobile-controls { display: none; position: absolute; bottom: 40px; left: 40px; width: 150px; height: 150px; z-index: 50; }
+        .dpad-btn { position: absolute; width: 50px; height: 50px; background: rgba(255, 157, 0, 0.15); border: 1px solid rgba(255, 157, 0, 0.4); border-radius: 50%; color: var(--main); font-family: 'Orbitron'; font-size: 20px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .dpad-btn:active { background: rgba(255, 157, 0, 0.5); color: #000; box-shadow: 0 0 15px var(--main); }
+        #btn-up { top: 0; left: 50px; }
+        #btn-down { bottom: 0; left: 50px; }
+        #btn-left { top: 50px; left: 0; }
+        #btn-right { top: 50px; left: 100px; }
+
+        @media (max-width: 768px) {
+            #mobile-controls { display: block; } /* Показуємо на телефонах */
+            .header { padding: 0 15px; }
+            .hide-mobile { display: none !important; }
+            .welcome-logo { font-size: 40px; letter-spacing: 10px; }
+        }
     </style>
 </head>
 <body>
-
-<div id="action-blocker"></div>
 
 <div class="sunset-bg-container">
     <div class="sunset-sun"></div>
@@ -78,120 +77,71 @@
 </div>
 
 <div id="welcome-screen">
-    <div class="welcome-logo">BABYSELL</div>
-    <button class="btn-nav" style="margin-top:50px; padding:20px 60px;" onclick="initApp()">go to site</button>
+    <div class="welcome-logo">BABYSELL WORLD</div>
+    <button class="btn-nav" style="margin-top:50px; padding:20px 60px;" onclick="initApp()">ENTER WORLD</button>
 </div>
 
 <audio id="bg-music" loop><source src="https://files.catbox.moe/5ru7vf.mp3"></audio>
 
 <div class="app-content">
     <header class="header">
-        <div style="display:flex; gap:20px;">
-            <button class="btn-nav" onclick="showPage('market')">MARKET</button>
-            <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
-            <button class="btn-nav" onclick="showPage('upgrade')">UPGRADE</button>
-            <button class="btn-nav" style="border-color:var(--main);" onclick="showPage('products')">BEYSELL PRODUCTS</button>
-            <!-- СЕКРЕТНА КНОПКА АДМІНА (прихована за замовчуванням) -->
-            <button id="btn-admin" class="btn-nav" style="display:none; border-color:red; color:red; font-weight:bold;" onclick="showPage('admin')">ADMIN</button>
-        </div>
-        <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
-        <div style="display:flex; align-items:center; gap:30px;">
-            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900;">0 B</div>
-            <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
-            <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main);"></div>
+        <div style="font-family:Orbitron; letter-spacing:5px; font-weight:900; color:var(--main);">BABYSELL MMO</div>
+        
+        <div style="display:flex; align-items:center; gap:20px;">
+            <div style="text-align: right; line-height: 1.2;">
+                <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:18px; font-weight:900;">0 B</div>
+                <div id="u-lvl" style="color:#aaa; font-size:12px;">LVL: 1</div>
+            </div>
+            <button id="l-btn" class="btn-nav" onclick="login()">LOGIN TO PLAY</button>
+            <div id="l-prof" style="display:none; position: relative;">
+                <img id="l-ava" src="" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--main); object-fit: cover;">
+            </div>
         </div>
     </header>
 
-    <div id="page-market" style="padding:100px 40px;">
-        <center>
-            <div class="case-card" style="max-width:400px;" onclick="openCaseModal()">
-                <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
-                <h2 style="font-family:Orbitron; margin-top:30px; letter-spacing:5px;">SUPREME CASE</h2>
-                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px;">1,000 B</div>
-            </div>
-        </center>
-    </div>
-
-    <div id="page-inventory" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; color:var(--main);">COLLECTION</h1>
-        <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
-    </div>
-
-    <div id="page-upgrade" style="display:none; padding:80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; color:var(--main);">UPGRADER</h1>
-        <div class="upgrade-container">
-            <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
-                <p style="color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
-            </div>
-            <div style="text-align:center; position:relative;">
-                <div class="upgrader-roulette" id="upg-roulette">
-                    <div class="upgrader-track" id="upg-track"></div>
-                    <div class="upgrader-arrow-container" id="upg-arrow">
-                        <div class="upgrader-arrow"></div>
-                    </div>
-                    <div class="upgrader-inner">
-                        <div class="water-wave" id="water-fill"></div>
-                        <div id="chance-display" class="chance-text">0%</div>
-                    </div>
-                </div>
-                <button id="upg-btn" class="btn-nav" style="margin-top:50px; width:220px; padding: 15px;" onclick="attemptUpgrade()" disabled>INITIATE UPGRADE</button>
-            </div>
-            <div id="slot-output" class="upgrade-slot">
-                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.85); color:#fff; border:1px solid rgba(255,157,0,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
-                    <option value="">TARGET SKIN</option>
-                </select>
-                <div id="target-img-preview" style="margin-top: 30px;"></div>
-            </div>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Джойстик для телефонів -->
+        <div id="mobile-controls">
+            <div class="dpad-btn" id="btn-up">W</div>
+            <div class="dpad-btn" id="btn-down">S</div>
+            <div class="dpad-btn" id="btn-left">A</div>
+            <div class="dpad-btn" id="btn-right">D</div>
         </div>
-    </div>
-
-    <div id="page-products" style="display:none; padding:100px 80px;">
-        <h1 style="font-family:Orbitron; margin-bottom:50px; text-align:center; color:var(--main);">BEYSELL</h1>
-        <div style="display:flex; justify-content:center;">
-            <div class="product-item" onclick="openProductInfo()" style="cursor:pointer; background: rgba(5,3,12,0.6); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,157,0,0.1);">
-                <h2 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h2>
-                <p style="color:#777;">Gaming Platform v1.0</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- АДМІН ПАНЕЛЬ -->
-    <div id="page-admin" style="display:none; padding:100px 40px; text-align:center;">
-        <h1 style="font-family:Orbitron; margin-bottom:40px; color:red; letter-spacing: 5px;">BEYSELL CONTROL PANEL</h1>
-        <div id="admin-users-list"></div>
-    </div>
-</div>
-
-<div id="product-modal" onclick="closeProductModal()">
-    <div id="product-modal-content" onclick="event.stopPropagation()">
-        <h1 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h1>
-        <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" style="display:inline-block; background:var(--main); color:#000; padding:20px 60px; border-radius:30px; font-family:Orbitron; text-decoration:none; margin-top:40px;">INSTALL</a>
-    </div>
-</div>
-
-<div id="case-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(25px);">
-    <div style="width:95%; max-width:1200px; text-align:center;">
-        <h1 id="win-status">FATE DECIDING...</h1>
-        <div class="view-window"><div class="pointer"></div><div id="strip" class="strip"></div></div>
-        <button id="spin-btn" class="btn-nav" onclick="startSpin()">OPEN FOR 1,000 B</button>
-        <div onclick="closeModals()" style="color:#555; cursor:pointer; margin-top:20px;">[ EXIT MODULE ]</div>
     </div>
 </div>
 
 <script>
     const music = document.getElementById('bg-music');
-    function initApp() { music.volume = 0.2; music.play(); document.getElementById('welcome-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('welcome-screen').style.visibility = 'hidden'; document.body.classList.add('app-loaded'); }, 1500); }
-    const firebaseConfig = { apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", authDomain: "babysell-8b37b.firebaseapp.com", databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", projectId: "babysell-8b37b", appId: "1:955498378146:web:52f027f8e97398e75b78fb" };
-    firebase.initializeApp(firebaseConfig); const auth = firebase.auth(), db = firebase.database();
+    function initApp() { 
+        music.volume = 0.2; 
+        music.play().catch(e => console.log("Audio play prevented")); 
+        document.getElementById('welcome-screen').style.opacity = '0'; 
+        setTimeout(() => { 
+            document.getElementById('welcome-screen').style.visibility = 'hidden'; 
+            document.body.classList.add('app-loaded'); 
+            initGame(); // Запуск гри після екрану завантаження
+        }, 1500); 
+    }
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
+        authDomain: "babysell-8b37b.firebaseapp.com", 
+        databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", 
+        projectId: "babysell-8b37b", 
+        appId: "1:955498378146:web:52f027f8e97398e75b78fb" 
+    };
+    firebase.initializeApp(firebaseConfig); 
+    const auth = firebase.auth(), db = firebase.database();
     
-    const SKINS = [
-        { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, color: "#4b69ff" },
-        { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, color: "#8847ff" },
-        { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, color: "#d32ee6" },
-        { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, color: "#ebca42" }
-    ];
+    let user = null;
+    let myData = { x: Math.random()*1000 - 500, y: Math.random()*1000 - 500, balance: 0, level: 1, name: "Guest", color: getRandomColor() };
+    let otherPlayers = {};
+    let crystals = {}; // Лут на карті
     
-    let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 180; 
+    // Вхід через Google
+    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
     
     auth.onAuthStateChanged(u => { 
         if(u) { 
@@ -199,198 +149,216 @@
             document.getElementById('l-btn').style.display = 'none'; 
             document.getElementById('l-prof').style.display = 'block'; 
             document.getElementById('l-ava').src = u.photoURL; 
+            myData.name = u.displayName || "Player";
 
-            // Автоматична реєстрація користувача в базі
             const userRef = db.ref('users/' + u.uid);
-            userRef.once('value').then(snapshot => {
-                if (!snapshot.exists()) {
-                    userRef.set({
-                        name: u.displayName,
-                        email: u.email,
-                        balance: 0
-                    });
+            userRef.once('value').then(snap => {
+                if(snap.exists()) {
+                    let d = snap.val();
+                    myData.balance = d.balance || 0;
+                    myData.level = d.level || 1;
+                    if(d.x) myData.x = d.x;
+                    if(d.y) myData.y = d.y;
+                    if(d.color) myData.color = d.color;
                 } else {
-                    userRef.update({
-                        name: u.displayName,
-                        email: u.email
-                    });
+                    userRef.set(myData);
                 }
+                updateUI();
             });
 
-            // Перевірка на тебе (Адміна)
-            if(u.email === "klevaka.kostia@gmail.com") {
-                document.getElementById('btn-admin').style.display = 'inline-block';
-                loadAdminData();
-            }
-
-            // Підключення до балансу та інвентарю
-            db.ref('users/'+u.uid+'/balance').on('value', s => { 
-                balance = s.val() || 0; 
-                document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; 
-            }); 
-            db.ref('users/'+u.uid+'/inventory').on('value', s => { 
-                userInv = s.val() || {}; 
-                renderInventory(); 
-                populateTargetSkins(); 
-            }); 
+            // Слухаємо свій баланс
+            userRef.child('balance').on('value', s => { myData.balance = s.val() || 0; updateUI(); checkLevelUp(); });
+            userRef.child('level').on('value', s => { myData.level = s.val() || 1; updateUI(); });
+            
+            // Запускаємо синхронізацію мережі
+            startNetworkSync();
         } 
     });
 
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    
-    function showPage(p) { 
-        ['page-market', 'page-inventory', 'page-products', 'page-upgrade', 'page-admin'].forEach(id => document.getElementById(id).style.display = 'none'); 
-        document.getElementById('page-' + p).style.display = 'block'; 
-    }
-    
-    function renderInventory() { const g = document.getElementById('inv-grid'); g.innerHTML = ""; Object.keys(userInv).reverse().forEach(id => { const i = userInv[id]; g.innerHTML += `<div class="inv-item" style="padding:30px; background:rgba(5,3,12,0.6); border-radius:35px; border-bottom:4px solid ${i.color}; text-align:center;"><img src="${i.img}" width="130"><br><b style="font-family:Orbitron">${i.name}</b><br><button class="btn-nav" style="width:100%; margin-top:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button><button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button></div>`; }); }
-    
-    function selectForUpgrade(id) { selectedUpgradeId = id; const skin = userInv[id]; const slot = document.getElementById('slot-input'); slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`; slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance(); }
-    
-    function populateTargetSkins() { const sel = document.getElementById('target-select'); const currentVal = sel.value; sel.innerHTML = '<option value="">TARGET SKIN</option>'; SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`); if(currentVal) sel.value = currentVal; }
-    
-    function updateUpgradeChance() { 
-        if(!selectedUpgradeId) return; 
-        const targetIdx = document.getElementById('target-select').value; 
-        const btn = document.getElementById('upg-btn'); 
-        const track = document.getElementById('upg-track'); 
-        const water = document.getElementById('water-fill'); 
-        const chanceDisplay = document.getElementById('chance-display'); 
-        const preview = document.getElementById('target-img-preview'); 
-        if(targetIdx === "") { chanceDisplay.innerText = "0%"; btn.disabled = true; track.style.background = `transparent`; water.style.top = `100%`; preview.innerHTML = ""; return; } 
-        const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); 
-        chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150">`; 
-        
-        const angleSize = (chance / 100) * 360; const half = angleSize / 2;
-        track.style.background = `conic-gradient(from 0deg, transparent 0deg, transparent ${180-half}deg, var(--main) ${180-half}deg, var(--main) ${180+half}deg, transparent ${180+half}deg, transparent 360deg)`;
-        water.style.top = `${100 - chance}%`; 
+    function updateUI() {
+        document.getElementById('u-bal').innerText = myData.balance.toLocaleString() + " B";
+        document.getElementById('u-lvl').innerText = "LVL: " + myData.level;
     }
 
-    function attemptUpgrade() { 
-        const targetIdx = document.getElementById('target-select').value; 
-        const chance = parseInt(document.getElementById('chance-display').innerText); 
-        const btn = document.getElementById('upg-btn'); 
-        const arrowCont = document.getElementById('upg-arrow'); 
-        document.getElementById('action-blocker').style.display = 'block'; 
-        btn.disabled = true; 
-        
-        const isWin = Math.random() * 100 < chance; 
-        const angleSize = (chance / 100) * 360;
-        const startWin = 180 - (angleSize / 2);
-        const endWin = 180 + (angleSize / 2);
-        
-        let resultAngle;
-        const winPadding = Math.min(5, angleSize / 3); 
-        const losePadding = Math.min(5, (360 - angleSize) / 3);
+    function checkLevelUp() {
+        let neededForNext = myData.level * 100; // Кожні 100 коїнів новий рівень
+        if (myData.balance >= neededForNext) {
+            myData.level++;
+            db.ref('users/' + user.uid + '/level').set(myData.level);
+        }
+    }
 
-        if (isWin) {
-            resultAngle = (startWin + winPadding) + (Math.random() * (angleSize - (winPadding * 2)));
-        } else {
-            const safeRange = (360 - angleSize) - (losePadding * 2);
-            resultAngle = (endWin + losePadding) + (Math.random() * safeRange);
-            if (resultAngle >= 360) resultAngle -= 360;
+    // --- GAME ENGINE ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let keys = {};
+
+    window.addEventListener('resize', () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; });
+
+    // Управління ПК
+    window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+    // Управління Телефон
+    const bindTouch = (id, key) => {
+        const btn = document.getElementById(id);
+        btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; });
+        btn.addEventListener('touchend', e => { e.preventDefault(); keys[key] = false; });
+    };
+    bindTouch('btn-up', 'w'); bindTouch('btn-down', 's'); bindTouch('btn-left', 'a'); bindTouch('btn-right', 'd');
+
+    function getRandomColor() {
+        const colors = ['#ff9d00', '#ff4500', '#d32ee6', '#4b69ff', '#00ffaa'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function initGame() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        requestAnimationFrame(gameLoop);
+    }
+
+    function gameLoop() {
+        updatePhysics();
+        drawScene();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function updatePhysics() {
+        if(!user) return; // Чекаємо логіна для руху
+        
+        let speed = 4 + (myData.level * 0.2); // Швидкість росте з рівнем
+        let moved = false;
+
+        if (keys['w'] || keys['ц']) { myData.y -= speed; moved = true; }
+        if (keys['s'] || keys['і']) { myData.y += speed; moved = true; }
+        if (keys['a'] || keys['ф']) { myData.x -= speed; moved = true; }
+        if (keys['d'] || keys['в']) { myData.x += speed; moved = true; }
+
+        // Межі карти (наприклад від -2000 до 2000)
+        myData.x = Math.max(-2000, Math.min(2000, myData.x));
+        myData.y = Math.max(-2000, Math.min(2000, myData.y));
+
+        // Збір кристалів (Collision)
+        let playerSize = 20 + (myData.level * 2);
+        for(let id in crystals) {
+            let c = crystals[id];
+            let dx = myData.x - c.x;
+            let dy = myData.y - c.y;
+            if(Math.sqrt(dx*dx + dy*dy) < playerSize + 10) {
+                collectCrystal(id, c.value);
+            }
+        }
+    }
+
+    function drawScene() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Камера слідує за гравцем
+        ctx.save();
+        ctx.translate(canvas.width / 2 - myData.x, canvas.height / 2 - myData.y);
+
+        // Малюємо сітку світу
+        ctx.strokeStyle = "rgba(255, 157, 0, 0.1)";
+        ctx.lineWidth = 1;
+        for(let i = -2000; i <= 2000; i+=100) {
+            ctx.beginPath(); ctx.moveTo(i, -2000); ctx.lineTo(i, 2000); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-2000, i); ctx.lineTo(2000, i); ctx.stroke();
         }
 
-        const spins = 5 * 360; 
-        currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360)); 
-        arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`; 
-        
-        setTimeout(() => { 
-            if(isWin) { 
-                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); 
-                db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]); 
-                alert("SUCCESS! +1 " + SKINS[targetIdx].name); 
-            } else { 
-                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); 
-                alert("FAILED! SKIN DESTROYED"); 
-            } 
-            selectedUpgradeId = null; 
-            document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>"; 
-            document.getElementById('slot-input').classList.remove('active'); 
-            document.getElementById('action-blocker').style.display = 'none'; 
-            updateUpgradeChance(); 
-            showPage('inventory'); 
-        }, 4100); 
+        // Малюємо кристали (лут)
+        for(let id in crystals) {
+            let c = crystals[id];
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff9d00';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff9d00';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // Малюємо ІНШИХ гравців
+        for(let uid in otherPlayers) {
+            if(uid === (user ? user.uid : null)) continue;
+            let p = otherPlayers[uid];
+            drawPlayer(p.x, p.y, p.color, p.name, p.level);
+        }
+
+        // Малюємо СЕБЕ
+        if(user) drawPlayer(myData.x, myData.y, myData.color, myData.name, myData.level);
+
+        ctx.restore();
     }
 
-    function getSkinByChance() { let rand = Math.random() * 100; let sum = 0; for (let i = 0; i < SKINS.length; i++) { sum += (100/SKINS.length); if (rand <= sum) return SKINS[i]; } return SKINS[0]; }
-    
-    function startSpin() { 
-        if(balance < 1000) return alert("LOW BALANCE"); 
-        const btn = document.getElementById('spin-btn'); 
-        btn.disabled = true; 
-        document.getElementById('action-blocker').style.display = 'block'; 
-        db.ref('users/'+user.uid+'/balance').set(balance - 1000); 
-        const strip = document.getElementById('strip'); 
-        strip.innerHTML = ""; 
-        
-        const win = getSkinByChance(); 
-        for(let i=0; i<100; i++) { 
-            let s = (i === 50) ? win : getSkinByChance(); 
-            strip.innerHTML += `<div class="case-strip-item"><img src="${s.img}" width="100"><div style="color:${s.color}">${s.name}</div></div>`; 
-        } 
-        
-        strip.style.transition = 'none'; 
-        strip.style.transform = 'translateX(0)'; 
-        
-        const windowWidth = document.querySelector('.view-window').clientWidth;
-        const finalShift = (50 * 240) + 120 - (windowWidth / 2);
-        const randomOffset = Math.floor(Math.random() * 180) - 90;
-        
-        setTimeout(() => { 
-            strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; 
-            strip.style.transform = `translateX(-${finalShift + randomOffset}px)`; 
-        }, 50); 
-        
-        setTimeout(() => { 
-            db.ref('users/'+user.uid+'/inventory').push(win); 
-            btn.disabled = false; 
-            document.getElementById('action-blocker').style.display = 'none'; 
-            alert("YOU GOT: " + win.name); 
-        }, 9000); 
-    }
-    
-    function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
-    function openCaseModal() { if(!user) return login(); document.getElementById('case-modal').style.display='flex'; }
-    function closeModals() { document.getElementById('case-modal').style.display='none'; }
-    function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
-    function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+    function drawPlayer(x, y, color, name, level) {
+        let size = 20 + (level * 2);
+        size = Math.min(size, 60); // Максимальний розмір
 
-    // АДМІНСЬКІ ФУНКЦІЇ
-    function loadAdminData() {
-        db.ref('users').on('value', snap => {
-            const users = snap.val();
-            let html = '<div style="display:flex; flex-direction:column; gap:15px; max-width: 800px; margin: 0 auto;">';
-            for(let uid in users) {
-                let uData = users[uid];
-                html += `
-                <div style="background:rgba(255,0,0,0.05); padding:20px; border:1px solid red; border-radius:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
-                    <div style="text-align: left;">
-                        <b style="font-family:Orbitron; font-size:22px;">${uData.name || 'Unknown'}</b><br>
-                        <span style="color:#aaa; font-size: 14px;">${uData.email || 'No email'}</span><br>
-                        Баланс: <b style="color:var(--main)">${uData.balance || 0} B</b>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-nav" style="border-color:#4CAF50; color:#4CAF50;" onclick="adminGiveMoney('${uid}', 10000)">+10,000 B</button>
-                        <button class="btn-nav" style="border-color:#ebca42; color:#ebca42;" onclick="adminGiveItem('${uid}', 3)">+ BUTTERFLY</button>
-                    </div>
-                </div>`;
+        // Тіло гравця
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.8)';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = color || var(--main);
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = color || var(--main);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Нікнейм та рівень
+        ctx.font = "14px Orbitron";
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.fillText(`${name} [Lv.${level}]`, x, y - size - 10);
+    }
+
+    // --- МЕРЕЖЕВИЙ КОД (Firebase) ---
+    let lastSyncX = 0, lastSyncY = 0;
+
+    function startNetworkSync() {
+        // Відправляємо свої координати кожні 100мс, якщо ми зрушили з місця
+        setInterval(() => {
+            if(Math.abs(myData.x - lastSyncX) > 2 || Math.abs(myData.y - lastSyncY) > 2) {
+                db.ref('world/players/' + user.uid).set({
+                    x: Math.round(myData.x), y: Math.round(myData.y),
+                    color: myData.color, name: myData.name, level: myData.level
+                });
+                lastSyncX = myData.x; lastSyncY = myData.y;
             }
-            html += '</div>';
-            document.getElementById('admin-users-list').innerHTML = html;
+        }, 100);
+
+        // Слухаємо інших гравців
+        db.ref('world/players').on('value', snap => {
+            otherPlayers = snap.val() || {};
         });
+
+        // Слухаємо кристали
+        db.ref('world/crystals').on('value', snap => {
+            crystals = snap.val() || {};
+        });
+
+        // Адмін-спавнер кристалів (якщо кристалів мало - генеруємо)
+        setInterval(() => {
+            if(Object.keys(crystals).length < 30) {
+                spawnCrystal();
+            }
+        }, 3000);
     }
 
-    function adminGiveMoney(uid, amount) {
-        db.ref('users/'+uid+'/balance').once('value').then(s => {
-            db.ref('users/'+uid+'/balance').set((s.val() || 0) + amount);
-        });
+    function spawnCrystal() {
+        let cx = Math.random() * 4000 - 2000;
+        let cy = Math.random() * 4000 - 2000;
+        db.ref('world/crystals').push({ x: cx, y: cy, value: Math.floor(Math.random()*15)+5 });
     }
 
-    function adminGiveItem(uid, skinIndex) {
-        db.ref('users/'+uid+'/inventory').push(SKINS[skinIndex]);
-        alert("Предмет успішно видано гравцю!");
+    function collectCrystal(id, value) {
+        delete crystals[id]; // Видаляємо локально для плавності
+        db.ref('world/crystals/' + id).remove(); // Видаляємо з бази
+        db.ref('users/' + user.uid + '/balance').set(myData.balance + value);
     }
+
 </script>
 </body>
 </html>
