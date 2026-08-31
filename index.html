@@ -3,128 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BABYSELL WORLD 1.0</title>
+    <title>BABYSELL ROBLOX</title>
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <!-- Three.js (Для 3D графіки) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
         :root { --main: #ff9d00; --bg: #050212; --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1); }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; }
-        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; position: relative; height: 100vh; touch-action: none; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; width: 100vw; height: 100vh; touch-action: none; }
         
-        /* Background Animations */
-        .sunset-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%); }
+        /* Задній фон для меню */
+        .sunset-bg-container { position: fixed; inset: 0; z-index: -1; background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%); }
         .sunset-sun { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; background: radial-gradient(circle, #ffb700 15%, #ff4500 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2); animation: sunPulse 8s ease-in-out infinite alternate; }
         @keyframes sunPulse { from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } }
-        .waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 15vh; min-height: 100px; }
-        .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
-        .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
-        .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
-        .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
-        @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
         
-        /* Welcome Screen */
-        #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
-        .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; text-align: center;}
-        @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        
-        /* Main UI */
-        .app-content { opacity: 0; filter: blur(20px); transform: scale(1.05); transition: all 2.5s var(--ease-hyper); z-index: 10; position: absolute; inset: 0; display: flex; flex-direction: column; }
-        .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); z-index: 100; }
-        
-        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 10px 20px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
+        /* Кнопки */
+        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 14px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); backdrop-filter: blur(5px); }
         .btn-nav::before { content: ""; position: absolute; top: 100%; left: 50%; width: 400px; height: 400px; margin-left: -200px; background: var(--main); border-radius: 40%; z-index: -1; transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-nav:hover:not(:disabled)::before { top: -100px; animation: btnWaveAnim 5s linear infinite; }
-        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
+        .btn-nav:hover::before { top: -100px; animation: btnWaveAnim 5s linear infinite; }
+        .btn-nav:hover { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
         @keyframes btnWaveAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Game Area */
-        #game-container { flex-grow: 1; position: relative; overflow: hidden; }
-        canvas { display: block; width: 100%; height: 100%; background: transparent; }
+        /* Екрани */
+        .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+        .screen.active { display: flex; }
+
+        /* Екран Логіну */
+        #login-screen { justify-content: center; align-items: center; z-index: 2000; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
         
-        /* Mobile Controls (D-Pad) */
-        #mobile-controls { display: none; position: absolute; bottom: 40px; left: 40px; width: 150px; height: 150px; z-index: 50; }
-        .dpad-btn { position: absolute; width: 50px; height: 50px; background: rgba(255, 157, 0, 0.15); border: 1px solid rgba(255, 157, 0, 0.4); border-radius: 50%; color: var(--main); font-family: 'Orbitron'; font-size: 20px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .dpad-btn:active { background: rgba(255, 157, 0, 0.5); color: #000; box-shadow: 0 0 15px var(--main); }
-        #btn-up { top: 0; left: 50px; }
-        #btn-down { bottom: 0; left: 50px; }
-        #btn-left { top: 50px; left: 0; }
-        #btn-right { top: 50px; left: 100px; }
+        /* Головне меню (Roblox Style) */
+        #home-screen { z-index: 1000; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 80px; background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid rgba(255,157,0,0.2); }
+        .places-grid { display: flex; padding: 40px; gap: 30px; flex-wrap: wrap; justify-content: center; overflow-y: auto; }
+        .place-card { background: rgba(10, 5, 20, 0.8); border: 1px solid rgba(255,157,0,0.2); border-radius: 20px; width: 300px; padding: 20px; text-align: center; transition: 0.3s; cursor: pointer; }
+        .place-card:hover { transform: translateY(-10px); border-color: var(--main); box-shadow: 0 10px 30px rgba(255,157,0,0.2); }
+        .place-thumbnail { width: 100%; height: 150px; background: #111; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; color: #444; font-size: 24px; border: 1px dashed #333; }
+        
+        /* Екран завантаження */
+        #loading-screen { justify-content: center; align-items: center; background: #000; z-index: 3000; }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(255,157,0,0.3); border-top-color: var(--main); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Гра (3D) */
+        #game-screen { background: #000; }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        /* Мобільний джойстик */
+        #joystick-zone { display: none; position: absolute; bottom: 30px; left: 30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; z-index: 100; border: 2px solid rgba(255,157,0,0.3); }
+        #joystick-knob { position: absolute; top: 50px; left: 50px; width: 50px; height: 50px; background: var(--main); border-radius: 50%; box-shadow: 0 0 15px var(--main); pointer-events: none; }
+        
+        #mobile-jump { display: none; position: absolute; bottom: 50px; right: 50px; width: 70px; height: 70px; background: rgba(255,157,0,0.2); border: 2px solid var(--main); border-radius: 50%; color: #fff; font-family: 'Orbitron'; font-weight: bold; z-index: 100; align-items: center; justify-content: center; }
 
         @media (max-width: 768px) {
-            #mobile-controls { display: block; } /* Показуємо на телефонах */
-            .header { padding: 0 15px; }
-            .hide-mobile { display: none !important; }
-            .welcome-logo { font-size: 40px; letter-spacing: 10px; }
+            #joystick-zone, #mobile-jump { display: flex; }
+            .header { padding: 0 20px; }
         }
     </style>
 </head>
 <body>
 
-<div class="sunset-bg-container">
+<!-- Задній фон меню -->
+<div class="sunset-bg-container" id="menu-bg">
     <div class="sunset-sun"></div>
-    <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
-        <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
-        <g class="parallax">
-            <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255, 69, 0, 0.6)" />
-            <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(211, 46, 230, 0.4)" />
-            <use xlink:href="#gentle-wave" x="48" y="7" fill="#050212" />
-        </g>
-    </svg>
 </div>
 
-<div id="welcome-screen">
-    <div class="welcome-logo">BABYSELL WORLD</div>
-    <button class="btn-nav" style="margin-top:50px; padding:20px 60px;" onclick="initApp()">ENTER WORLD</button>
+<!-- 1. Екран Входу -->
+<div id="login-screen" class="screen active">
+    <h1 style="font-family:'Orbitron'; font-size:40px; margin-bottom:10px; color:var(--main);">BABYSELL WORLD</h1>
+    <p style="margin-bottom: 40px; color:#aaa;">Log in to access places</p>
+    <button class="btn-nav" onclick="loginWithGoogle()" style="font-size: 18px; padding: 15px 40px;">LOGIN WITH GOOGLE</button>
 </div>
 
-<audio id="bg-music" loop><source src="https://files.catbox.moe/5ru7vf.mp3"></audio>
-
-<div class="app-content">
-    <header class="header">
-        <div style="font-family:Orbitron; letter-spacing:5px; font-weight:900; color:var(--main);">BABYSELL MMO</div>
-        
-        <div style="display:flex; align-items:center; gap:20px;">
-            <div style="text-align: right; line-height: 1.2;">
-                <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:18px; font-weight:900;">0 B</div>
-                <div id="u-lvl" style="color:#aaa; font-size:12px;">LVL: 1</div>
+<!-- 2. Головне Меню (Roblox Style) -->
+<div id="home-screen" class="screen">
+    <div class="header">
+        <div style="font-family:'Orbitron'; font-size:24px; color:var(--main); font-weight:900;">BABYSELL</div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <div style="text-align: right;">
+                <div id="ui-name" style="font-weight:bold; font-size:16px;">Player</div>
+                <div id="ui-bal" style="color:var(--main); font-family:'Orbitron'; font-size:14px;">0 B-Coins</div>
             </div>
-            <button id="l-btn" class="btn-nav" onclick="login()">LOGIN TO PLAY</button>
-            <div id="l-prof" style="display:none; position: relative;">
-                <img id="l-ava" src="" style="width:40px; height:40px; border-radius:50%; border:2px solid var(--main); object-fit: cover;">
-            </div>
+            <img id="ui-avatar" src="" style="width:45px; height:45px; border-radius:50%; border:2px solid var(--main);">
         </div>
-    </header>
-
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
-        
-        <!-- Джойстик для телефонів -->
-        <div id="mobile-controls">
-            <div class="dpad-btn" id="btn-up">W</div>
-            <div class="dpad-btn" id="btn-down">S</div>
-            <div class="dpad-btn" id="btn-left">A</div>
-            <div class="dpad-btn" id="btn-right">D</div>
+    </div>
+    
+    <div class="places-grid">
+        <div class="place-card">
+            <div class="place-thumbnail">EMPTY</div>
+            <h2 style="font-family:'Orbitron'; margin-bottom:10px;">Empty Place</h2>
+            <p style="color:#888; font-size:14px; margin-bottom:20px;">A blank canvas. Run around and meet other players.</p>
+            <button class="btn-nav" style="width:100%; background:var(--main); color:#000;" onclick="joinServer()">PLAY</button>
         </div>
     </div>
 </div>
 
-<script>
-    const music = document.getElementById('bg-music');
-    function initApp() { 
-        music.volume = 0.2; 
-        music.play().catch(e => console.log("Audio play prevented")); 
-        document.getElementById('welcome-screen').style.opacity = '0'; 
-        setTimeout(() => { 
-            document.getElementById('welcome-screen').style.visibility = 'hidden'; 
-            document.body.classList.add('app-loaded'); 
-            initGame(); // Запуск гри після екрану завантаження
-        }, 1500); 
-    }
+<!-- 3. Екран завантаження -->
+<div id="loading-screen" class="screen">
+    <div class="spinner"></div>
+    <h2 id="loading-text" style="font-family:'Orbitron'; color:var(--main); letter-spacing:3px;">CONNECTING TO SERVER...</h2>
+</div>
 
+<!-- 4. Гра (3D) -->
+<div id="game-screen" class="screen">
+    <!-- Сюди Three.js вставить canvas -->
+    <div id="joystick-zone">
+        <div id="joystick-knob"></div>
+    </div>
+    <div id="mobile-jump">JUMP</div>
+</div>
+
+<script>
+    // --- FIREBASE SETUP ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
@@ -133,232 +130,345 @@
         appId: "1:955498378146:web:52f027f8e97398e75b78fb" 
     };
     firebase.initializeApp(firebaseConfig); 
-    const auth = firebase.auth(), db = firebase.database();
+    const auth = firebase.auth();
+    const db = firebase.database();
     
-    let user = null;
-    let myData = { x: Math.random()*1000 - 500, y: Math.random()*1000 - 500, balance: 0, level: 1, name: "Guest", color: getRandomColor() };
-    let otherPlayers = {};
-    let crystals = {}; // Лут на карті
-    
-    // Вхід через Google
-    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-    
-    auth.onAuthStateChanged(u => { 
-        if(u) { 
-            user = u; 
-            document.getElementById('l-btn').style.display = 'none'; 
-            document.getElementById('l-prof').style.display = 'block'; 
-            document.getElementById('l-ava').src = u.photoURL; 
-            myData.name = u.displayName || "Player";
+    let currentUser = null;
+    let myColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Випадковий колір кубика
 
-            const userRef = db.ref('users/' + u.uid);
-            userRef.once('value').then(snap => {
-                if(snap.exists()) {
-                    let d = snap.val();
-                    myData.balance = d.balance || 0;
-                    myData.level = d.level || 1;
-                    if(d.x) myData.x = d.x;
-                    if(d.y) myData.y = d.y;
-                    if(d.color) myData.color = d.color;
-                } else {
-                    userRef.set(myData);
-                }
-                updateUI();
-            });
+    // --- UI ЛОГІКА ---
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
 
-            // Слухаємо свій баланс
-            userRef.child('balance').on('value', s => { myData.balance = s.val() || 0; updateUI(); checkLevelUp(); });
-            userRef.child('level').on('value', s => { myData.level = s.val() || 1; updateUI(); });
+    function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).catch(err => alert("Login failed: " + err.message));
+    }
+
+    // Слухач авторизації
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('ui-name').innerText = user.displayName || "Guest";
+            document.getElementById('ui-avatar').src = user.photoURL;
+            showScreen('home-screen');
             
-            // Запускаємо синхронізацію мережі
-            startNetworkSync();
-        } 
+            // Створюємо профіль у базі, якщо немає
+            db.ref('users/' + user.uid).once('value', snap => {
+                if(!snap.exists()) {
+                    db.ref('users/' + user.uid).set({ name: user.displayName, balance: 0, color: myColor });
+                } else {
+                    myColor = snap.val().color || myColor;
+                    document.getElementById('ui-bal').innerText = (snap.val().balance || 0) + " B-Coins";
+                }
+            });
+        } else {
+            showScreen('login-screen');
+        }
     });
 
-    function updateUI() {
-        document.getElementById('u-bal').innerText = myData.balance.toLocaleString() + " B";
-        document.getElementById('u-lvl').innerText = "LVL: " + myData.level;
-    }
-
-    function checkLevelUp() {
-        let neededForNext = myData.level * 100; // Кожні 100 коїнів новий рівень
-        if (myData.balance >= neededForNext) {
-            myData.level++;
-            db.ref('users/' + user.uid + '/level').set(myData.level);
-        }
-    }
-
-    // --- GAME ENGINE ---
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    let keys = {};
-
-    window.addEventListener('resize', () => { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; });
-
-    // Управління ПК
-    window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-    window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-    // Управління Телефон
-    const bindTouch = (id, key) => {
-        const btn = document.getElementById(id);
-        btn.addEventListener('touchstart', e => { e.preventDefault(); keys[key] = true; });
-        btn.addEventListener('touchend', e => { e.preventDefault(); keys[key] = false; });
-    };
-    bindTouch('btn-up', 'w'); bindTouch('btn-down', 's'); bindTouch('btn-left', 'a'); bindTouch('btn-right', 'd');
-
-    function getRandomColor() {
-        const colors = ['#ff9d00', '#ff4500', '#d32ee6', '#4b69ff', '#00ffaa'];
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    function initGame() {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
-        requestAnimationFrame(gameLoop);
-    }
-
-    function gameLoop() {
-        updatePhysics();
-        drawScene();
-        requestAnimationFrame(gameLoop);
-    }
-
-    function updatePhysics() {
-        if(!user) return; // Чекаємо логіна для руху
+    // Підключення до сервера (плейсу)
+    function joinServer() {
+        showScreen('loading-screen');
+        document.getElementById('menu-bg').style.display = 'none'; // Ховаємо задній фон заходу сонця
         
-        let speed = 4 + (myData.level * 0.2); // Швидкість росте з рівнем
-        let moved = false;
-
-        if (keys['w'] || keys['ц']) { myData.y -= speed; moved = true; }
-        if (keys['s'] || keys['і']) { myData.y += speed; moved = true; }
-        if (keys['a'] || keys['ф']) { myData.x -= speed; moved = true; }
-        if (keys['d'] || keys['в']) { myData.x += speed; moved = true; }
-
-        // Межі карти (наприклад від -2000 до 2000)
-        myData.x = Math.max(-2000, Math.min(2000, myData.x));
-        myData.y = Math.max(-2000, Math.min(2000, myData.y));
-
-        // Збір кристалів (Collision)
-        let playerSize = 20 + (myData.level * 2);
-        for(let id in crystals) {
-            let c = crystals[id];
-            let dx = myData.x - c.x;
-            let dy = myData.y - c.y;
-            if(Math.sqrt(dx*dx + dy*dy) < playerSize + 10) {
-                collectCrystal(id, c.value);
-            }
-        }
-    }
-
-    function drawScene() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Імітуємо реальне підключення для атмосфери
+        setTimeout(() => { document.getElementById('loading-text').innerText = "JOINING INSTANCE..."; }, 1000);
+        setTimeout(() => { document.getElementById('loading-text').innerText = "REQUESTING CHARACTER..."; }, 2000);
         
-        // Камера слідує за гравцем
-        ctx.save();
-        ctx.translate(canvas.width / 2 - myData.x, canvas.height / 2 - myData.y);
-
-        // Малюємо сітку світу
-        ctx.strokeStyle = "rgba(255, 157, 0, 0.1)";
-        ctx.lineWidth = 1;
-        for(let i = -2000; i <= 2000; i+=100) {
-            ctx.beginPath(); ctx.moveTo(i, -2000); ctx.lineTo(i, 2000); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-2000, i); ctx.lineTo(2000, i); ctx.stroke();
-        }
-
-        // Малюємо кристали (лут)
-        for(let id in crystals) {
-            let c = crystals[id];
-            ctx.beginPath();
-            ctx.arc(c.x, c.y, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff9d00';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#ff9d00';
-            ctx.fill();
-            ctx.shadowBlur = 0;
-        }
-
-        // Малюємо ІНШИХ гравців
-        for(let uid in otherPlayers) {
-            if(uid === (user ? user.uid : null)) continue;
-            let p = otherPlayers[uid];
-            drawPlayer(p.x, p.y, p.color, p.name, p.level);
-        }
-
-        // Малюємо СЕБЕ
-        if(user) drawPlayer(myData.x, myData.y, myData.color, myData.name, myData.level);
-
-        ctx.restore();
-    }
-
-    function drawPlayer(x, y, color, name, level) {
-        let size = 20 + (level * 2);
-        size = Math.min(size, 60); // Максимальний розмір
-
-        // Тіло гравця
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0,0,0,0.8)';
-        ctx.fill();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = color || var(--main);
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = color || var(--main);
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-
-        // Нікнейм та рівень
-        ctx.font = "14px Orbitron";
-        ctx.fillStyle = "#fff";
-        ctx.textAlign = "center";
-        ctx.fillText(`${name} [Lv.${level}]`, x, y - size - 10);
-    }
-
-    // --- МЕРЕЖЕВИЙ КОД (Firebase) ---
-    let lastSyncX = 0, lastSyncY = 0;
-
-    function startNetworkSync() {
-        // Відправляємо свої координати кожні 100мс, якщо ми зрушили з місця
-        setInterval(() => {
-            if(Math.abs(myData.x - lastSyncX) > 2 || Math.abs(myData.y - lastSyncY) > 2) {
-                db.ref('world/players/' + user.uid).set({
-                    x: Math.round(myData.x), y: Math.round(myData.y),
-                    color: myData.color, name: myData.name, level: myData.level
-                });
-                lastSyncX = myData.x; lastSyncY = myData.y;
-            }
-        }, 100);
-
-        // Слухаємо інших гравців
-        db.ref('world/players').on('value', snap => {
-            otherPlayers = snap.val() || {};
-        });
-
-        // Слухаємо кристали
-        db.ref('world/crystals').on('value', snap => {
-            crystals = snap.val() || {};
-        });
-
-        // Адмін-спавнер кристалів (якщо кристалів мало - генеруємо)
-        setInterval(() => {
-            if(Object.keys(crystals).length < 30) {
-                spawnCrystal();
-            }
+        setTimeout(() => {
+            showScreen('game-screen');
+            init3DGame(); // Запускаємо Three.js
         }, 3000);
     }
 
-    function spawnCrystal() {
-        let cx = Math.random() * 4000 - 2000;
-        let cy = Math.random() * 4000 - 2000;
-        db.ref('world/crystals').push({ x: cx, y: cy, value: Math.floor(Math.random()*15)+5 });
+    // --- 3D ГРА (THREE.JS) ---
+    let scene, camera, renderer;
+    let player, playerMesh;
+    let otherPlayers = {}; // Об'єкти інших гравців на карті
+    let keys = { w:false, a:false, s:false, d:false, space:false };
+    let joyMove = { x: 0, y: 0 };
+    
+    function init3DGame() {
+        const gameDiv = document.getElementById('game-screen');
+        
+        // 1. Сцена та Туман (щоб край карти розчинявся)
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Блакитне небо
+        scene.fog = new THREE.Fog(0x87CEEB, 50, 150);
+
+        // 2. Камера (від 3-го лиця)
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        // 3. Рендерер
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        gameDiv.appendChild(renderer.domElement);
+
+        // 4. Світло
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 100, 50);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // 5. Земля (Карта)
+        const groundGeo = new THREE.PlaneGeometry(500, 500);
+        const groundMat = new THREE.MeshLambertMaterial({ color: 0x3a5a22 }); // Трава
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Сітка на землі (для стилю Roblox Baseplate)
+        const grid = new THREE.GridHelper(500, 100, 0x000000, 0x000000);
+        grid.material.opacity = 0.2;
+        grid.material.transparent = true;
+        scene.add(grid);
+
+        // 6. МІЙ ПЕРСОНАЖ (Роблокс-стайл кубик)
+        player = new THREE.Group();
+        
+        const geo = new THREE.BoxGeometry(2, 4, 2);
+        const mat = new THREE.MeshLambertMaterial({ color: myColor });
+        playerMesh = new THREE.Mesh(geo, mat);
+        playerMesh.position.y = 2; // Піднімаємо над землею
+        playerMesh.castShadow = true;
+        player.add(playerMesh);
+        
+        // Додаємо нікнейм над собою
+        const nameTag = createNameTag(currentUser.displayName);
+        nameTag.position.y = 5;
+        player.add(nameTag);
+
+        scene.add(player);
+
+        // 7. Керування ПК (WASD)
+        window.addEventListener('keydown', e => {
+            if(e.key.toLowerCase() === 'w' || e.key === 'ц') keys.w = true;
+            if(e.key.toLowerCase() === 's' || e.key === 'і') keys.s = true;
+            if(e.key.toLowerCase() === 'a' || e.key === 'ф') keys.a = true;
+            if(e.key.toLowerCase() === 'd' || e.key === 'в') keys.d = true;
+            if(e.key === ' ') keys.space = true;
+        });
+        window.addEventListener('keyup', e => {
+            if(e.key.toLowerCase() === 'w' || e.key === 'ц') keys.w = false;
+            if(e.key.toLowerCase() === 's' || e.key === 'і') keys.s = false;
+            if(e.key.toLowerCase() === 'a' || e.key === 'ф') keys.a = false;
+            if(e.key.toLowerCase() === 'd' || e.key === 'в') keys.d = false;
+            if(e.key === ' ') keys.space = false;
+        });
+
+        // 8. Керування Телефон (Джойстик)
+        setupJoystick();
+
+        // 9. Ресайз екрану
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 10. Мережа: Firebase Sync
+        setupMultiplayer();
+
+        // Запуск ігрового циклу
+        animate();
     }
 
-    function collectCrystal(id, value) {
-        delete crystals[id]; // Видаляємо локально для плавності
-        db.ref('world/crystals/' + id).remove(); // Видаляємо з бази
-        db.ref('users/' + user.uid + '/balance').set(myData.balance + value);
+    // Створення тексту над головою (Sprite)
+    function createNameTag(text) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, 256, 64);
+        ctx.font = "bold 30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText(text, 128, 40);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const spriteMat = new THREE.SpriteMaterial({ map: texture });
+        const sprite = new THREE.Sprite(spriteMat);
+        sprite.scale.set(6, 1.5, 1);
+        return sprite;
     }
 
+    // Мобільний джойстик
+    function setupJoystick() {
+        const zone = document.getElementById('joystick-zone');
+        const knob = document.getElementById('joystick-knob');
+        const jumpBtn = document.getElementById('mobile-jump');
+        
+        let isDragging = false;
+        let centerX, centerY;
+
+        zone.addEventListener('touchstart', e => {
+            isDragging = true;
+            const rect = zone.getBoundingClientRect();
+            centerX = rect.left + rect.width / 2;
+            centerY = rect.top + rect.height / 2;
+            handleTouch(e);
+        });
+
+        zone.addEventListener('touchmove', e => {
+            if(isDragging) handleTouch(e);
+        });
+
+        zone.addEventListener('touchend', () => {
+            isDragging = false;
+            knob.style.transform = `translate(0px, 0px)`;
+            joyMove = { x: 0, y: 0 };
+        });
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            let dx = touch.clientX - centerX;
+            let dy = touch.clientY - centerY;
+            
+            // Обмеження радіусу джойстика
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            const maxRadius = 50;
+            if (distance > maxRadius) {
+                dx = (dx / distance) * maxRadius;
+                dy = (dy / distance) * maxRadius;
+            }
+            
+            knob.style.transform = `translate(${dx}px, ${dy}px)`;
+            
+            // Нормалізуємо для швидкості (-1 до 1)
+            joyMove.x = dx / maxRadius;
+            joyMove.y = dy / maxRadius;
+        }
+
+        jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.space = true; });
+        jumpBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.space = false; });
+    }
+
+    // Мережевий код (Мультиплеєр)
+    let lastSync = 0;
+    function setupMultiplayer() {
+        const myRef = db.ref('places/empty/players/' + currentUser.uid);
+        
+        // Видаляти нас із сервера при закритті вкладки
+        myRef.onDisconnect().remove();
+
+        // Синхронізуємо свої координати
+        setInterval(() => {
+            myRef.set({
+                x: player.position.x,
+                y: player.position.y,
+                z: player.position.z,
+                ry: player.rotation.y,
+                name: currentUser.displayName,
+                color: myColor
+            });
+        }, 100); // 10 разів на секунду
+
+        // Слухаємо інших гравців
+        db.ref('places/empty/players').on('value', snap => {
+            const serverPlayers = snap.val() || {};
+            
+            // Оновлюємо або створюємо
+            for(let uid in serverPlayers) {
+                if(uid === currentUser.uid) continue; // Себе ігноруємо
+                
+                const data = serverPlayers[uid];
+                if(!otherPlayers[uid]) {
+                    // Створюємо нового гравця
+                    const group = new THREE.Group();
+                    const pMesh = new THREE.Mesh(
+                        new THREE.BoxGeometry(2, 4, 2),
+                        new THREE.MeshLambertMaterial({ color: data.color || '#fff' })
+                    );
+                    pMesh.position.y = 2;
+                    pMesh.castShadow = true;
+                    group.add(pMesh);
+                    
+                    const pTag = createNameTag(data.name);
+                    pTag.position.y = 5;
+                    group.add(pTag);
+
+                    scene.add(group);
+                    otherPlayers[uid] = group;
+                }
+                
+                // Плавне переміщення (Lerp можна додати пізніше, поки жорстко)
+                otherPlayers[uid].position.set(data.x, data.y, data.z);
+                otherPlayers[uid].rotation.y = data.ry;
+            }
+
+            // Видаляємо тих, хто вийшов
+            for(let uid in otherPlayers) {
+                if(!serverPlayers[uid]) {
+                    scene.remove(otherPlayers[uid]);
+                    delete otherPlayers[uid];
+                }
+            }
+        });
+    }
+
+    // Фізика та ігровий цикл
+    let velocityY = 0;
+    const speed = 0.3;
+    const gravity = -0.02;
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // 1. Рух гравця (ПК + Телефон)
+        let moveX = 0;
+        let moveZ = 0;
+
+        // WASD
+        if(keys.w) moveZ -= speed;
+        if(keys.s) moveZ += speed;
+        if(keys.a) moveX -= speed;
+        if(keys.d) moveX += speed;
+
+        // Джойстик
+        if(joyMove.x !== 0 || joyMove.y !== 0) {
+            moveX = joyMove.x * speed;
+            moveZ = joyMove.y * speed;
+        }
+
+        player.position.x += moveX;
+        player.position.z += moveZ;
+
+        // Поворот персонажа в сторону руху
+        if(moveX !== 0 || moveZ !== 0) {
+            player.rotation.y = Math.atan2(moveX, moveZ);
+        }
+
+        // 2. Стрибок і гравітація
+        velocityY += gravity;
+        player.position.y += velocityY;
+        
+        if (player.position.y <= 0) {
+            player.position.y = 0;
+            velocityY = 0;
+            if (keys.space) {
+                velocityY = 0.5; // Сила стрибка
+            }
+        }
+
+        // 3. Камера від 3-го лиця (слідує за гравцем)
+        // Висить трохи позаду і зверху
+        camera.position.x = player.position.x;
+        camera.position.y = player.position.y + 10; // Висота камери
+        camera.position.z = player.position.z + 20; // Відстань назад
+        
+        camera.lookAt(player.position); // Камера завжди дивиться на гравця
+
+        renderer.render(scene, camera);
+    }
 </script>
+
 </body>
 </html>
