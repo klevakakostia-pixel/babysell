@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROBLOX - Ultimate Sunset Experience</title>
+    <title>ROBLOX - Crossplatform Engine</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -21,279 +21,190 @@
             --rbx-green-hover: #00D661;
             --rbx-blue: #00A2FF;
             --rbx-red: #F24747;
-            --rbx-topbar: rgba(15, 15, 15, 0.65);
-            --ease-out: cubic-bezier(0.15, 0.85, 0.35, 1.2);
-            --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --rbx-topbar: rgba(15, 15, 15, 0.7);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; font-family: 'Hanken Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { background: var(--rbx-bg); color: #fff; overflow: hidden; width: 100vw; height: 100vh; touch-action: none; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--rbx-bg); color: #fff; touch-action: none; }
 
-        /* Фоновий ефект з партиклами */
-        .ambient-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 30%, #3a1c28 0%, #111215 70%);
-            overflow: hidden;
-        }
-        .particle {
-            position: absolute; background: rgba(255, 160, 122, 0.3); border-radius: 50%;
-            animation: floatUp 10s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
-        }
-
-        .screen { position: absolute; inset: 0; display: none; flex-direction: column; opacity: 0; transition: opacity 0.3s var(--ease-smooth); }
+        .screen { position: absolute; inset: 0; display: none; flex-direction: column; opacity: 0; transition: opacity 0.25s ease; }
         .screen.active { display: flex; opacity: 1; }
 
-        /* Кнопки Roblox */
+        /* Кнопки */
         .rbx-btn {
-            background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.12); color: #fff;
             padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px;
-            cursor: pointer; transition: all 0.2s var(--ease-smooth);
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer; transition: 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .rbx-btn:hover { background: var(--rbx-hover); transform: translateY(-2px); border-color: rgba(255,255,255,0.25); }
-        .rbx-btn:active { transform: translateY(0) scale(0.97); }
+        .rbx-btn:hover { background: var(--rbx-hover); }
         .rbx-btn.primary { background: var(--rbx-green); border: none; }
-        .rbx-btn.primary:hover { background: var(--rbx-green-hover); box-shadow: 0 0 20px rgba(0, 178, 81, 0.4); }
+        .rbx-btn.primary:hover { background: var(--rbx-green-hover); }
 
-        /* --- 1. ЛОГІН --- */
-        #login-screen { justify-content: center; align-items: center; z-index: 2000; }
-        .login-box {
-            background: rgba(35, 37, 39, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,0.12); border-radius: 20px;
-            padding: 45px 35px; text-align: center; width: 90%; max-width: 420px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7); animation: popIn 0.5s var(--ease-out) forwards;
-        }
-        @keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .roblox-logo-icon { width: 64px; height: 64px; background: #fff; border-radius: 14px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; transform: rotate(-9deg); box-shadow: 0 8px 25px rgba(255,255,255,0.2); }
-        .roblox-logo-icon::after { content: ''; width: 22px; height: 22px; background: var(--rbx-bg); transform: rotate(0deg); border-radius: 4px; }
+        /* 1. АВТОРИЗАЦІЯ */
+        #login-screen { justify-content: center; align-items: center; z-index: 2000; background: radial-gradient(circle, #2a1b24 0%, #111215 100%); }
+        .login-box { background: rgba(35, 37, 39, 0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 40px 30px; text-align: center; width: 90%; max-width: 400px; }
+        .rbx-logo { width: 56px; height: 56px; background: #fff; border-radius: 12px; margin: 0 auto 20px; transform: rotate(-9deg); display: flex; align-items: center; justify-content: center; }
+        .rbx-logo::after { content: ''; width: 20px; height: 20px; background: var(--rbx-bg); }
 
-        /* --- 2. ГОЛОВНЕ МЕНЮ (LOBBY) --- */
+        /* 2. МЕНЮ (LOBBY) */
         #home-screen { z-index: 1000; flex-direction: row; }
-        .rbx-sidebar {
-            width: 80px; background: var(--rbx-card); border-right: 1px solid rgba(255,255,255,0.08);
-            display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 25px;
-        }
-        .nav-icon { width: 48px; height: 48px; border-radius: 12px; color: #999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .nav-icon:hover, .nav-icon.active { background: var(--rbx-hover); color: #fff; }
-        .nav-icon svg { width: 24px; height: 24px; fill: currentColor; }
+        .sidebar { width: 70px; background: var(--rbx-card); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; }
+        .lobby-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .lobby-header { height: 60px; padding: 0 25px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(25,27,29,0.9); }
+        .lobby-body { padding: 25px; display: flex; flex-direction: column; gap: 25px; }
 
-        .lobby-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .lobby-header { height: 65px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(25,27,29,0.8); backdrop-filter: blur(10px); }
-        .user-badge { display: flex; align-items: center; gap: 12px; }
-        .user-badge img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--rbx-blue); }
-
-        .lobby-body { padding: 30px; display: flex; flex-direction: column; gap: 30px; }
-        
-        /* Секція Друзів */
-        .friends-container { display: flex; gap: 15px; overflow-x: auto; padding: 5px 0; }
-        .friend-card { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 75px; cursor: pointer; }
-        .friend-avatar { width: 68px; height: 68px; border-radius: 50%; background: var(--rbx-card); border: 2px solid rgba(255,255,255,0.1); padding: 3px; position: relative; transition: 0.2s var(--ease-out); }
-        .friend-card:hover .friend-avatar { transform: scale(1.08); border-color: var(--rbx-blue); }
-        .friend-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .status-dot { position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; background: var(--rbx-green); border: 2px solid var(--rbx-bg); border-radius: 50%; }
-
-        /* Баннер гри */
-        .game-banner-card {
-            background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; overflow: hidden;
-            display: flex; flex-direction: column; max-width: 650px; transition: 0.3s var(--ease-smooth);
-        }
-        .game-banner-card:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .banner-thumb { height: 220px; background: linear-gradient(135deg, #ff6b4a 0%, #ff2a5f 100%); position: relative; display: flex; align-items: center; justify-content: center; }
-        .play-btn-large {
-            position: absolute; bottom: -25px; right: 30px; width: 65px; height: 65px; background: var(--rbx-green); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(0, 178, 81, 0.5); cursor: pointer; transition: 0.2s var(--ease-out);
-        }
-        .play-btn-large:hover { transform: scale(1.1); background: var(--rbx-green-hover); }
-        .play-btn-large svg { width: 32px; height: 32px; fill: #fff; margin-left: 4px; }
-
-        /* --- 3D ГРА & СТИЛІ РОБЛОКС UI --- */
+        /* 3. 3D СВІТ & UI */
         #game-screen { background: #000; z-index: 3000; }
         
-        /* ROBLOX TOPBAR */
         .rbx-topbar {
             position: absolute; top: 0; left: 0; right: 0; height: 46px;
-            background: var(--rbx-topbar); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            z-index: 500; display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
-            pointer-events: auto;
+            background: var(--rbx-topbar); backdrop-filter: blur(10px);
+            z-index: 500; display: flex; align-items: center; justify-content: space-between; padding: 0 14px;
         }
-        .topbar-left, .topbar-right { display: flex; align-items: center; gap: 12px; }
-        .rbx-icon-btn { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; }
+        .rbx-icon-btn { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .rbx-icon-btn:hover { background: rgba(255,255,255,0.15); }
-        
-        /* Roblox Escape Menu Modal */
-        #esc-menu {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px);
-            z-index: 2000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.25s var(--ease-smooth);
-        }
-        #esc-menu.active { display: flex; opacity: 1; }
-        .esc-box { background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; width: 360px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
 
-        /* ROBLOX LEADERBOARD */
+        /* Leaderboard */
         .rbx-leaderboard {
-            position: absolute; top: 56px; right: 16px; background: rgba(25, 27, 29, 0.8); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 220px; padding: 10px; z-index: 400;
+            position: absolute; top: 54px; right: 14px; background: rgba(25, 27, 29, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 200px; padding: 8px; z-index: 400;
         }
-        .lb-title { font-size: 12px; font-weight: 800; color: #8a8d9b; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-        .lb-player { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-bottom: 4px; }
-        .lb-player img { width: 24px; height: 24px; border-radius: 50%; }
-        .lb-player span { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-player { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); margin-bottom: 4px; font-size: 12px; font-weight: 700; }
 
-        /* Health Bar */
-        .rbx-health-bar {
-            position: absolute; top: 14px; right: 120px; width: 140px; height: 18px;
-            background: rgba(0,0,0,0.5); border-radius: 9px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden;
+        /* ESC Menu */
+        #esc-menu {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+            z-index: 2000; display: none; align-items: center; justify-content: center;
         }
-        .health-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #00B251, #00D661); transition: width 0.3s; }
+        #esc-menu.active { display: flex; }
+        .esc-box { background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; width: 320px; padding: 25px; display: flex; flex-direction: column; gap: 12px; }
 
-        /* Мобільне керування */
-        #joystick-zone { position: absolute; bottom: 40px; left: 30px; width: 120px; height: 120px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 50%; pointer-events: auto; backdrop-filter: blur(10px); }
-        #joystick-knob { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: #fff; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        #jump-btn { position: absolute; bottom: 45px; right: 35px; width: 75px; height: 75px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        /* МОБІЛЬНЕ КЕРУВАННЯ (З'ЯВЛЯЄТЬСЯ ТІЛЬКИ НА ТЕЛЕФОНІ) */
+        .mobile-ui { display: none; }
+        body.is-mobile .mobile-ui { display: block; }
+        
+        #joystick-zone {
+            position: absolute; bottom: 30px; left: 30px; width: 130px; height: 130px;
+            background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%; z-index: 1000; touch-action: none;
+        }
+        #joystick-knob {
+            position: absolute; top: 40px; left: 40px; width: 50px; height: 50px;
+            background: rgba(255,255,255,0.9); border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        #jump-btn {
+            position: absolute; bottom: 40px; right: 35px; width: 80px; height: 80px;
+            background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25);
+            border-radius: 50%; z-index: 1000; display: flex; align-items: center; justify-content: center;
+            touch-action: none;
+        }
         #jump-btn:active { background: rgba(255,255,255,0.3); }
 
-        @media (min-width: 769px) { #joystick-zone, #jump-btn { display: none !important; } }
-        @media (max-width: 768px) { .rbx-sidebar { display: none; } .rbx-leaderboard { display: none; } }
+        /* ПІДКАЗКИ ДЛЯ ПК */
+        .pc-controls-hint {
+            position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6);
+            padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #ccc; z-index: 400;
+        }
+        body.is-mobile .pc-controls-hint { display: none; }
 
-        /* Loader */
         #loading-screen { justify-content: center; align-items: center; background: #111215; z-index: 5000; }
-        .rbx-spinner { width: 60px; height: 60px; border: 5px solid rgba(255,255,255,0.1); border-top-color: var(--rbx-blue); border-radius: 50%; animation: spin 0.7s infinite linear; }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--rbx-blue); border-radius: 50%; animation: spin 0.8s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="ambient-bg" id="particles"></div>
-
-<!-- 1. ЕКРАН АВТОРИЗАЦІЇ -->
 <div id="login-screen" class="screen active">
     <div class="login-box">
-        <div class="roblox-logo-icon"></div>
-        <h1 style="font-size: 24px; font-weight: 900; margin-bottom: 6px;">ROBLOX STUDIO</h1>
-        <p style="color: #8a8d9b; font-size: 14px; margin-bottom: 30px;">Sunset Engine 2.0 • Crossplatform</p>
-        <button class="rbx-btn primary" onclick="loginWithGoogle()" style="width: 100%; height: 48px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/></svg>
-            Увійти через Google
-        </button>
+        <div class="rbx-logo"></div>
+        <h1 style="font-size: 22px; font-weight: 900; margin-bottom: 5px;">ROBLOX STUDIO</h1>
+        <p style="color: #8a8d9b; font-size: 13px; margin-bottom: 25px;" id="device-label">Detecting device...</p>
+        <button class="rbx-btn primary" onclick="loginWithGoogle()" style="width: 100%;">Увійти через Google</button>
     </div>
 </div>
 
-<!-- 2. ГОЛОВНЕ МЕНЮ (ROBLOX LOBBY) -->
 <div id="home-screen" class="screen">
-    <div class="rbx-sidebar">
-        <div class="roblox-logo-icon" style="width: 40px; height: 40px; margin: 0;"></div>
-        <div class="nav-icon active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+    <div class="sidebar">
+        <div class="rbx-logo" style="width: 36px; height: 36px; margin: 0;"></div>
     </div>
-
-    <div class="lobby-content">
+    <div class="lobby-main">
         <div class="lobby-header">
-            <div class="user-badge">
-                <img id="ui-avatar" src="">
-                <span id="ui-name" style="font-weight: 800; font-size: 16px;">Player</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="ui-avatar" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--rbx-blue);">
+                <span id="ui-name" style="font-weight: 800;">Player</span>
             </div>
-            <button class="rbx-btn" onclick="logout()" style="padding: 8px 16px; font-size: 13px; color: var(--rbx-red);">Вийти</button>
+            <button class="rbx-btn" onclick="logout()" style="padding: 6px 12px; font-size: 12px; color: var(--rbx-red);">Вийти</button>
         </div>
-
         <div class="lobby-body">
-            <!-- Друзі -->
-            <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="font-size: 16px; font-weight: 800; color: #a0a5b5;">ДРУЗІ</h3>
-                    <button class="rbx-btn" onclick="addRandomFriend()" style="padding: 6px 12px; font-size: 12px;">+ Додати</button>
-                </div>
-                <div class="friends-container" id="friends-list"></div>
-            </div>
-
-            <!-- Плейси -->
-            <div>
-                <h3 style="font-size: 16px; font-weight: 800; color: #a0a5b5; margin-bottom: 12px;">ПОПУЛЯРНЕ</h3>
-                <div class="game-banner-card">
-                    <div class="banner-thumb">
-                        <div style="font-size: 70px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));">🌅</div>
-                        <div class="play-btn-large" onclick="joinServer()">
-                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                    </div>
-                    <div style="padding: 22px;">
-                        <h2 style="font-size: 22px; font-weight: 900; margin-bottom: 6px;">[SUNSET] Roblox Empty Baseplate</h2>
-                        <div style="font-size: 13px; color: #8a8d9b;">Гравців он-лайн: <strong id="online-count" style="color: var(--rbx-green);">0</strong></div>
-                    </div>
-                </div>
+            <div style="background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 20px;">
+                <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 10px;">🌅 Sunset Baseplate</h2>
+                <p style="color: #8a8d9b; font-size: 13px; margin-bottom: 20px;">Онлайн гравців: <strong id="online-count" style="color: var(--rbx-green);">0</strong></p>
+                <button class="rbx-btn primary" onclick="joinServer()" style="width: 100%; height: 46px; font-size: 16px;">ГРАТИ</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 3. ЗАВАНТАЖЕННЯ -->
 <div id="loading-screen" class="screen">
-    <div class="rbx-spinner"></div>
-    <div style="margin-top: 25px; font-weight: 800; font-size: 16px; letter-spacing: 1px;">JOINING SERVER...</div>
+    <div class="spinner"></div>
+    <div style="margin-top: 20px; font-weight: 800; font-size: 14px;">ЗАВАНТАЖЕННЯ СВІТУ...</div>
 </div>
 
-<!-- 4. 3D СВІТ РОБЛОКС -->
 <div id="game-screen" class="screen">
-    <!-- Topbar Roblox -->
     <div class="rbx-topbar">
-        <div class="topbar-left">
-            <div class="rbx-icon-btn" onclick="toggleEscMenu()">
-                <div class="roblox-logo-icon" style="width: 22px; height: 22px; margin: 0; border-radius: 4px;"></div>
-            </div>
+        <div class="rbx-icon-btn" onclick="toggleEscMenu()">
+            <div class="rbx-logo" style="width: 20px; height: 20px; margin: 0; border-radius: 4px;"></div>
         </div>
-        <div class="topbar-right">
-            <div class="rbx-health-bar"><div class="health-fill"></div></div>
-        </div>
+        <div style="font-weight: 800; font-size: 13px; color: #8a8d9b;">ROBLOX ENGINE</div>
     </div>
 
-    <!-- Leaderboard -->
     <div class="rbx-leaderboard">
-        <div class="lb-title">Гравці на сервері</div>
+        <div style="font-size: 10px; font-weight: 800; color: #8a8d9b; text-transform: uppercase; margin-bottom: 6px;">Гравці</div>
         <div id="leaderboard-players"></div>
     </div>
 
-    <!-- Меню ESC -->
-    <div id="esc-menu">
-        <div class="esc-box">
-            <h2 style="font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 10px;">МЕНЮ ГРИ</h2>
-            <button class="rbx-btn primary" onclick="toggleEscMenu()">Продовжити</button>
-            <button class="rbx-btn" onclick="resetCharacter()">Заспавнитись знову</button>
-            <button class="rbx-btn" onclick="leaveGame()" style="background: var(--rbx-red); border: none;">Вийти з гри</button>
+    <div class="pc-controls-hint">
+        WASD - Ходьба | Пробіл - Стрибок | Мишка - Огляд
+    </div>
+
+    <!-- Мобільні елементи -->
+    <div class="mobile-ui">
+        <div id="joystick-zone"><div id="joystick-knob"></div></div>
+        <div id="jump-btn">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#fff"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
         </div>
     </div>
 
-    <div id="touch-camera-zone" style="position: absolute; inset: 0; pointer-events: auto;"></div>
-    <div id="joystick-zone"><div id="joystick-knob"></div></div>
-    <div id="jump-btn">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
+    <div id="esc-menu">
+        <div class="esc-box">
+            <h3 style="text-align: center; font-weight: 900;">МЕНЮ</h3>
+            <button class="rbx-btn primary" onclick="toggleEscMenu()">Продовжити</button>
+            <button class="rbx-btn" onclick="resetCharacter()">Заспавнитись</button>
+            <button class="rbx-btn" onclick="leaveGame()" style="background: var(--rbx-red); border: none;">Вийти</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // Генерація фонових партиклів
-    const pContainer = document.getElementById('particles');
-    for(let i=0; i<25; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.width = p.style.height = Math.random()*8 + 4 + 'px';
-        p.style.left = Math.random()*100 + '%';
-        p.style.animationDelay = Math.random()*8 + 's';
-        pContainer.appendChild(p);
+    // --- 1. АВТО-ВИЗНАЧЕННЯ ПРИСТРОЮ ---
+    const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth < 768;
+    if (isMobileDevice) {
+        document.body.classList.add('is-mobile');
+        document.getElementById('device-label').innerText = "Мобільний режим (Touch UI)";
+    } else {
+        document.body.classList.remove('is-mobile');
+        document.getElementById('device-label').innerText = "ПК режим (Keyboard & Mouse)";
     }
 
-    // --- FIREBASE INIT ---
+    // --- 2. FIREBASE CONFIG ---
     const firebaseConfig = { 
         apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
         authDomain: "babysell-8b37b.firebaseapp.com", 
         databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", 
         projectId: "babysell-8b37b" 
     };
-    firebase.initializeApp(firebaseConfig); 
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
@@ -307,60 +218,21 @@
         document.getElementById(id).classList.add('active');
     }
 
-    function loginWithGoogle() {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => alert(err.message));
-    }
-
-    function logout() {
-        leaveGame();
-        auth.signOut().then(() => showScreen('login-screen'));
-    }
+    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message)); }
+    function logout() { leaveGame(); auth.signOut().then(() => showScreen('login-screen')); }
 
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
-            document.getElementById('ui-name').innerText = user.displayName;
+            document.getElementById('ui-name').innerText = user.displayName.split(' ')[0];
             document.getElementById('ui-avatar').src = user.photoURL;
             showScreen('home-screen');
-            
-            db.ref('users/' + user.uid + '/color').once('value', snap => {
-                if(!snap.exists()) db.ref('users/' + user.uid + '/color').set(myColor);
-                else myColor = snap.val();
-            });
-
-            db.ref('users/' + user.uid + '/friends').on('value', snap => {
-                const list = document.getElementById('friends-list');
-                list.innerHTML = '';
-                if(snap.exists()) {
-                    snap.forEach(child => {
-                        const f = child.val();
-                        list.innerHTML += `
-                            <div class="friend-card">
-                                <div class="friend-avatar"><img src="${f.avatar}"><div class="status-dot"></div></div>
-                                <span style="font-size: 11px; font-weight: 700; color: #8a8d9b; max-width: 75px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.name}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    list.innerHTML = '<div style="color: #666; font-size: 13px;">Друзів немає</div>';
-                }
-            });
         } else {
             showScreen('login-screen');
         }
     });
 
-    function addRandomFriend() {
-        if(!currentUser) return;
-        const names = ["Builderman", "NoobMaster", "Guest666", "BloxKnight", "Valkyrie"];
-        const name = names[Math.floor(Math.random()*names.length)] + Math.floor(Math.random()*999);
-        db.ref('users/' + currentUser.uid + '/friends').push({
-            name: name,
-            avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`
-        });
-    }
-
-    // МИТТЄВЕ ВИДАЛЕННЯ ГРАВЦЯ З СЕРВЕРА (HEARTBEAT 3.5 СЕКУНДИ)
+    // Очищення офлайн-гравців
     db.ref('places/empty/players').on('value', snap => {
         const players = snap.val() || {};
         const now = Date.now();
@@ -370,18 +242,12 @@
 
         for(let id in players) {
             const p = players[id];
-            // Якщо гравець не надсилав сигналів понад 3.5 сек — примусово видаляємо з бази
             if(p.lastSeen && (now - p.lastSeen > 3500)) {
                 db.ref('places/empty/players/' + id).remove();
                 continue;
             }
             count++;
-            lb.innerHTML += `
-                <div class="lb-player">
-                    <img src="${p.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + p.name}">
-                    <span>${p.name}</span>
-                </div>
-            `;
+            lb.innerHTML += `<div class="lb-player"><span>${p.name}</span></div>`;
         }
         document.getElementById('online-count').innerText = count;
     });
@@ -394,109 +260,65 @@
             if(!scene) init3DGame();
             resetCharacter();
 
-            const playerRef = db.ref('places/empty/players/' + currentUser.uid);
-            playerRef.onDisconnect().remove();
+            const pRef = db.ref('places/empty/players/' + currentUser.uid);
+            pRef.onDisconnect().remove();
 
-            // Прискорей heartbeat до 1.5 сек
             clearInterval(heartbeatTimer);
             heartbeatTimer = setInterval(() => {
                 if(isIngame && currentUser) {
-                    playerRef.update({ 
-                        lastSeen: Date.now(),
-                        name: currentUser.displayName.split(' ')[0],
-                        avatar: currentUser.photoURL
-                    });
+                    pRef.update({ lastSeen: Date.now(), name: currentUser.displayName.split(' ')[0] });
                 }
             }, 1500);
-
-        }, 700);
-    }
-
-    function resetCharacter() {
-        if(playerGroup) {
-            playerGroup.position.set(0, 20, 0);
-            velocityY = 0;
-            if(document.getElementById('esc-menu').classList.contains('active')) toggleEscMenu();
-        }
+        }, 600);
     }
 
     function leaveGame() {
         isIngame = false;
         clearInterval(heartbeatTimer);
-        if(currentUser) {
-            db.ref('places/empty/players/' + currentUser.uid).remove();
-        }
-        if(document.getElementById('esc-menu').classList.contains('active')) toggleEscMenu();
+        if(currentUser) db.ref('places/empty/players/' + currentUser.uid).remove();
         showScreen('home-screen');
     }
 
-    function toggleEscMenu() {
-        const menu = document.getElementById('esc-menu');
-        menu.classList.toggle('active');
+    function resetCharacter() {
+        if(playerGroup) { playerGroup.position.set(0, 15, 0); velocityY = 0; }
+        if(document.getElementById('esc-menu').classList.contains('active')) toggleEscMenu();
     }
 
-    // МИТТЄВІ ОБРОБНИКИ ЗАКРИТТЯ ВКЛАДКИ
-    const purge = () => { if(currentUser) db.ref('places/empty/players/' + currentUser.uid).remove(); };
-    window.addEventListener('beforeunload', purge);
-    window.addEventListener('pagehide', purge);
-    document.addEventListener('visibilitychange', () => { if (document.hidden) purge(); });
+    function toggleEscMenu() { document.getElementById('esc-menu').classList.toggle('active'); }
 
-    // --- THREE.JS СУПЕР ПЛАВНИЙ ДВИГУН ---
+    // --- 3. THREE.JS ДВИГУН ТА КЕРУВАННЯ ---
     let scene, camera, renderer, playerObj, playerGroup;
     let otherPlayers = {};
     let keys = { w:false, a:false, s:false, d:false, space:false };
-    let joyMove = { x: 0, y: 0 };
-    let cameraYaw = 0, cameraPitch = 0.35;
-    let isMouseDown = false, prevMouseX = 0, prevMouseY = 0;
-    let velocityY = 0, gravity = -0.018, moveSpeed = 0.28;
+    let joyVector = { x: 0, y: 0 };
+    let cameraYaw = 0, cameraPitch = 0.3;
+    let velocityY = 0, gravity = -0.016, moveSpeed = 0.25;
 
-    function createRobloxAvatar(colorHex, nameText) {
+    function createAvatar(colorHex, nameText) {
         const group = new THREE.Group();
         const mat = new THREE.MeshLambertMaterial({ color: colorHex });
-        const skinMat = new THREE.MeshLambertMaterial({ color: 0xffcc99 });
+        const skin = new THREE.MeshLambertMaterial({ color: 0xffcc99 });
 
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2, 0.8), mat); torso.position.y = 2; torso.castShadow = true; group.add(torso);
-        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), skinMat); head.position.y = 3.6; head.castShadow = true; group.add(head);
-        
-        const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); leftArm.position.set(-1.25, 2, 0); group.add(leftArm);
-        const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); rightArm.position.set(1.25, 2, 0); group.add(rightArm);
-        const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); leftLeg.position.set(-0.45, 0, 0); group.add(leftLeg);
-        const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); rightLeg.position.set(0.45, 0, 0); group.add(rightLeg);
-
-        // Nametag
-        const canvas = document.createElement('canvas'); canvas.width = 256; canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.roundRect(8, 8, 240, 48, 12); ctx.fill();
-        ctx.font = "900 24px 'Hanken Grotesk', sans-serif"; ctx.fillStyle = "#ffffff"; ctx.textAlign = "center"; ctx.fillText(nameText, 128, 40);
-        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas) }));
-        sprite.scale.set(3.8, 0.95, 1); sprite.position.y = 4.8; group.add(sprite);
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2, 0.8), mat); torso.position.y = 2; group.add(torso);
+        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), skin); head.position.y = 3.6; group.add(head);
+        const lA = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); lA.position.set(-1.2, 2, 0); group.add(lA);
+        const rA = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); rA.position.set(1.2, 2, 0); group.add(rA);
+        const lL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); lL.position.set(-0.4, 0, 0); group.add(lL);
+        const rL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); rL.position.set(0.4, 0, 0); group.add(rL);
 
         return {
-            group: group, lA: leftArm, rA: rightArm, lL: leftLeg, rL: rightLeg, torso: torso, head: head,
-            animate: function(time, isMoving, inAir) {
+            group, lA, rA, lL, rL, torso, head,
+            animate: function(t, isM, inAir) {
                 if(inAir) {
-                    // Стрибок
-                    this.lL.rotation.x = THREE.MathUtils.lerp(this.lL.rotation.x, -0.8, 0.25);
-                    this.rL.rotation.x = THREE.MathUtils.lerp(this.rL.rotation.x, 0.4, 0.25);
-                    this.lA.rotation.x = THREE.MathUtils.lerp(this.lA.rotation.x, -2.5, 0.25);
-                    this.rA.rotation.x = THREE.MathUtils.lerp(this.rA.rotation.x, -2.5, 0.25);
-                } else if(isMoving) {
-                    // Плавний біг зі скручуванням
-                    const cycle = Math.sin(time * 14);
-                    this.lA.rotation.x = cycle * 0.85; this.rA.rotation.x = -cycle * 0.85;
-                    this.lL.rotation.x = -cycle * 0.85; this.rL.rotation.x = cycle * 0.85;
-                    this.torso.rotation.y = cycle * 0.08;
-                    this.head.rotation.y = -cycle * 0.08;
+                    this.lL.rotation.x = -0.6; this.rL.rotation.x = 0.4;
+                    this.lA.rotation.x = -2.2; this.rA.rotation.x = -2.2;
+                } else if(isM) {
+                    const c = Math.sin(t * 13);
+                    this.lA.rotation.x = c; this.rA.rotation.x = -c;
+                    this.lL.rotation.x = -c; this.rL.rotation.x = c;
                 } else {
-                    // Плавне дихання в idle
-                    const breath = Math.sin(time * 3.5) * 0.04;
-                    this.torso.position.y = 2 + breath;
-                    this.head.position.y = 3.6 + breath * 1.2;
-                    this.lA.rotation.x = THREE.MathUtils.lerp(this.lA.rotation.x, 0, 0.2);
-                    this.rA.rotation.x = THREE.MathUtils.lerp(this.rA.rotation.x, 0, 0.2);
-                    this.lL.rotation.x = THREE.MathUtils.lerp(this.lL.rotation.x, 0, 0.2);
-                    this.rL.rotation.x = THREE.MathUtils.lerp(this.rL.rotation.x, 0, 0.2);
-                    this.torso.rotation.y = 0; this.head.rotation.y = 0;
+                    this.lA.rotation.x = 0; this.rA.rotation.x = 0;
+                    this.lL.rotation.x = 0; this.rL.rotation.x = 0;
                 }
             }
         };
@@ -506,100 +328,163 @@
         const container = document.getElementById('game-screen');
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0xff6b4a);
-        scene.fog = new THREE.FogExp2(0xff6b4a, 0.01);
+        scene.fog = new THREE.FogExp2(0xff6b4a, 0.012);
 
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
-        renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        container.insertBefore(renderer.domElement, container.firstChild);
+        container.appendChild(renderer.domElement);
 
-        // Освітлення Sunset
-        scene.add(new THREE.AmbientLight(0x705060, 0.85));
-        const dirLight = new THREE.DirectionalLight(0xffb07c, 1.5);
-        dirLight.position.set(-60, 35, -60); dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048; dirLight.shadow.mapSize.height = 2048;
+        scene.add(new THREE.AmbientLight(0x705060, 0.9));
+        const dirLight = new THREE.DirectionalLight(0xffb07c, 1.4);
+        dirLight.position.set(-50, 40, -50); dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // Сонячне диск
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(14, 32, 32), new THREE.MeshBasicMaterial({color: 0xffea00}));
-        sun.position.set(-110, 45, -130); scene.add(sun);
-
-        // Земля baseplate
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshLambertMaterial({ color: 0x1e1619 }));
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshLambertMaterial({ color: 0x1e1619 }));
         ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
         scene.add(ground);
 
-        const grid = new THREE.GridHelper(400, 100, 0xff2a5f, 0xff2a5f);
-        grid.material.opacity = 0.15; grid.material.transparent = true;
+        const grid = new THREE.GridHelper(300, 60, 0xff2a5f, 0xff2a5f);
+        grid.material.opacity = 0.2; grid.material.transparent = true;
         scene.add(grid);
 
-        playerObj = createRobloxAvatar(myColor, currentUser.displayName.split(' ')[0]);
+        playerObj = createAvatar(myColor, currentUser.displayName.split(' ')[0]);
         playerGroup = playerObj.group;
         scene.add(playerGroup);
 
-        setupControls();
+        setupInputHandlers();
         setupMultiplayer();
         animate();
     }
 
-    function setupControls() {
-        window.addEventListener('keydown', e => handleKey(e, true));
-        window.addEventListener('keyup', e => handleKey(e, false));
+    // НАЛАШТУВАННЯ КЕРУВАННЯ З ЧІТКИМ РОЗДІЛЕННЯМ ДЕЛЕГОВАНИХ ПОДІЙ
+    function setupInputHandlers() {
+        // --- ПК: КЛАВІАТУРА ТА МИШКА ---
+        window.addEventListener('keydown', e => {
+            const k = e.key.toLowerCase();
+            if(k === 'w' || k === 'ц') keys.w = true;
+            if(k === 's' || k === 'і') keys.s = true;
+            if(k === 'a' || k === 'ф') keys.a = true;
+            if(k === 'd' || k === 'в') keys.d = true;
+            if(e.key === ' ') keys.space = true;
+            if(e.key === 'Escape') toggleEscMenu();
+        });
 
-        const touchZone = document.getElementById('touch-camera-zone');
-        touchZone.addEventListener('mousedown', e => { isMouseDown = true; prevMouseX = e.clientX; prevMouseY = e.clientY; });
+        window.addEventListener('keyup', e => {
+            const k = e.key.toLowerCase();
+            if(k === 'w' || k === 'ц') keys.w = false;
+            if(k === 's' || k === 'і') keys.s = false;
+            if(k === 'a' || k === 'ф') keys.a = false;
+            if(k === 'd' || k === 'в') keys.d = false;
+            if(e.key === ' ') keys.space = false;
+        });
+
+        let isMouseDown = false, lastMX = 0, lastMY = 0;
+        window.addEventListener('mousedown', e => {
+            if(!isMobileDevice && isIngame && e.target.tagName === 'CANVAS') {
+                isMouseDown = true; lastMX = e.clientX; lastMY = e.clientY;
+            }
+        });
         window.addEventListener('mouseup', () => isMouseDown = false);
         window.addEventListener('mousemove', e => {
-            if(isMouseDown) {
-                cameraYaw -= (e.clientX - prevMouseX) * 0.005;
-                cameraPitch = Math.max(0.05, Math.min(1.35, cameraPitch + (e.clientY - prevMouseY) * 0.005));
-                prevMouseX = e.clientX; prevMouseY = e.clientY;
+            if(isMouseDown && !isMobileDevice) {
+                cameraYaw -= (e.clientX - lastMX) * 0.005;
+                cameraPitch = Math.max(0.05, Math.min(1.3, cameraPitch + (e.clientY - lastMY) * 0.005));
+                lastMX = e.clientX; lastMY = e.clientY;
             }
         });
 
-        const zone = document.getElementById('joystick-zone');
-        const knob = document.getElementById('joystick-knob');
-        let jId = null, cx, cy;
+        // --- МОБІЛЬНІ: ТАЧ-СЕНСОР ТА ДЖОЙСТИК ---
+        if(isMobileDevice) {
+            const joyZone = document.getElementById('joystick-zone');
+            const joyKnob = document.getElementById('joystick-knob');
+            const jumpBtn = document.getElementById('jump-btn');
 
-        zone.addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; jId = t.identifier; const r = zone.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; updateJ(t); });
-        zone.addEventListener('touchmove', e => { e.preventDefault(); for(let t of e.changedTouches) if(t.identifier === jId) updateJ(t); });
-        const resetJ = (e) => { for(let t of e.changedTouches) if(t.identifier === jId) { jId = null; knob.style.transform = `translate(0,0)`; joyMove = {x:0, y:0}; } };
-        zone.addEventListener('touchend', resetJ); zone.addEventListener('touchcancel', resetJ);
+            let joyTouchId = null;
+            let joyCenterX = 0, joyCenterY = 0;
 
-        function updateJ(t) {
-            let dx = t.clientX - cx, dy = t.clientY - cy;
-            const dist = Math.sqrt(dx*dx + dy*dy), maxR = 35;
-            if(dist > maxR) { dx = (dx/dist)*maxR; dy = (dy/dist)*maxR; }
-            knob.style.transform = `translate(${dx}px, ${dy}px)`;
-            joyMove.x = dx / maxR; joyMove.y = dy / maxR;
-        }
+            joyZone.addEventListener('touchstart', e => {
+                e.preventDefault();
+                const t = e.changedTouches[0];
+                joyTouchId = t.identifier;
+                const r = joyZone.getBoundingClientRect();
+                joyCenterX = r.left + r.width / 2;
+                joyCenterY = r.top + r.height / 2;
+                updateJoystick(t);
+            }, { passive: false });
 
-        let cId = null, lx, ly;
-        touchZone.addEventListener('touchstart', e => { const t = e.changedTouches[0]; cId = t.identifier; lx = t.clientX; ly = t.clientY; });
-        touchZone.addEventListener('touchmove', e => {
-            for(let t of e.changedTouches) {
-                if(t.identifier === cId) {
-                    cameraYaw -= (t.clientX - lx) * 0.007;
-                    cameraPitch = Math.max(0.05, Math.min(1.35, cameraPitch + (t.clientY - ly) * 0.007));
-                    lx = t.clientX; ly = t.clientY;
+            window.addEventListener('touchmove', e => {
+                for(let i=0; i<e.changedTouches.length; i++) {
+                    const t = e.changedTouches[i];
+                    if(t.identifier === joyTouchId) {
+                        updateJoystick(t);
+                    }
                 }
+            }, { passive: false });
+
+            const endJoystick = (e) => {
+                for(let i=0; i<e.changedTouches.length; i++) {
+                    if(e.changedTouches[i].identifier === joyTouchId) {
+                        joyTouchId = null;
+                        joyKnob.style.transform = `translate(0px, 0px)`;
+                        joyVector = { x: 0, y: 0 };
+                    }
+                }
+            };
+            window.addEventListener('touchend', endJoystick);
+            window.addEventListener('touchcancel', endJoystick);
+
+            function updateJoystick(t) {
+                let dx = t.clientX - joyCenterX;
+                let dy = t.clientY - joyCenterY;
+                const maxDist = 40;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist > maxDist) {
+                    dx = (dx / dist) * maxDist;
+                    dy = (dy / dist) * maxDist;
+                }
+                joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+                joyVector.x = dx / maxDist;
+                joyVector.y = dy / maxDist;
             }
-        });
 
-        document.getElementById('jump-btn').addEventListener('touchstart', e => { e.preventDefault(); keys.space = true; });
-        document.getElementById('jump-btn').addEventListener('touchend', e => { e.preventDefault(); keys.space = false; });
-    }
+            // Кнопка стрибка
+            jumpBtn.addEventListener('touchstart', e => { e.preventDefault(); keys.space = true; }, { passive: false });
+            jumpBtn.addEventListener('touchend', e => { e.preventDefault(); keys.space = false; }, { passive: false });
 
-    function handleKey(e, isPressed) {
-        const k = e.key.toLowerCase();
-        if(k === 'w' || k === 'ц' || e.key === 'ArrowUp') keys.w = isPressed;
-        if(k === 's' || k === 'і' || e.key === 'ArrowDown') keys.s = isPressed;
-        if(k === 'a' || k === 'ф' || e.key === 'ArrowLeft') keys.a = isPressed;
-        if(k === 'd' || k === 'в' || e.key === 'ArrowRight') keys.d = isPressed;
-        if(e.key === ' ') keys.space = isPressed;
-        if(e.key === 'Escape' && isPressed) toggleEscMenu();
+            // Обертання камери пальцем по екрану
+            let camTouchId = null, lastTX = 0, lastTY = 0;
+            window.addEventListener('touchstart', e => {
+                for(let i=0; i<e.changedTouches.length; i++) {
+                    const t = e.changedTouches[i];
+                    // Якщо тач не на джойстику і не на кнопці стрибка — це обертання камери
+                    if(t.identifier !== joyTouchId && !e.target.closest('#jump-btn') && !e.target.closest('#joystick-zone')) {
+                        camTouchId = t.identifier;
+                        lastTX = t.clientX; lastTY = t.clientY;
+                    }
+                }
+            });
+
+            window.addEventListener('touchmove', e => {
+                for(let i=0; i<e.changedTouches.length; i++) {
+                    const t = e.changedTouches[i];
+                    if(t.identifier === camTouchId) {
+                        cameraYaw -= (t.clientX - lastTX) * 0.007;
+                        cameraPitch = Math.max(0.05, Math.min(1.3, cameraPitch + (t.clientY - lastTY) * 0.007));
+                        lastTX = t.clientX; lastTY = t.clientY;
+                    }
+                }
+            });
+
+            const endCamTouch = (e) => {
+                for(let i=0; i<e.changedTouches.length; i++) {
+                    if(e.changedTouches[i].identifier === camTouchId) camTouchId = null;
+                }
+            };
+            window.addEventListener('touchend', endCamTouch);
+            window.addEventListener('touchcancel', endCamTouch);
+        }
     }
 
     function setupMultiplayer() {
@@ -608,16 +493,14 @@
             for(let uid in players) {
                 if(uid === currentUser.uid) continue;
                 const d = players[uid];
-
                 if(!otherPlayers[uid]) {
-                    const avatar = createRobloxAvatar(d.color || '#fff', d.name);
-                    scene.add(avatar.group);
-                    otherPlayers[uid] = { avatar: avatar, tx: d.x, ty: d.y, tz: d.z, try: d.ry, isM: false, inAir: false };
+                    const av = createAvatar(d.color || '#fff', d.name);
+                    scene.add(av.group);
+                    otherPlayers[uid] = { avatar: av, tx: d.x, ty: d.y, tz: d.z, try: d.ry, isM: false, inAir: false };
                 }
                 const op = otherPlayers[uid];
                 op.tx = d.x; op.ty = d.y; op.tz = d.z; op.try = d.ry; op.isM = d.isM; op.inAir = d.inAir;
             }
-
             for(let uid in otherPlayers) {
                 if(!players[uid]) { scene.remove(otherPlayers[uid].avatar.group); delete otherPlayers[uid]; }
             }
@@ -629,33 +512,40 @@
         if(!isIngame) return;
 
         let inputX = 0, inputZ = 0;
-        if(keys.w) inputZ -= 1; if(keys.s) inputZ += 1;
-        if(keys.a) inputX -= 1; if(keys.d) inputX += 1;
-        if(joyMove.x !== 0 || joyMove.y !== 0) { inputX = joyMove.x; inputZ = joyMove.y; }
 
-        const isMoving = (inputX !== 0 || inputZ !== 0);
-
-        if(isMoving) {
-            const angle = Math.atan2(inputX, inputZ) + cameraYaw;
-            playerGroup.position.x += Math.sin(angle) * moveSpeed;
-            playerGroup.position.z += Math.cos(angle) * moveSpeed;
-            playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, angle, 0.3);
+        // Векторний вхід в залежності від типу пристрою
+        if(isMobileDevice) {
+            inputX = joyVector.x;
+            inputZ = joyVector.y;
+        } else {
+            if(keys.w) inputZ -= 1; if(keys.s) inputZ += 1;
+            if(keys.a) inputX -= 1; if(keys.d) inputX += 1;
         }
 
-        // Гравітація
-        velocityY += gravity; 
+        const isMoving = Math.abs(inputX) > 0.1 || Math.abs(inputZ) > 0.1;
+
+        if(isMoving) {
+            const moveAngle = Math.atan2(inputX, inputZ) + cameraYaw;
+            playerGroup.position.x += Math.sin(moveAngle) * moveSpeed;
+            playerGroup.position.z += Math.cos(moveAngle) * moveSpeed;
+            playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, moveAngle, 0.25);
+        }
+
+        // Фізика стрибків
+        velocityY += gravity;
         playerGroup.position.y += velocityY;
         let inAir = false;
+
         if(playerGroup.position.y <= 1) {
             playerGroup.position.y = 1; velocityY = 0;
-            if(keys.space) { velocityY = 0.42; }
+            if(keys.space) velocityY = 0.4;
         } else {
             inAir = true;
         }
 
         playerObj.animate(time * 0.001, isMoving, inAir);
 
-        // Синхронізація
+        // Синхронізація позиції
         if(currentUser) {
             db.ref('places/empty/players/' + currentUser.uid).update({
                 x: playerGroup.position.x, y: playerGroup.position.y, z: playerGroup.position.z,
@@ -663,6 +553,7 @@
             });
         }
 
+        // Інтерполяція інших гравців
         for(let uid in otherPlayers) {
             const op = otherPlayers[uid];
             op.avatar.group.position.lerp(new THREE.Vector3(op.tx, op.ty, op.tz), 0.25);
@@ -670,7 +561,7 @@
             op.avatar.animate(time * 0.001, op.isM, op.inAir);
         }
 
-        // Камера
+        // Камера від 3-ї особи
         const camDist = 14;
         const tx = playerGroup.position.x + Math.sin(cameraYaw) * Math.cos(cameraPitch) * camDist;
         const ty = playerGroup.position.y + Math.sin(cameraPitch) * camDist + 1.2;
@@ -680,6 +571,14 @@
 
         renderer.render(scene, camera);
     }
+
+    window.addEventListener('resize', () => {
+        if(camera && renderer) {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    });
 </script>
 
 </body>
