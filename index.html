@@ -1,585 +1,396 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ROBLOX - Crossplatform Engine</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BABYSELL 1.0 BETA</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;500;700&display=swap');
         
-        :root {
-            --rbx-bg: #191B1D;
-            --rbx-card: #232527;
-            --rbx-hover: #393B3D;
-            --rbx-green: #00B251;
-            --rbx-green-hover: #00D661;
-            --rbx-blue: #00A2FF;
-            --rbx-red: #F24747;
-            --rbx-topbar: rgba(15, 15, 15, 0.7);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; user-select: none; font-family: 'Hanken Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--rbx-bg); color: #fff; touch-action: none; }
-
-        .screen { position: absolute; inset: 0; display: none; flex-direction: column; opacity: 0; transition: opacity 0.25s ease; }
-        .screen.active { display: flex; opacity: 1; }
-
-        /* Кнопки */
-        .rbx-btn {
-            background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.12); color: #fff;
-            padding: 12px 24px; border-radius: 8px; font-weight: 700; font-size: 15px;
-            cursor: pointer; transition: 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .rbx-btn:hover { background: var(--rbx-hover); }
-        .rbx-btn.primary { background: var(--rbx-green); border: none; }
-        .rbx-btn.primary:hover { background: var(--rbx-green-hover); }
-
-        /* 1. АВТОРИЗАЦІЯ */
-        #login-screen { justify-content: center; align-items: center; z-index: 2000; background: radial-gradient(circle, #2a1b24 0%, #111215 100%); }
-        .login-box { background: rgba(35, 37, 39, 0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 40px 30px; text-align: center; width: 90%; max-width: 400px; }
-        .rbx-logo { width: 56px; height: 56px; background: #fff; border-radius: 12px; margin: 0 auto 20px; transform: rotate(-9deg); display: flex; align-items: center; justify-content: center; }
-        .rbx-logo::after { content: ''; width: 20px; height: 20px; background: var(--rbx-bg); }
-
-        /* 2. МЕНЮ (LOBBY) */
-        #home-screen { z-index: 1000; flex-direction: row; }
-        .sidebar { width: 70px; background: var(--rbx-card); border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; }
-        .lobby-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .lobby-header { height: 60px; padding: 0 25px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(25,27,29,0.9); }
-        .lobby-body { padding: 25px; display: flex; flex-direction: column; gap: 25px; }
-
-        /* 3. 3D СВІТ & UI */
-        #game-screen { background: #000; z-index: 3000; }
+        :root { --main: #ff9d00; --bg: #050212; --ease-hyper: cubic-bezier(0.15, 0.85, 0.25, 1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; position: relative; min-height: 100vh; }
+        #action-blocker { display: none; position: fixed; inset: 0; z-index: 99999; background: transparent; cursor: not-allowed; }
+        .sunset-bg-container { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, #040110 0%, #110624 45%, #25092b 80%, #1f1105 100%); }
+        .sunset-sun { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 240px; height: 240px; background: radial-gradient(circle, #ffb700 15%, #ff4500 100%); border-radius: 50%; box-shadow: 0 0 60px rgba(255, 69, 0, 0.5), 0 0 150px rgba(255, 183, 0, 0.2); animation: sunPulse 8s ease-in-out infinite alternate; }
+        @keyframes sunPulse { from { transform: translate(-50%, -50%) scale(0.97); opacity: 0.85; } to { transform: translate(-50%, -50%) scale(1.03); opacity: 1; } }
+        .waves { position: absolute; bottom: 0; left: 0; width: 100%; height: 15vh; min-height: 100px; }
+        .parallax > use { animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite; }
+        .parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+        .parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+        .parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+        @keyframes move-forever { 0% { transform: translate3d(-90px,0,0); } 100% { transform: translate3d(85px,0,0); } }
+        #welcome-screen { position: fixed; inset: 0; background: #000; z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 2.5s var(--ease-hyper), visibility 2.5s; }
+        .welcome-logo { font-family: 'Orbitron'; font-size: 60px; font-weight: 900; letter-spacing: 20px; text-shadow: 0 0 50px var(--main); animation: softGlow 4s infinite alternate; }
+        @keyframes softGlow { from { opacity: 0.3; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .app-content { opacity: 0; filter: blur(20px); transform: scale(1.05); transition: all 2.5s var(--ease-hyper); z-index: 10; position: relative; }
+        .app-loaded .app-content { opacity: 1; filter: blur(0); transform: scale(1); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 0 60px; height: 100px; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,157,0,0.15); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); }
         
-        .rbx-topbar {
-            position: absolute; top: 0; left: 0; right: 0; height: 46px;
-            background: var(--rbx-topbar); backdrop-filter: blur(10px);
-            z-index: 500; display: flex; align-items: center; justify-content: space-between; padding: 0 14px;
-        }
-        .rbx-icon-btn { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .rbx-icon-btn:hover { background: rgba(255,255,255,0.15); }
+        .btn-nav { position: relative; z-index: 1; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); color: #ccc; padding: 12px 25px; border-radius: 30px; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 2px; cursor: pointer; transition: 0.5s var(--ease-hyper); }
+        .btn-nav::before { content: ""; position: absolute; top: 100%; left: 50%; width: 400px; height: 400px; margin-left: -200px; background: var(--main); border-radius: 40%; z-index: -1; transition: top 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-nav:hover:not(:disabled)::before { top: -100px; animation: btnWaveAnim 5s linear infinite; }
+        .btn-nav:hover:not(:disabled) { color: #000; border-color: var(--main); box-shadow: 0 0 20px rgba(255,157,0,0.4); }
+        .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+        @keyframes btnWaveAnim { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Leaderboard */
-        .rbx-leaderboard {
-            position: absolute; top: 54px; right: 14px; background: rgba(25, 27, 29, 0.85); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; width: 200px; padding: 8px; z-index: 400;
-        }
-        .lb-player { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); margin-bottom: 4px; font-size: 12px; font-weight: 700; }
-
-        /* ESC Menu */
-        #esc-menu {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-        }
-        #esc-menu.active { display: flex; }
-        .esc-box { background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; width: 320px; padding: 25px; display: flex; flex-direction: column; gap: 12px; }
-
-        /* МОБІЛЬНЕ КЕРУВАННЯ (З'ЯВЛЯЄТЬСЯ ТІЛЬКИ НА ТЕЛЕФОНІ) */
-        .mobile-ui { display: none; }
-        body.is-mobile .mobile-ui { display: block; }
-        
-        #joystick-zone {
-            position: absolute; bottom: 30px; left: 30px; width: 130px; height: 130px;
-            background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50%; z-index: 1000; touch-action: none;
-        }
-        #joystick-knob {
-            position: absolute; top: 40px; left: 40px; width: 50px; height: 50px;
-            background: rgba(255,255,255,0.9); border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            pointer-events: none;
-        }
-        #jump-btn {
-            position: absolute; bottom: 40px; right: 35px; width: 80px; height: 80px;
-            background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25);
-            border-radius: 50%; z-index: 1000; display: flex; align-items: center; justify-content: center;
-            touch-action: none;
-        }
-        #jump-btn:active { background: rgba(255,255,255,0.3); }
-
-        /* ПІДКАЗКИ ДЛЯ ПК */
-        .pc-controls-hint {
-            position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6);
-            padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #ccc; z-index: 400;
-        }
-        body.is-mobile .pc-controls-hint { display: none; }
-
-        #loading-screen { justify-content: center; align-items: center; background: #111215; z-index: 5000; }
-        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--rbx-blue); border-radius: 50%; animation: spin 0.8s infinite linear; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .case-card { background: rgba(4,3,10,0.85); padding: 60px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,157,0,0.1); transition: 1s var(--ease-hyper); cursor: pointer; }
+        .case-card:hover { transform: translateY(-15px); border-color: var(--main); }
+        .case-card img { width: 100%; max-width: 240px; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); }
+        .view-window { position: relative; width: 100%; height: 280px; background: rgba(0,0,0,0.7); margin: 40px 0; overflow: hidden; border-radius: 30px; border: 1px solid rgba(255,157,0,0.15); }
+        .strip { display: flex; position: absolute; left: 0; height: 100%; align-items: center; transition: transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0); }
+        .pointer { position: absolute; left: 50%; top: -10px; bottom: -10px; width: 4px; background: linear-gradient(180deg, transparent, var(--main), transparent); z-index: 100; transform: translateX(-50%); border-radius: 5px; }
+        .pointer::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 20px solid var(--main); }
+        .pointer::after { content: ''; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 20px solid var(--main); }
+        .case-strip-item { min-width: 220px; height: 220px; margin: 0 10px; background: linear-gradient(180deg, rgba(18,12,28,0.7), rgba(4,2,8,0.9)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .upgrade-container { display: flex; justify-content: space-around; align-items: center; gap: 40px; padding: 40px; }
+        .upgrade-slot { width: 300px; height: 350px; background: rgba(5,3,12,0.6); border: 2px dashed rgba(255,157,0,0.3); border-radius: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(10px); }
+        .upgrade-slot.active { border-style: solid; border-color: var(--main); }
+        .upgrader-roulette { position: relative; width: 280px; height: 280px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(0,0,0,0.85); border: 2px solid rgba(255,157,0,0.2); }
+        .upgrader-track { position: absolute; inset: 0; border-radius: 50%; transition: background 0.8s ease; }
+        .upgrader-inner { position: absolute; inset: 15px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; z-index: 2; }
+        .upgrader-arrow-container { position: absolute; inset: -15px; z-index: 5; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        .upgrader-arrow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #fff; }
+        .water-wave { position: absolute; width: 400px; height: 400px; background: rgba(255, 157, 0, 0.35); border-radius: 38%; top: 100%; left: 50%; margin-left: -200px; animation: spinWave 6s linear infinite; transition: top 1s var(--ease-hyper); }
+        @keyframes spinWave { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .chance-text { position: relative; z-index: 4; font-family: 'Orbitron'; font-size: 45px; color: #fff; font-weight: 900; }
+        #product-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 3000; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        #product-modal-content { background: #0d0914; border: 1px solid var(--main); padding: 60px; border-radius: 40px; max-width: 500px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="login-screen" class="screen active">
-    <div class="login-box">
-        <div class="rbx-logo"></div>
-        <h1 style="font-size: 22px; font-weight: 900; margin-bottom: 5px;">ROBLOX STUDIO</h1>
-        <p style="color: #8a8d9b; font-size: 13px; margin-bottom: 25px;" id="device-label">Detecting device...</p>
-        <button class="rbx-btn primary" onclick="loginWithGoogle()" style="width: 100%;">Увійти через Google</button>
-    </div>
+<div id="action-blocker"></div>
+
+<div class="sunset-bg-container">
+    <div class="sunset-sun"></div>
+    <svg class="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none">
+        <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" /></defs>
+        <g class="parallax">
+            <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255, 69, 0, 0.6)" />
+            <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(211, 46, 230, 0.4)" />
+            <use xlink:href="#gentle-wave" x="48" y="7" fill="#050212" />
+        </g>
+    </svg>
 </div>
 
-<div id="home-screen" class="screen">
-    <div class="sidebar">
-        <div class="rbx-logo" style="width: 36px; height: 36px; margin: 0;"></div>
-    </div>
-    <div class="lobby-main">
-        <div class="lobby-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <img id="ui-avatar" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--rbx-blue);">
-                <span id="ui-name" style="font-weight: 800;">Player</span>
+<div id="welcome-screen">
+    <div class="welcome-logo">BABYSELL</div>
+    <button class="btn-nav" style="margin-top:50px; padding:20px 60px;" onclick="initApp()">go to site</button>
+</div>
+
+<audio id="bg-music" loop><source src="https://files.catbox.moe/5ru7vf.mp3"></audio>
+
+<div class="app-content">
+    <header class="header">
+        <div style="display:flex; gap:20px;">
+            <button class="btn-nav" onclick="showPage('market')">MARKET</button>
+            <button class="btn-nav" onclick="showPage('inventory')">INVENTORY</button>
+            <button class="btn-nav" onclick="showPage('upgrade')">UPGRADE</button>
+            <button class="btn-nav" style="border-color:var(--main);" onclick="showPage('products')">BEYSELL PRODUCTS</button>
+            <!-- СЕКРЕТНА КНОПКА АДМІНА (прихована за замовчуванням) -->
+            <button id="btn-admin" class="btn-nav" style="display:none; border-color:red; color:red; font-weight:bold;" onclick="showPage('admin')">ADMIN</button>
+        </div>
+        <div style="font-family:Orbitron; letter-spacing:10px; font-weight:900; cursor:pointer;" onclick="showPage('market')">BABYSELL</div>
+        <div style="display:flex; align-items:center; gap:30px;">
+            <div id="u-bal" style="color:var(--main); font-family:Orbitron; font-size:22px; font-weight:900;">0 B</div>
+            <button id="l-btn" class="btn-nav" onclick="login()">LOGIN</button>
+            <div id="l-prof" style="display:none;"><img id="l-ava" src="" style="width:45px; border-radius:50%; border:2px solid var(--main);"></div>
+        </div>
+    </header>
+
+    <div id="page-market" style="padding:100px 40px;">
+        <center>
+            <div class="case-card" style="max-width:400px;" onclick="openCaseModal()">
+                <img src="https://i.postimg.cc/ZnHQ1pwz/AAA.png">
+                <h2 style="font-family:Orbitron; margin-top:30px; letter-spacing:5px;">SUPREME CASE</h2>
+                <div style="color:var(--main); font-size:30px; font-weight:900; margin-top:15px;">1,000 B</div>
             </div>
-            <button class="rbx-btn" onclick="logout()" style="padding: 6px 12px; font-size: 12px; color: var(--rbx-red);">Вийти</button>
-        </div>
-        <div class="lobby-body">
-            <div style="background: var(--rbx-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 20px;">
-                <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 10px;">🌅 Sunset Baseplate</h2>
-                <p style="color: #8a8d9b; font-size: 13px; margin-bottom: 20px;">Онлайн гравців: <strong id="online-count" style="color: var(--rbx-green);">0</strong></p>
-                <button class="rbx-btn primary" onclick="joinServer()" style="width: 100%; height: 46px; font-size: 16px;">ГРАТИ</button>
+        </center>
+    </div>
+
+    <div id="page-inventory" style="display:none; padding:80px;">
+        <h1 style="font-family:Orbitron; margin-bottom:50px; color:var(--main);">COLLECTION</h1>
+        <div id="inv-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div>
+    </div>
+
+    <div id="page-upgrade" style="display:none; padding:80px;">
+        <h1 style="font-family:Orbitron; margin-bottom:40px; text-align:center; color:var(--main);">UPGRADER</h1>
+        <div class="upgrade-container">
+            <div id="slot-input" class="upgrade-slot" onclick="showPage('inventory')">
+                <p style="color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;">SELECT SKIN</p>
+            </div>
+            <div style="text-align:center; position:relative;">
+                <div class="upgrader-roulette" id="upg-roulette">
+                    <div class="upgrader-track" id="upg-track"></div>
+                    <div class="upgrader-arrow-container" id="upg-arrow">
+                        <div class="upgrader-arrow"></div>
+                    </div>
+                    <div class="upgrader-inner">
+                        <div class="water-wave" id="water-fill"></div>
+                        <div id="chance-display" class="chance-text">0%</div>
+                    </div>
+                </div>
+                <button id="upg-btn" class="btn-nav" style="margin-top:50px; width:220px; padding: 15px;" onclick="attemptUpgrade()" disabled>INITIATE UPGRADE</button>
+            </div>
+            <div id="slot-output" class="upgrade-slot">
+                <select id="target-select" onchange="updateUpgradeChance()" style="background: rgba(0,0,0,0.85); color:#fff; border:1px solid rgba(255,157,0,0.3); padding:12px; font-family:Orbitron; outline: none; cursor: pointer; border-radius: 10px;">
+                    <option value="">TARGET SKIN</option>
+                </select>
+                <div id="target-img-preview" style="margin-top: 30px;"></div>
             </div>
         </div>
     </div>
+
+    <div id="page-products" style="display:none; padding:100px 80px;">
+        <h1 style="font-family:Orbitron; margin-bottom:50px; text-align:center; color:var(--main);">BEYSELL</h1>
+        <div style="display:flex; justify-content:center;">
+            <div class="product-item" onclick="openProductInfo()" style="cursor:pointer; background: rgba(5,3,12,0.6); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,157,0,0.1);">
+                <h2 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h2>
+                <p style="color:#777;">Gaming Platform v1.0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- АДМІН ПАНЕЛЬ -->
+    <div id="page-admin" style="display:none; padding:100px 40px; text-align:center;">
+        <h1 style="font-family:Orbitron; margin-bottom:40px; color:red; letter-spacing: 5px;">BEYSELL CONTROL PANEL</h1>
+        <div id="admin-users-list"></div>
+    </div>
 </div>
 
-<div id="loading-screen" class="screen">
-    <div class="spinner"></div>
-    <div style="margin-top: 20px; font-weight: 800; font-size: 14px;">ЗАВАНТАЖЕННЯ СВІТУ...</div>
+<div id="product-modal" onclick="closeProductModal()">
+    <div id="product-modal-content" onclick="event.stopPropagation()">
+        <h1 style="font-family:Orbitron; color:var(--main);">BEYSELL-LAUNCHER</h1>
+        <a href="https://www.dropbox.com/scl/fi/33u95qm2g9tj0ltaohz5m/BEYSELL_Setup.exe?rlkey=ygvjgyx6vtroxxt5adlc81c1o&st=77dypihf&dl=1" style="display:inline-block; background:var(--main); color:#000; padding:20px 60px; border-radius:30px; font-family:Orbitron; text-decoration:none; margin-top:40px;">INSTALL</a>
+    </div>
 </div>
 
-<div id="game-screen" class="screen">
-    <div class="rbx-topbar">
-        <div class="rbx-icon-btn" onclick="toggleEscMenu()">
-            <div class="rbx-logo" style="width: 20px; height: 20px; margin: 0; border-radius: 4px;"></div>
-        </div>
-        <div style="font-weight: 800; font-size: 13px; color: #8a8d9b;">ROBLOX ENGINE</div>
-    </div>
-
-    <div class="rbx-leaderboard">
-        <div style="font-size: 10px; font-weight: 800; color: #8a8d9b; text-transform: uppercase; margin-bottom: 6px;">Гравці</div>
-        <div id="leaderboard-players"></div>
-    </div>
-
-    <div class="pc-controls-hint">
-        WASD - Ходьба | Пробіл - Стрибок | Мишка - Огляд
-    </div>
-
-    <!-- Мобільні елементи -->
-    <div class="mobile-ui">
-        <div id="joystick-zone"><div id="joystick-knob"></div></div>
-        <div id="jump-btn">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="#fff"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg>
-        </div>
-    </div>
-
-    <div id="esc-menu">
-        <div class="esc-box">
-            <h3 style="text-align: center; font-weight: 900;">МЕНЮ</h3>
-            <button class="rbx-btn primary" onclick="toggleEscMenu()">Продовжити</button>
-            <button class="rbx-btn" onclick="resetCharacter()">Заспавнитись</button>
-            <button class="rbx-btn" onclick="leaveGame()" style="background: var(--rbx-red); border: none;">Вийти</button>
-        </div>
+<div id="case-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(25px);">
+    <div style="width:95%; max-width:1200px; text-align:center;">
+        <h1 id="win-status">FATE DECIDING...</h1>
+        <div class="view-window"><div class="pointer"></div><div id="strip" class="strip"></div></div>
+        <button id="spin-btn" class="btn-nav" onclick="startSpin()">OPEN FOR 1,000 B</button>
+        <div onclick="closeModals()" style="color:#555; cursor:pointer; margin-top:20px;">[ EXIT MODULE ]</div>
     </div>
 </div>
 
 <script>
-    // --- 1. АВТО-ВИЗНАЧЕННЯ ПРИСТРОЮ ---
-    const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth < 768;
-    if (isMobileDevice) {
-        document.body.classList.add('is-mobile');
-        document.getElementById('device-label').innerText = "Мобільний режим (Touch UI)";
-    } else {
-        document.body.classList.remove('is-mobile');
-        document.getElementById('device-label').innerText = "ПК режим (Keyboard & Mouse)";
-    }
+    const music = document.getElementById('bg-music');
+    function initApp() { music.volume = 0.2; music.play(); document.getElementById('welcome-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('welcome-screen').style.visibility = 'hidden'; document.body.classList.add('app-loaded'); }, 1500); }
+    const firebaseConfig = { apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", authDomain: "babysell-8b37b.firebaseapp.com", databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", projectId: "babysell-8b37b", appId: "1:955498378146:web:52f027f8e97398e75b78fb" };
+    firebase.initializeApp(firebaseConfig); const auth = firebase.auth(), db = firebase.database();
+    
+    const SKINS = [
+        { name: "Glock Fade", img: "https://i.postimg.cc/Hk5Jznr2/Gemini-Generated-Image-m3j83tm3j83tm3j8.png", price: 150, color: "#4b69ff" },
+        { name: "Deagle", img: "https://i.postimg.cc/HL5phv0W/ааааа.png", price: 400, color: "#8847ff" },
+        { name: "AK Neon", img: "https://i.postimg.cc/3NW96mG1/Gemini_Generated_Image_rii36prii36prii3.png", price: 1200, color: "#d32ee6" },
+        { name: "Butterfly", img: "https://i.postimg.cc/ZRsrkWDd/Gemini_Generated_Image_i0cyvji0cyvji0cy.png", price: 15000, color: "#ebca42" }
+    ];
+    
+    let user = null, balance = 0, userInv = {}, selectedUpgradeId = null, currentSpinAngle = 180; 
+    
+    auth.onAuthStateChanged(u => { 
+        if(u) { 
+            user = u; 
+            document.getElementById('l-btn').style.display = 'none'; 
+            document.getElementById('l-prof').style.display = 'block'; 
+            document.getElementById('l-ava').src = u.photoURL; 
 
-    // --- 2. FIREBASE CONFIG ---
-    const firebaseConfig = { 
-        apiKey: "AIzaSyB-vHc4nWntJQwf-Ezd6QH5ChXldCkiYBM", 
-        authDomain: "babysell-8b37b.firebaseapp.com", 
-        databaseURL: "https://babysell-8b37b-default-rtdb.europe-west1.firebasedatabase.app", 
-        projectId: "babysell-8b37b" 
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    let currentUser = null;
-    let myColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-    let isIngame = false;
-    let heartbeatTimer = null;
-
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    function loginWithGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert(e.message)); }
-    function logout() { leaveGame(); auth.signOut().then(() => showScreen('login-screen')); }
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            document.getElementById('ui-name').innerText = user.displayName.split(' ')[0];
-            document.getElementById('ui-avatar').src = user.photoURL;
-            showScreen('home-screen');
-        } else {
-            showScreen('login-screen');
-        }
-    });
-
-    // Очищення офлайн-гравців
-    db.ref('places/empty/players').on('value', snap => {
-        const players = snap.val() || {};
-        const now = Date.now();
-        let count = 0;
-        const lb = document.getElementById('leaderboard-players');
-        lb.innerHTML = '';
-
-        for(let id in players) {
-            const p = players[id];
-            if(p.lastSeen && (now - p.lastSeen > 3500)) {
-                db.ref('places/empty/players/' + id).remove();
-                continue;
-            }
-            count++;
-            lb.innerHTML += `<div class="lb-player"><span>${p.name}</span></div>`;
-        }
-        document.getElementById('online-count').innerText = count;
-    });
-
-    function joinServer() {
-        showScreen('loading-screen');
-        setTimeout(() => {
-            isIngame = true;
-            showScreen('game-screen');
-            if(!scene) init3DGame();
-            resetCharacter();
-
-            const pRef = db.ref('places/empty/players/' + currentUser.uid);
-            pRef.onDisconnect().remove();
-
-            clearInterval(heartbeatTimer);
-            heartbeatTimer = setInterval(() => {
-                if(isIngame && currentUser) {
-                    pRef.update({ lastSeen: Date.now(), name: currentUser.displayName.split(' ')[0] });
-                }
-            }, 1500);
-        }, 600);
-    }
-
-    function leaveGame() {
-        isIngame = false;
-        clearInterval(heartbeatTimer);
-        if(currentUser) db.ref('places/empty/players/' + currentUser.uid).remove();
-        showScreen('home-screen');
-    }
-
-    function resetCharacter() {
-        if(playerGroup) { playerGroup.position.set(0, 15, 0); velocityY = 0; }
-        if(document.getElementById('esc-menu').classList.contains('active')) toggleEscMenu();
-    }
-
-    function toggleEscMenu() { document.getElementById('esc-menu').classList.toggle('active'); }
-
-    // --- 3. THREE.JS ДВИГУН ТА КЕРУВАННЯ ---
-    let scene, camera, renderer, playerObj, playerGroup;
-    let otherPlayers = {};
-    let keys = { w:false, a:false, s:false, d:false, space:false };
-    let joyVector = { x: 0, y: 0 };
-    let cameraYaw = 0, cameraPitch = 0.3;
-    let velocityY = 0, gravity = -0.016, moveSpeed = 0.25;
-
-    function createAvatar(colorHex, nameText) {
-        const group = new THREE.Group();
-        const mat = new THREE.MeshLambertMaterial({ color: colorHex });
-        const skin = new THREE.MeshLambertMaterial({ color: 0xffcc99 });
-
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2, 0.8), mat); torso.position.y = 2; group.add(torso);
-        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), skin); head.position.y = 3.6; group.add(head);
-        const lA = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); lA.position.set(-1.2, 2, 0); group.add(lA);
-        const rA = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2, 0.7), mat); rA.position.set(1.2, 2, 0); group.add(rA);
-        const lL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); lL.position.set(-0.4, 0, 0); group.add(lL);
-        const rL = new THREE.Mesh(new THREE.BoxGeometry(0.75, 2, 0.75), mat); rL.position.set(0.4, 0, 0); group.add(rL);
-
-        return {
-            group, lA, rA, lL, rL, torso, head,
-            animate: function(t, isM, inAir) {
-                if(inAir) {
-                    this.lL.rotation.x = -0.6; this.rL.rotation.x = 0.4;
-                    this.lA.rotation.x = -2.2; this.rA.rotation.x = -2.2;
-                } else if(isM) {
-                    const c = Math.sin(t * 13);
-                    this.lA.rotation.x = c; this.rA.rotation.x = -c;
-                    this.lL.rotation.x = -c; this.rL.rotation.x = c;
+            // Автоматична реєстрація користувача в базі
+            const userRef = db.ref('users/' + u.uid);
+            userRef.once('value').then(snapshot => {
+                if (!snapshot.exists()) {
+                    userRef.set({
+                        name: u.displayName,
+                        email: u.email,
+                        balance: 0
+                    });
                 } else {
-                    this.lA.rotation.x = 0; this.rA.rotation.x = 0;
-                    this.lL.rotation.x = 0; this.rL.rotation.x = 0;
-                }
-            }
-        };
-    }
-
-    function init3DGame() {
-        const container = document.getElementById('game-screen');
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xff6b4a);
-        scene.fog = new THREE.FogExp2(0xff6b4a, 0.012);
-
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 500);
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
-
-        scene.add(new THREE.AmbientLight(0x705060, 0.9));
-        const dirLight = new THREE.DirectionalLight(0xffb07c, 1.4);
-        dirLight.position.set(-50, 40, -50); dirLight.castShadow = true;
-        scene.add(dirLight);
-
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshLambertMaterial({ color: 0x1e1619 }));
-        ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
-        scene.add(ground);
-
-        const grid = new THREE.GridHelper(300, 60, 0xff2a5f, 0xff2a5f);
-        grid.material.opacity = 0.2; grid.material.transparent = true;
-        scene.add(grid);
-
-        playerObj = createAvatar(myColor, currentUser.displayName.split(' ')[0]);
-        playerGroup = playerObj.group;
-        scene.add(playerGroup);
-
-        setupInputHandlers();
-        setupMultiplayer();
-        animate();
-    }
-
-    // НАЛАШТУВАННЯ КЕРУВАННЯ З ЧІТКИМ РОЗДІЛЕННЯМ ДЕЛЕГОВАНИХ ПОДІЙ
-    function setupInputHandlers() {
-        // --- ПК: КЛАВІАТУРА ТА МИШКА ---
-        window.addEventListener('keydown', e => {
-            const k = e.key.toLowerCase();
-            if(k === 'w' || k === 'ц') keys.w = true;
-            if(k === 's' || k === 'і') keys.s = true;
-            if(k === 'a' || k === 'ф') keys.a = true;
-            if(k === 'd' || k === 'в') keys.d = true;
-            if(e.key === ' ') keys.space = true;
-            if(e.key === 'Escape') toggleEscMenu();
-        });
-
-        window.addEventListener('keyup', e => {
-            const k = e.key.toLowerCase();
-            if(k === 'w' || k === 'ц') keys.w = false;
-            if(k === 's' || k === 'і') keys.s = false;
-            if(k === 'a' || k === 'ф') keys.a = false;
-            if(k === 'd' || k === 'в') keys.d = false;
-            if(e.key === ' ') keys.space = false;
-        });
-
-        let isMouseDown = false, lastMX = 0, lastMY = 0;
-        window.addEventListener('mousedown', e => {
-            if(!isMobileDevice && isIngame && e.target.tagName === 'CANVAS') {
-                isMouseDown = true; lastMX = e.clientX; lastMY = e.clientY;
-            }
-        });
-        window.addEventListener('mouseup', () => isMouseDown = false);
-        window.addEventListener('mousemove', e => {
-            if(isMouseDown && !isMobileDevice) {
-                cameraYaw -= (e.clientX - lastMX) * 0.005;
-                cameraPitch = Math.max(0.05, Math.min(1.3, cameraPitch + (e.clientY - lastMY) * 0.005));
-                lastMX = e.clientX; lastMY = e.clientY;
-            }
-        });
-
-        // --- МОБІЛЬНІ: ТАЧ-СЕНСОР ТА ДЖОЙСТИК ---
-        if(isMobileDevice) {
-            const joyZone = document.getElementById('joystick-zone');
-            const joyKnob = document.getElementById('joystick-knob');
-            const jumpBtn = document.getElementById('jump-btn');
-
-            let joyTouchId = null;
-            let joyCenterX = 0, joyCenterY = 0;
-
-            joyZone.addEventListener('touchstart', e => {
-                e.preventDefault();
-                const t = e.changedTouches[0];
-                joyTouchId = t.identifier;
-                const r = joyZone.getBoundingClientRect();
-                joyCenterX = r.left + r.width / 2;
-                joyCenterY = r.top + r.height / 2;
-                updateJoystick(t);
-            }, { passive: false });
-
-            window.addEventListener('touchmove', e => {
-                for(let i=0; i<e.changedTouches.length; i++) {
-                    const t = e.changedTouches[i];
-                    if(t.identifier === joyTouchId) {
-                        updateJoystick(t);
-                    }
-                }
-            }, { passive: false });
-
-            const endJoystick = (e) => {
-                for(let i=0; i<e.changedTouches.length; i++) {
-                    if(e.changedTouches[i].identifier === joyTouchId) {
-                        joyTouchId = null;
-                        joyKnob.style.transform = `translate(0px, 0px)`;
-                        joyVector = { x: 0, y: 0 };
-                    }
-                }
-            };
-            window.addEventListener('touchend', endJoystick);
-            window.addEventListener('touchcancel', endJoystick);
-
-            function updateJoystick(t) {
-                let dx = t.clientX - joyCenterX;
-                let dy = t.clientY - joyCenterY;
-                const maxDist = 40;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist > maxDist) {
-                    dx = (dx / dist) * maxDist;
-                    dy = (dy / dist) * maxDist;
-                }
-                joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-                joyVector.x = dx / maxDist;
-                joyVector.y = dy / maxDist;
-            }
-
-            // Кнопка стрибка
-            jumpBtn.addEventListener('touchstart', e => { e.preventDefault(); keys.space = true; }, { passive: false });
-            jumpBtn.addEventListener('touchend', e => { e.preventDefault(); keys.space = false; }, { passive: false });
-
-            // Обертання камери пальцем по екрану
-            let camTouchId = null, lastTX = 0, lastTY = 0;
-            window.addEventListener('touchstart', e => {
-                for(let i=0; i<e.changedTouches.length; i++) {
-                    const t = e.changedTouches[i];
-                    // Якщо тач не на джойстику і не на кнопці стрибка — це обертання камери
-                    if(t.identifier !== joyTouchId && !e.target.closest('#jump-btn') && !e.target.closest('#joystick-zone')) {
-                        camTouchId = t.identifier;
-                        lastTX = t.clientX; lastTY = t.clientY;
-                    }
+                    userRef.update({
+                        name: u.displayName,
+                        email: u.email
+                    });
                 }
             });
 
-            window.addEventListener('touchmove', e => {
-                for(let i=0; i<e.changedTouches.length; i++) {
-                    const t = e.changedTouches[i];
-                    if(t.identifier === camTouchId) {
-                        cameraYaw -= (t.clientX - lastTX) * 0.007;
-                        cameraPitch = Math.max(0.05, Math.min(1.3, cameraPitch + (t.clientY - lastTY) * 0.007));
-                        lastTX = t.clientX; lastTY = t.clientY;
-                    }
-                }
-            });
-
-            const endCamTouch = (e) => {
-                for(let i=0; i<e.changedTouches.length; i++) {
-                    if(e.changedTouches[i].identifier === camTouchId) camTouchId = null;
-                }
-            };
-            window.addEventListener('touchend', endCamTouch);
-            window.addEventListener('touchcancel', endCamTouch);
-        }
-    }
-
-    function setupMultiplayer() {
-        db.ref('places/empty/players').on('value', snap => {
-            const players = snap.val() || {};
-            for(let uid in players) {
-                if(uid === currentUser.uid) continue;
-                const d = players[uid];
-                if(!otherPlayers[uid]) {
-                    const av = createAvatar(d.color || '#fff', d.name);
-                    scene.add(av.group);
-                    otherPlayers[uid] = { avatar: av, tx: d.x, ty: d.y, tz: d.z, try: d.ry, isM: false, inAir: false };
-                }
-                const op = otherPlayers[uid];
-                op.tx = d.x; op.ty = d.y; op.tz = d.z; op.try = d.ry; op.isM = d.isM; op.inAir = d.inAir;
+            // Перевірка на тебе (Адміна)
+            if(u.email === "klevaka.kostia@gmail.com") {
+                document.getElementById('btn-admin').style.display = 'inline-block';
+                loadAdminData();
             }
-            for(let uid in otherPlayers) {
-                if(!players[uid]) { scene.remove(otherPlayers[uid].avatar.group); delete otherPlayers[uid]; }
-            }
-        });
-    }
 
-    function animate(time) {
-        requestAnimationFrame(animate);
-        if(!isIngame) return;
-
-        let inputX = 0, inputZ = 0;
-
-        // Векторний вхід в залежності від типу пристрою
-        if(isMobileDevice) {
-            inputX = joyVector.x;
-            inputZ = joyVector.y;
-        } else {
-            if(keys.w) inputZ -= 1; if(keys.s) inputZ += 1;
-            if(keys.a) inputX -= 1; if(keys.d) inputX += 1;
-        }
-
-        const isMoving = Math.abs(inputX) > 0.1 || Math.abs(inputZ) > 0.1;
-
-        if(isMoving) {
-            const moveAngle = Math.atan2(inputX, inputZ) + cameraYaw;
-            playerGroup.position.x += Math.sin(moveAngle) * moveSpeed;
-            playerGroup.position.z += Math.cos(moveAngle) * moveSpeed;
-            playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, moveAngle, 0.25);
-        }
-
-        // Фізика стрибків
-        velocityY += gravity;
-        playerGroup.position.y += velocityY;
-        let inAir = false;
-
-        if(playerGroup.position.y <= 1) {
-            playerGroup.position.y = 1; velocityY = 0;
-            if(keys.space) velocityY = 0.4;
-        } else {
-            inAir = true;
-        }
-
-        playerObj.animate(time * 0.001, isMoving, inAir);
-
-        // Синхронізація позиції
-        if(currentUser) {
-            db.ref('places/empty/players/' + currentUser.uid).update({
-                x: playerGroup.position.x, y: playerGroup.position.y, z: playerGroup.position.z,
-                ry: playerGroup.rotation.y, isM: isMoving, inAir: inAir
-            });
-        }
-
-        // Інтерполяція інших гравців
-        for(let uid in otherPlayers) {
-            const op = otherPlayers[uid];
-            op.avatar.group.position.lerp(new THREE.Vector3(op.tx, op.ty, op.tz), 0.25);
-            op.avatar.group.rotation.y = THREE.MathUtils.lerp(op.avatar.group.rotation.y, op.try, 0.25);
-            op.avatar.animate(time * 0.001, op.isM, op.inAir);
-        }
-
-        // Камера від 3-ї особи
-        const camDist = 14;
-        const tx = playerGroup.position.x + Math.sin(cameraYaw) * Math.cos(cameraPitch) * camDist;
-        const ty = playerGroup.position.y + Math.sin(cameraPitch) * camDist + 1.2;
-        const tz = playerGroup.position.z + Math.cos(cameraYaw) * Math.cos(cameraPitch) * camDist;
-        camera.position.lerp(new THREE.Vector3(tx, ty, tz), 0.2);
-        camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1.5, playerGroup.position.z);
-
-        renderer.render(scene, camera);
-    }
-
-    window.addEventListener('resize', () => {
-        if(camera && renderer) {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+            // Підключення до балансу та інвентарю
+            db.ref('users/'+u.uid+'/balance').on('value', s => { 
+                balance = s.val() || 0; 
+                document.getElementById('u-bal').innerText = balance.toLocaleString() + " B"; 
+            }); 
+            db.ref('users/'+u.uid+'/inventory').on('value', s => { 
+                userInv = s.val() || {}; 
+                renderInventory(); 
+                populateTargetSkins(); 
+            }); 
+        } 
     });
-</script>
 
+    function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    
+    function showPage(p) { 
+        ['page-market', 'page-inventory', 'page-products', 'page-upgrade', 'page-admin'].forEach(id => document.getElementById(id).style.display = 'none'); 
+        document.getElementById('page-' + p).style.display = 'block'; 
+    }
+    
+    function renderInventory() { const g = document.getElementById('inv-grid'); g.innerHTML = ""; Object.keys(userInv).reverse().forEach(id => { const i = userInv[id]; g.innerHTML += `<div class="inv-item" style="padding:30px; background:rgba(5,3,12,0.6); border-radius:35px; border-bottom:4px solid ${i.color}; text-align:center;"><img src="${i.img}" width="130"><br><b style="font-family:Orbitron">${i.name}</b><br><button class="btn-nav" style="width:100%; margin-top:10px;" onclick="selectForUpgrade('${id}')">UPGRADE</button><button class="btn-nav" style="width:100%; margin-top:5px;" onclick="sell('${id}',${i.price})">SELL ${i.price}B</button></div>`; }); }
+    
+    function selectForUpgrade(id) { selectedUpgradeId = id; const skin = userInv[id]; const slot = document.getElementById('slot-input'); slot.innerHTML = `<img src="${skin.img}" width="150"><p style="margin-top:15px; font-family:Orbitron; font-weight:bold;">${skin.name}</p><p style="color:var(--main);">${skin.price} B</p>`; slot.classList.add('active'); showPage('upgrade'); updateUpgradeChance(); }
+    
+    function populateTargetSkins() { const sel = document.getElementById('target-select'); const currentVal = sel.value; sel.innerHTML = '<option value="">TARGET SKIN</option>'; SKINS.forEach((s, i) => sel.innerHTML += `<option value="${i}">${s.name} (${s.price}B)</option>`); if(currentVal) sel.value = currentVal; }
+    
+    function updateUpgradeChance() { 
+        if(!selectedUpgradeId) return; 
+        const targetIdx = document.getElementById('target-select').value; 
+        const btn = document.getElementById('upg-btn'); 
+        const track = document.getElementById('upg-track'); 
+        const water = document.getElementById('water-fill'); 
+        const chanceDisplay = document.getElementById('chance-display'); 
+        const preview = document.getElementById('target-img-preview'); 
+        if(targetIdx === "") { chanceDisplay.innerText = "0%"; btn.disabled = true; track.style.background = `transparent`; water.style.top = `100%`; preview.innerHTML = ""; return; } 
+        const chance = Math.min(95, Math.floor((userInv[selectedUpgradeId].price / SKINS[targetIdx].price) * 100)); 
+        chanceDisplay.innerText = chance + "%"; btn.disabled = false; preview.innerHTML = `<img src="${SKINS[targetIdx].img}" width="150">`; 
+        
+        const angleSize = (chance / 100) * 360; const half = angleSize / 2;
+        track.style.background = `conic-gradient(from 0deg, transparent 0deg, transparent ${180-half}deg, var(--main) ${180-half}deg, var(--main) ${180+half}deg, transparent ${180+half}deg, transparent 360deg)`;
+        water.style.top = `${100 - chance}%`; 
+    }
+
+    function attemptUpgrade() { 
+        const targetIdx = document.getElementById('target-select').value; 
+        const chance = parseInt(document.getElementById('chance-display').innerText); 
+        const btn = document.getElementById('upg-btn'); 
+        const arrowCont = document.getElementById('upg-arrow'); 
+        document.getElementById('action-blocker').style.display = 'block'; 
+        btn.disabled = true; 
+        
+        const isWin = Math.random() * 100 < chance; 
+        const angleSize = (chance / 100) * 360;
+        const startWin = 180 - (angleSize / 2);
+        const endWin = 180 + (angleSize / 2);
+        
+        let resultAngle;
+        const winPadding = Math.min(5, angleSize / 3); 
+        const losePadding = Math.min(5, (360 - angleSize) / 3);
+
+        if (isWin) {
+            resultAngle = (startWin + winPadding) + (Math.random() * (angleSize - (winPadding * 2)));
+        } else {
+            const safeRange = (360 - angleSize) - (losePadding * 2);
+            resultAngle = (endWin + losePadding) + (Math.random() * safeRange);
+            if (resultAngle >= 360) resultAngle -= 360;
+        }
+
+        const spins = 5 * 360; 
+        currentSpinAngle += spins + (resultAngle - (currentSpinAngle % 360)); 
+        arrowCont.style.transform = `rotate(${currentSpinAngle}deg)`; 
+        
+        setTimeout(() => { 
+            if(isWin) { 
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); 
+                db.ref('users/'+user.uid+'/inventory').push(SKINS[targetIdx]); 
+                alert("SUCCESS! +1 " + SKINS[targetIdx].name); 
+            } else { 
+                db.ref('users/'+user.uid+'/inventory/'+selectedUpgradeId).remove(); 
+                alert("FAILED! SKIN DESTROYED"); 
+            } 
+            selectedUpgradeId = null; 
+            document.getElementById('slot-input').innerHTML = "<p style='color:#555; font-family:Orbitron; font-size:12px; letter-spacing:2px;'>SELECT SKIN</p>"; 
+            document.getElementById('slot-input').classList.remove('active'); 
+            document.getElementById('action-blocker').style.display = 'none'; 
+            updateUpgradeChance(); 
+            showPage('inventory'); 
+        }, 4100); 
+    }
+
+    function getSkinByChance() { let rand = Math.random() * 100; let sum = 0; for (let i = 0; i < SKINS.length; i++) { sum += (100/SKINS.length); if (rand <= sum) return SKINS[i]; } return SKINS[0]; }
+    
+    function startSpin() { 
+        if(balance < 1000) return alert("LOW BALANCE"); 
+        const btn = document.getElementById('spin-btn'); 
+        btn.disabled = true; 
+        document.getElementById('action-blocker').style.display = 'block'; 
+        db.ref('users/'+user.uid+'/balance').set(balance - 1000); 
+        const strip = document.getElementById('strip'); 
+        strip.innerHTML = ""; 
+        
+        const win = getSkinByChance(); 
+        for(let i=0; i<100; i++) { 
+            let s = (i === 50) ? win : getSkinByChance(); 
+            strip.innerHTML += `<div class="case-strip-item"><img src="${s.img}" width="100"><div style="color:${s.color}">${s.name}</div></div>`; 
+        } 
+        
+        strip.style.transition = 'none'; 
+        strip.style.transform = 'translateX(0)'; 
+        
+        const windowWidth = document.querySelector('.view-window').clientWidth;
+        const finalShift = (50 * 240) + 120 - (windowWidth / 2);
+        const randomOffset = Math.floor(Math.random() * 180) - 90;
+        
+        setTimeout(() => { 
+            strip.style.transition = 'transform 9s cubic-bezier(0.05, 0.7, 0.1, 1.0)'; 
+            strip.style.transform = `translateX(-${finalShift + randomOffset}px)`; 
+        }, 50); 
+        
+        setTimeout(() => { 
+            db.ref('users/'+user.uid+'/inventory').push(win); 
+            btn.disabled = false; 
+            document.getElementById('action-blocker').style.display = 'none'; 
+            alert("YOU GOT: " + win.name); 
+        }, 9000); 
+    }
+    
+    function sell(id, p) { db.ref('users/'+user.uid+'/inventory/'+id).remove(); db.ref('users/'+user.uid+'/balance').set(balance + p); }
+    function openCaseModal() { if(!user) return login(); document.getElementById('case-modal').style.display='flex'; }
+    function closeModals() { document.getElementById('case-modal').style.display='none'; }
+    function openProductInfo() { document.getElementById('product-modal').style.display = 'flex'; }
+    function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
+
+    // АДМІНСЬКІ ФУНКЦІЇ
+    function loadAdminData() {
+        db.ref('users').on('value', snap => {
+            const users = snap.val();
+            let html = '<div style="display:flex; flex-direction:column; gap:15px; max-width: 800px; margin: 0 auto;">';
+            for(let uid in users) {
+                let uData = users[uid];
+                html += `
+                <div style="background:rgba(255,0,0,0.05); padding:20px; border:1px solid red; border-radius:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 10px;">
+                    <div style="text-align: left;">
+                        <b style="font-family:Orbitron; font-size:22px;">${uData.name || 'Unknown'}</b><br>
+                        <span style="color:#aaa; font-size: 14px;">${uData.email || 'No email'}</span><br>
+                        Баланс: <b style="color:var(--main)">${uData.balance || 0} B</b>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-nav" style="border-color:#4CAF50; color:#4CAF50;" onclick="adminGiveMoney('${uid}', 10000)">+10,000 B</button>
+                        <button class="btn-nav" style="border-color:#ebca42; color:#ebca42;" onclick="adminGiveItem('${uid}', 3)">+ BUTTERFLY</button>
+                    </div>
+                </div>`;
+            }
+            html += '</div>';
+            document.getElementById('admin-users-list').innerHTML = html;
+        });
+    }
+
+    function adminGiveMoney(uid, amount) {
+        db.ref('users/'+uid+'/balance').once('value').then(s => {
+            db.ref('users/'+uid+'/balance').set((s.val() || 0) + amount);
+        });
+    }
+
+    function adminGiveItem(uid, skinIndex) {
+        db.ref('users/'+uid+'/inventory').push(SKINS[skinIndex]);
+        alert("Предмет успішно видано гравцю!");
+    }
+</script>
 </body>
 </html>
